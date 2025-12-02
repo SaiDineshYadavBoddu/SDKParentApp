@@ -1,10 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useAuth } from '../../../context/AuthContext';
 
 const HomeScreen = () => {
+    const { signOut } = useAuth();
+
     return (
         <View style={styles.container}>
             <Text style={styles.text}>Welcome to Home Screen!</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
+                <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -20,6 +26,18 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
+        marginBottom: 20,
+    },
+    logoutButton: {
+        backgroundColor: '#FF3B30',
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 8,
+    },
+    logoutButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 

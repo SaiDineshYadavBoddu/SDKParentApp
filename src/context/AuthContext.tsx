@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { authorize, AuthConfiguration } from 'react-native-app-auth';
+import { authorize, logout, AuthConfiguration } from 'react-native-app-auth';
 import { keycloakConfig } from '../config/keycloakConfig';
 
 interface AuthContextData {
@@ -7,6 +7,7 @@ interface AuthContextData {
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
     accessToken: string | null;
+    idToken: string | null;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -14,12 +15,14 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [idToken, setIdToken] = useState<string | null>(null);
 
     const signIn = async () => {
         try {
             const result = await authorize(keycloakConfig as AuthConfiguration);
             console.log('Login success:', result);
             setAccessToken(result.accessToken);
+            setIdToken(result.idToken);
             setIsAuthenticated(true);
         } catch (error) {
             console.error('Login failed:', error);
@@ -28,13 +31,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const signOut = async () => {
-        // Implement logout logic if needed, for now just clear local state
-        setAccessToken(null);
-        setIsAuthenticated(false);
+        try {
+            if (idToken) {
+                await logout(keycloakConfig as AuthConfiguration, {
+                    idToken: idToken,
+                    postLogoutRedirectUrl: keycloakConfig.redirectUrl,
+                });
+            }
+        } catch (error) {
+            console.error('Logout failed:', error);
+        } finally {
+            setAccessToken(null);
+            setIdToken(null);
+            setIsAuthenticated(false);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, accessToken }}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, accessToken, idToken }}>
             {children}
         </AuthContext.Provider>
     );
