@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useGetPostsQuery } from '../../../network/user/user.api';
 
 const HomeScreen = () => {
+    const { data } = useGetPostsQuery();
+    console.log("data",data);
     return (
         <View style={styles.container}>
             <Text style={styles.text}>Welcome to Home Screen!</Text>
+        
         </View>
     );
 };
