@@ -1,8 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useGetPostsQuery } from '../../../network/user/user.api';
 import { useAuth } from '../../../context/AuthContext';
 
 const HomeScreen = () => {
+    const { data } = useGetPostsQuery();
+    console.log("data", data);
     const { signOut } = useAuth();
 
     return (
