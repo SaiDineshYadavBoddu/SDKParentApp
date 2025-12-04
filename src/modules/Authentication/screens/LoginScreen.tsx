@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
     View,
     Text,
@@ -11,6 +11,8 @@ import {
     NativeSyntheticEvent,
     NativeScrollEvent,
 } from 'react-native';
+import { useAuth } from '../../../context/AuthContext';
+import { useTheme } from '../../../theme/ThemeProvider';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,12 +37,13 @@ const ONBOARDING_DATA = [
     },
 ];
 
-import { useAuth } from '../../../context/AuthContext';
-
 const LoginScreen = () => {
     const { signIn } = useAuth();
+    const { colors } = useTheme();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
+
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const slideIndex = Math.ceil(event.nativeEvent.contentOffset.x / width);
@@ -102,10 +105,10 @@ const LoginScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#C8E4F7',
+        backgroundColor: colors.backgroundVariant,
     },
     sliderContainer: {
         flex: 3,
@@ -130,12 +133,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
+        color: colors.onBackgroundVariant,
         textAlign: 'left',
     },
     description: {
         fontSize: 16,
-        color: '#666',
+        color: colors.onBackgroundVariant,
         textAlign: 'left',
     },
     pagination: {
@@ -150,11 +153,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 4,
     },
     activeDot: {
-        backgroundColor: '#007AFF', // Primary color
+        backgroundColor: colors.primary,
         width: 20,
     },
     inactiveDot: {
-        backgroundColor: '#ccc',
+        backgroundColor: colors.primary,
+        opacity: 0.3,
     },
     bottomContainer: {
         flex: 1,
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     loginButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: colors.primary,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     loginButtonText: {
-        color: '#fff',
+        color: colors.onPrimary,
         fontSize: 18,
         fontWeight: 'bold',
     },
