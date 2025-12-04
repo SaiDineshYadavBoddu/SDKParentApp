@@ -6,13 +6,18 @@ import { useAuth } from '../../../context/AuthContext';
 const HomeScreen = () => {
     const { data } = useGetPostsQuery();
     console.log("data", data);
-    const { signOut } = useAuth();
+    const { signOut, changePassword } = useAuth();
 
     return (
         <View style={styles.container}>
             <Text style={styles.text}>Welcome to Home Screen!</Text>
-            <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
-                <Text style={styles.logoutButtonText}>Logout</Text>
+
+            <TouchableOpacity style={styles.button} onPress={changePassword}>
+                <Text style={styles.buttonText}>Change Password</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={signOut}>
+                <Text style={styles.buttonText}>Logout</Text>
             </TouchableOpacity>
         </View>
     );
@@ -31,13 +36,19 @@ const styles = StyleSheet.create({
         color: '#333',
         marginBottom: 20,
     },
-    logoutButton: {
-        backgroundColor: '#FF3B30',
+    button: {
+        backgroundColor: '#007AFF',
         paddingVertical: 12,
         paddingHorizontal: 30,
         borderRadius: 8,
+        marginVertical: 10,
+        minWidth: 200,
+        alignItems: 'center',
     },
-    logoutButtonText: {
+    logoutButton: {
+        backgroundColor: '#FF3B30',
+    },
+    buttonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',

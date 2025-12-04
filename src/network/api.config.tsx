@@ -9,7 +9,7 @@ const dynamicBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
-    baseUrl: AppConfig.BASE_URL || "https://jsonplaceholder.typicode.com",
+    baseUrl: "https://jsonplaceholder.typicode.com",
     prepareHeaders: (headers, { getState: _getState }) => {
       headers.set("Content-Type", "application/json");
       return headers;
@@ -35,8 +35,8 @@ const baseQueryWithReauth: BaseQueryFn<
   } else if (result.error && result.error.status === 400) {
     // Show global toast only if not ignored
     console.log(
-        result.error?.data ||
-        "Something went wrong."
+      result.error?.data ||
+      "Something went wrong."
     );
   } else if (result.error && result.error.status === 500) {
     // try to get a new token
