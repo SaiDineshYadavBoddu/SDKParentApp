@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../theme/ThemeProvider';
+import CustomText, { TextType } from '../../../common/components/CustomText';
+import { moderateScale } from 'react-native-size-matters';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,8 +59,8 @@ const LoginScreen = () => {
             <View style={styles.slide}>
                 <Image source={item.image} style={styles.image} resizeMode="contain" />
                 <View style={styles.textContainer}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <Text style={styles.description}>{item.description}</Text>
+                    <CustomText type={TextType.ScreenLarge}>{item.title}</CustomText>
+                    <CustomText type={TextType.ScreenMedium}>{item.description}</CustomText>
                 </View>
             </View>
         );
@@ -128,7 +130,8 @@ const createStyles = (colors: any) => StyleSheet.create({
         marginBottom: 20,
     },
     textContainer: {
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: moderateScale(10)
     },
     title: {
         fontSize: 24,

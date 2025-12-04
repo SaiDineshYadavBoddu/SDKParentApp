@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useGetPostsQuery } from '../../../network/user/user.api';
 import { useAuth } from '../../../context/AuthContext';
+import CustomText, { TextType } from '../../../common/components/CustomText';
 
 const HomeScreen = () => {
     const { data } = useGetPostsQuery();
@@ -10,7 +11,7 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Welcome to Home Screen!</Text>
+            <CustomText type={TextType.ScreenLarge}>Welcome to Home Screen!</CustomText>
 
             <TouchableOpacity style={styles.button} onPress={changePassword}>
                 <Text style={styles.buttonText}>Change Password</Text>
