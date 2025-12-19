@@ -21,19 +21,19 @@ const { width, height } = Dimensions.get('window');
 const ONBOARDING_DATA = [
     {
         id: '1',
-        image: require('../../../assets/png/onboarding1.png'),
+        image: require('../../../assets/images/onboarding1.png'),
         title: 'Accept Payments',
         description: 'Tap or link, seemless payments',
     },
     {
         id: '2',
-        image: require('../../../assets/png/onboarding2.png'),
+        image: require('../../../assets/images/onboarding2.png'),
         title: 'Track Every Transaction',
         description: 'Clear, fast and reliable tracking',
     },
     {
         id: '3',
-        image: require('../../../assets/png/onboarding3.png'),
+        image: require('../../../assets/images/onboarding3.png'),
         title: 'Instant Settlements',
         description: 'Withdraw funnds anytime, instantly',
     },

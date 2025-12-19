@@ -1,99 +1,118 @@
+// components/CustomText.tsx
 import React from "react";
-import { Text, TextProps } from "react-native";
-import { ms } from "react-native-size-matters";
-import { useTheme } from "../../theme/ThemeProvider";
+import { Text, TextProps, TextStyle } from "react-native";
 import { Typography } from "../../theme/typography";
+import { useTheme } from "../../theme/ThemeProvider";
 
 export enum TextType {
-    // Screen-level
-    ScreenLarge = "ScreenLarge",
-    ScreenMedium = "ScreenMedium",
-    ScreenSmall = "ScreenSmall",
+    ScreenHeadlineLarge = "ScreenHeadlineLarge",
+    ScreenHeadlineMedium = "ScreenHeadlineMedium",
+    ScreenHeadlineSmall = "ScreenHeadlineSmall",
 
-    // Section / Card-level
+    ScreenDisplayLarge = "ScreenDisplayLarge",
+    ScreenDisplayMedium = "ScreenDisplayMedium",
+    ScreenDisplaySmall = "ScreenDisplaySmall",
+
     SectionTitle = "SectionTitle",
     CardTitle = "CardTitle",
     CardSubtitle = "CardSubtitle",
     CardText = "CardText",
 
-    // Image overlays
     ImageLarge = "ImageLarge",
     ImageSmall = "ImageSmall",
 
-    // Buttons
     Button = "Button",
     OutlinedButton = "OutlinedButton",
 
-    // Error
     Error = "Error",
 }
 
 interface Props extends TextProps {
     type: TextType;
     colorOverride?: string;
-    styleOverride?: any;
+    style?: TextStyle | TextStyle[];
+    numberOfLines?: number;
+    uppercase?: boolean;
 }
 
 export default function CustomText({
     children,
     type,
     colorOverride,
-    styleOverride,
+    style,
+    numberOfLines,
+    uppercase = false,
     ...rest
 }: Props) {
     const { colors } = useTheme();
 
-    const { color, textStyle } = (() => {
+    const getStyle = () => {
         switch (type) {
-            // Screen-level
-            case TextType.ScreenLarge:
-                return { color: colors.onBackground, textStyle: Typography.headlineLarge };
-            case TextType.ScreenMedium:
-                return { color: colors.onBackground, textStyle: Typography.titleMedium };
-            case TextType.ScreenSmall:
-                return { color: colors.onBackground, textStyle: Typography.bodyMedium };
+            // Screen headings
+            case TextType.ScreenHeadlineLarge:
+                return { color: colors.onBackground, text: Typography.headlineLarge };
+            case TextType.ScreenHeadlineMedium:
+                return { color: colors.onBackground, text: Typography.headlineMedium };
+            case TextType.ScreenHeadlineSmall:
+                return { color: colors.onBackground, text: Typography.headlineSmall };
 
-            // Sections / Cards
+            case TextType.ScreenDisplayLarge:
+                return { color: colors.onBackground, text: Typography.displayLarge };
+            case TextType.ScreenDisplayMedium:
+                return { color: colors.onBackground, text: Typography.displayMedium };
+            case TextType.ScreenDisplaySmall:
+                return { color: colors.onBackground, text: Typography.displaySmall };
+
+            // Cards / Sections
             case TextType.SectionTitle:
-                return { color: colors.primary, textStyle: Typography.titleLarge };
+                return { color: colors.onSurface, text: Typography.titleLarge };
             case TextType.CardTitle:
-                return { color: colors.primary, textStyle: Typography.titleMedium };
+                return { color: colors.onSurface, text: Typography.titleMedium };
             case TextType.CardSubtitle:
-                return { color: colors.onSurface, textStyle: Typography.titleSmall };
+                return { color: colors.onSurface, text: Typography.titleSmall };
             case TextType.CardText:
-                return { color: colors.onSurface, textStyle: Typography.bodySmall };
+                return { color: colors.onSurface, text: Typography.bodySmall };
 
             // Image overlays
             case TextType.ImageLarge:
-                return { color: "#FFFFFF", textStyle: Typography.titleLarge };
+                return { color: "#FFFFFF", text: Typography.titleLarge };
             case TextType.ImageSmall:
-                return { color: "#FFFFFF", textStyle: Typography.titleMedium };
+                return { color: "#FFFFFF", text: Typography.titleMedium };
 
             // Buttons
             case TextType.Button:
-                return { color: colors.onPrimary, textStyle: Typography.labelLarge };
+                return { color: colors.onPrimary, text: Typography.labelLarge };
             case TextType.OutlinedButton:
-                return { color: colors.primary, textStyle: Typography.labelLarge };
+                return { color: colors.primary, text: Typography.labelLarge };
 
             // Error
             case TextType.Error:
-                return { color: colors.error, textStyle: Typography.bodySmall };
+                return { color: colors.error, text: Typography.bodySmall };
 
             default:
-                return { color: colors.onBackground, textStyle: Typography.bodyMedium };
+                return { color: colors.onBackground, text: Typography.bodyMedium };
         }
-    })();
+    };
+
+    const { text, color } = getStyle();
+
+    const outputText =
+        uppercase && typeof children === "string"
+            ? children.toUpperCase()
+            : children;
 
     return (
         <Text
             {...rest}
+            allowFontScaling={false}
+            numberOfLines={numberOfLines}
             style={[
+                text as TextStyle,
                 { color: colorOverride ?? color },
-                textStyle,
-                styleOverride,
+                style,
             ]}
         >
-            {children}
+            {outputText}
         </Text>
     );
 }

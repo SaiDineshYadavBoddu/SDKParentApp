@@ -19,6 +19,9 @@ export const lightColors = {
 
     errorContainer: "#FFDAD6",
     onErrorContainer: "#410002",
+
+    textColor: "#000000",
+    textColorDisabled: "#B3B3B3",
 };
 
 export const darkColors = {
@@ -42,4 +45,7 @@ export const darkColors = {
 
     errorContainer: "#93000A",
     onErrorContainer: "#FFB4AB",
+
+    textColor: "#FFFFFF",
+    textColorDisabled: "#B3B3B3",
 };
