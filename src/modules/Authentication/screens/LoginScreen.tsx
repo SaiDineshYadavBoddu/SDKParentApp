@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     View,
     Text,
@@ -15,31 +16,13 @@ import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../theme/ThemeProvider';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
+import { getSlideIndex } from '../../../utils/scrollUtils';
+import { LOGIN_ONBOARDING_DATA } from '../../../constants/appConstants';
 
 const { width, height } = Dimensions.get('window');
 
-const ONBOARDING_DATA = [
-    {
-        id: '1',
-        image: require('../../../assets/images/onboarding1.png'),
-        title: 'Accept Payments',
-        description: 'Tap or link, seemless payments',
-    },
-    {
-        id: '2',
-        image: require('../../../assets/images/onboarding2.png'),
-        title: 'Track Every Transaction',
-        description: 'Clear, fast and reliable tracking',
-    },
-    {
-        id: '3',
-        image: require('../../../assets/images/onboarding3.png'),
-        title: 'Instant Settlements',
-        description: 'Withdraw funnds anytime, instantly',
-    },
-];
-
 const LoginScreen = () => {
+    const { t } = useTranslation();
     const { signIn } = useAuth();
     const { colors } = useTheme();
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,19 +31,19 @@ const LoginScreen = () => {
     const styles = useMemo(() => createStyles(colors), [colors]);
 
     const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const slideIndex = Math.ceil(event.nativeEvent.contentOffset.x / width);
+        const slideIndex = getSlideIndex(event.nativeEvent.contentOffset.x, width);
         if (slideIndex !== currentIndex) {
             setCurrentIndex(slideIndex);
         }
     };
 
-    const renderItem = ({ item }: { item: typeof ONBOARDING_DATA[0] }) => {
+    const renderItem = ({ item }: { item: typeof LOGIN_ONBOARDING_DATA[0] }) => {
         return (
             <View style={styles.slide}>
                 <Image source={item.image} style={styles.image} resizeMode="contain" />
                 <View style={styles.textContainer}>
-                    <CustomText type={TextType.ScreenHeadlineMedium}>{item.title}</CustomText>
-                    <CustomText type={TextType.ScreenDisplayMedium}>{item.description}</CustomText>
+                    <CustomText type={TextType.ScreenHeadlineMedium}>{t(item.title)}</CustomText>
+                    <CustomText type={TextType.ScreenDisplayMedium}>{t(item.description)}</CustomText>
                 </View>
             </View>
         );
@@ -76,7 +59,7 @@ const LoginScreen = () => {
             <View style={styles.sliderContainer}>
                 <FlatList
                     ref={flatListRef}
-                    data={ONBOARDING_DATA}
+                    data={LOGIN_ONBOARDING_DATA}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
                     horizontal
@@ -86,7 +69,7 @@ const LoginScreen = () => {
                     scrollEventThrottle={16}
                 />
                 <View style={styles.pagination}>
-                    {ONBOARDING_DATA.map((_, index) => (
+                    {LOGIN_ONBOARDING_DATA.map((_, index) => (
                         <View
                             key={index}
                             style={[
@@ -100,7 +83,7 @@ const LoginScreen = () => {
 
             <View style={styles.bottomContainer}>
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={styles.loginButtonText}>Login</Text>
+                    <Text style={styles.loginButtonText}>{t('login.loginButton')}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

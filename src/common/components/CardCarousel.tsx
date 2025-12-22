@@ -8,6 +8,7 @@ import {
 import { ms } from "react-native-size-matters";
 import { Spacing } from "../../theme/spacing";
 import PaymentCard from "./PaymentCard";
+import { toggleInSet } from "../../utils/selectionUtils";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_MARGIN = ms(5);
@@ -32,15 +33,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data }) => {
     const scrollX = useRef(new Animated.Value(0)).current;
 
     const toggleCardVisibility = (id: string) => {
-        setVisibleCardIds((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(id)) {
-                newSet.delete(id);
-            } else {
-                newSet.add(id);
-            }
-            return newSet;
-        });
+        setVisibleCardIds((prev) => toggleInSet(prev, id));
     };
 
     const renderItem = ({ item, index }: { item: CardData; index: number }) => (

@@ -30,5 +30,22 @@
             "damaged": "Card damaged",
             "fraud": "Fraud on the card"
         }
+    },
+    "onboarding": {
+        "step1": {
+            "title": "Accept Payments",
+            "description": "Tap or link, seamless payments"
+        },
+        "step2": {
+            "title": "Track Every Transaction",
+            "description": "Clear, fast and reliable tracking"
+        },
+        "step3": {
+            "title": "Instant Settlements",
+            "description": "Withdraw funds anytime, instantly"
+        }
+    },
+    "login": {
+        "loginButton": "Log In"
     }
 }

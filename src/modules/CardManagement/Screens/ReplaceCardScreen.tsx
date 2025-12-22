@@ -13,13 +13,8 @@ import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import InfoSVG from '../../../assets/svgs/InfoSVG';
+import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
 
-const REASONS = [
-    "lost",
-    "stolen",
-    "damaged",
-    "fraud"
-];
 
 const ReplaceCardScreen = () => {
     const { t } = useTranslation();
@@ -105,7 +100,7 @@ const ReplaceCardScreen = () => {
                 title={t('replaceCard.selectReason')}
             >
                 <View style={styles.bottomSheetContent}>
-                    {REASONS.map((reason) => (
+                    {REPLACE_CARD_REASONS.map((reason) => (
                         <View
                             key={reason}
                             style={[
