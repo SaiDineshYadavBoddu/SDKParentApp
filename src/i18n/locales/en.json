@@ -1,0 +1,34 @@
+{
+    "common": {
+        "done": "Done",
+        "submit": "Submit",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "select": "Select"
+    },
+    "cardList": {
+        "title": "My Cards",
+        "availableBalance": "Available balance",
+        "active": "Active",
+        "recentTransactions": "Recent Transactions",
+        "viewAll": "View All",
+        "manage": "Manage",
+        "replace": "Replace",
+        "freeze": "Freeze"
+    },
+    "replaceCard": {
+        "title": "Replace Card",
+        "description": "If you've lost your card or it's been stolen, you can request a replacement here.",
+        "selectReason": "Select reason",
+        "replacementFee": "Replacement fee",
+        "feeAmount": "AED 50.00 will be charged for the replacement card.",
+        "successTitle": "Card replacement request submitted successfully",
+        "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
+        "reasons": {
+            "lost": "Card lost",
+            "stolen": "Card is stolen",
+            "damaged": "Card damaged",
+            "fraud": "Fraud on the card"
+        }
+    }
+}

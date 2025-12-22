@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ScrollView,
   View,
@@ -30,6 +31,7 @@ const formatAmount = (amount: string | number) => {
 };
 
 export default function CardListScreen() {
+  const { t } = useTranslation();
   const { signOut } = useAuth();
   const navigation = useNavigation<any>();
 
@@ -76,7 +78,7 @@ export default function CardListScreen() {
     <>
       <View style={styles.header}>
         <CustomText type={TextType.ScreenHeadlineSmall}>
-          My Cards
+          {t('cardList.title')}
         </CustomText>
         <View style={{ paddingTop: ms(10) }}>
           <TouchableOpacity onPress={() => { signOut() }}>
@@ -108,13 +110,13 @@ export default function CardListScreen() {
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, paddingTop: Spacing.m }}>
             <CustomText type={TextType.ScreenDisplaySmall}>
-              Available balance
+              {t('cardList.availableBalance')}
             </CustomText>
             <InfoSVG />
           </View>
 
           <CustomText type={TextType.ScreenDisplaySmall}>
-            Active
+            {t('cardList.active')}
           </CustomText>
         </View>
 
@@ -122,19 +124,19 @@ export default function CardListScreen() {
 
         <View style={styles.actionsRow}>
           <ActionButton
-            title="Manage"
+            title={t('cardList.manage')}
             icon={<ManageCardSVG />}
             onPress={() => { }}
           />
 
           <ActionButton
-            title="Replace"
+            title={t('cardList.replace')}
             icon={<ReplaceCardSVG />}
             onPress={() => { navigation.navigate('ReplaceCard') }}
           />
 
           <ActionButton
-            title="Freeze"
+            title={t('cardList.freeze')}
             icon={<FreezeCardSVG />}
             onPress={() => { }}
           />
@@ -142,8 +144,8 @@ export default function CardListScreen() {
 
         <View style={styles.transactionContainer}>
           <SectionContainer
-            title="Recent Transactions"
-            rightTitle="View All"
+            title={t('cardList.recentTransactions')}
+            rightTitle={t('cardList.viewAll')}
             onRightTitlePress={() => { }}
             items={transactionItems}
           />

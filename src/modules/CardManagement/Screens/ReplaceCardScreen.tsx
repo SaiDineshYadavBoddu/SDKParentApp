@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
@@ -14,13 +15,14 @@ import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import InfoSVG from '../../../assets/svgs/InfoSVG';
 
 const REASONS = [
-    "Card lost",
-    "Card is stolen",
-    "Card damaged",
-    "Fraud on the card"
+    "lost",
+    "stolen",
+    "damaged",
+    "fraud"
 ];
 
 const ReplaceCardScreen = () => {
+    const { t } = useTranslation();
     const { colors } = useTheme();
     const navigation = useNavigation();
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
@@ -40,10 +42,10 @@ const ReplaceCardScreen = () => {
     if (isSuccess) {
         return (
             <CustomResultScreen
-                title="Card replacement request submitted successfully"
-                subtitle="Your card replacement is being processed. We’ll notify you once it’s ready to be shipped."
+                title={t('replaceCard.successTitle')}
+                subtitle={t('replaceCard.successSubtitle')}
                 iconName="check"
-                buttonTitle="Done"
+                buttonTitle={t('common.done')}
                 onButtonPress={() => navigation.goBack()}
             />
         );
@@ -59,15 +61,15 @@ const ReplaceCardScreen = () => {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <CustomText type={TextType.ScreenHeadlineSmall} style={styles.title}>
-                    Replace Card
+                    {t('replaceCard.title')}
                 </CustomText>
                 <CustomText type={TextType.CardText} style={styles.subtitle}>
-                    In case of a damaged card
+                    {t('replaceCard.description')}
                 </CustomText>
 
                 <CustomDropdown
-                    label="Select the reason for card replacement"
-                    placeholder="Select"
+                    label={t('replaceCard.selectReason')}
+                    placeholder={t('common.select')}
                     selectedValue={selectedReason}
                     onPress={() => {
                         setTempReason(selectedReason);
@@ -82,7 +84,7 @@ const ReplaceCardScreen = () => {
                             <InfoSVG width={ms(20)} height={ms(20)} />
                         </View>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
-                            Card replacement fee is $ 25.00. The fee will be deducted from the replaced card.
+                            {t('replaceCard.feeAmount')}
                         </CustomText>
                     </View>
                 )}
@@ -90,7 +92,7 @@ const ReplaceCardScreen = () => {
 
             <View style={styles.bottomButtonContainer}>
                 <CustomButton
-                    title="Submit"
+                    title={t('common.submit')}
                     onPress={handleSubmit}
                     disabled={!selectedReason}
                     style={selectedReason ? styles.submitButtonActive : styles.submitButtonDisabled}
@@ -100,7 +102,7 @@ const ReplaceCardScreen = () => {
             <CustomBottomSheet
                 visible={isBottomSheetVisible}
                 onClose={() => setBottomSheetVisible(false)}
-                title="Select reason"
+                title={t('replaceCard.selectReason')}
             >
                 <View style={styles.bottomSheetContent}>
                     {REASONS.map((reason) => (
@@ -115,7 +117,7 @@ const ReplaceCardScreen = () => {
                             ]}
                         >
                             <CustomRadioButton
-                                label={reason}
+                                label={t(`replaceCard.reasons.${reason}`)}
                                 selected={tempReason === reason}
                                 onPress={() => setTempReason(reason)}
                                 containerStyle={styles.radioButton}
@@ -128,12 +130,12 @@ const ReplaceCardScreen = () => {
                             <InfoSVG width={ms(20)} height={ms(20)} />
                         </View>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
-                            Card replacement fee is $ 25.00. The fee will be deducted from the replaced card.
+                            {t('replaceCard.feeAmount')}
                         </CustomText>
                     </View>
 
                     <CustomButton
-                        title="Confirm"
+                        title={t('common.confirm')}
                         onPress={handleConfirm}
                         disabled={!tempReason}
                         style={styles.confirmButton}
