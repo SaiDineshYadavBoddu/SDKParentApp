@@ -12,20 +12,22 @@ import {
   Text,
 } from "react-native";
 import { ms } from "react-native-size-matters";
-import SectionContainer, { SectionItem } from "../../common/components/SectionContainer";
-import CustomText, { TextType } from "../../common/components/CustomText";
-import ActionButton from "../../common/components/ActionButton";
-import CustomIcon from "../../common/components/CustomIcon";
-import { Spacing } from "../../theme/spacing";
-import InfoSVG from "../../assets/svgs/InfoSVG";
-import ReplaceCardSVG from "../../assets/svgs/ReplaceCardSVG";
-import FreezeCardSVG from "../../assets/svgs/FreezeCardSVG";
-import ManageCardSVG from "../../assets/svgs/ManageCardSVG";
-import CustomImage from "../../common/components/CustomImage";
-import NotificationSVG from "../../assets/svgs/NotificationSVG";
-import { useGetCardsQuery } from "../../network/card/card.api";
-import { useAuth } from "../../context/AuthContext";
-import CurrencySVG from "../../assets/svgs/CurrencySVG";
+import SectionContainer, { SectionItem } from "../../../common/components/SectionContainer";
+import CustomText, { TextType } from "../../../common/components/CustomText";
+import ActionButton from "../../../common/components/ActionButton";
+import CustomIcon from "../../../common/components/CustomIcon";
+import { Spacing } from "../../../theme/spacing";
+import InfoSVG from "../../../assets/svgs/InfoSVG";
+import ReplaceCardSVG from "../../../assets/svgs/ReplaceCardSVG";
+import FreezeCardSVG from "../../../assets/svgs/FreezeCardSVG";
+import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
+import CustomImage from "../../../common/components/CustomImage";
+import NotificationSVG from "../../../assets/svgs/NotificationSVG";
+import { useGetCardsQuery } from "../../../network/card/card.api";
+import { useAuth } from "../../../context/AuthContext";
+import CurrencySVG from "../../../assets/svgs/CurrencySVG";
+import CustomLoader from "../../../common/components/CustomLoader";
+import { useNavigation } from "@react-navigation/native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_MARGIN = ms(5);
@@ -41,7 +43,8 @@ const formatAmount = (amount: string | number) => {
 export default function CardListScreen() {
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = React.useRef(new Animated.Value(0)).current;
-  const { signOut } = useAuth();
+  const { signOut } = useAuth(); ''
+  const navigation = useNavigation();
 
   const { data, isLoading, error } = useGetCardsQuery({
     pageSize: 10,
@@ -132,14 +135,13 @@ export default function CardListScreen() {
             zIndex
           }
         ]}>
-          <Image
-            source={require("../../assets/images/cardbackground.png")}
-            style={styles.cardImage}
+          <CustomImage
+            source={require("../../../assets/images/cardbackground.png")}
             resizeMode="cover"
           />
 
-          <Image
-            source={require("../../assets/images/LogoDefault.png")}
+          <CustomImage
+            source={require("../../../assets/images/LogoDefault.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -170,8 +172,8 @@ export default function CardListScreen() {
               {item.holderName}
             </CustomText>
           </View>
-          <Image
-            source={require("../../assets/images/MastercardLogo.png")}
+          <CustomImage
+            source={require("../../../assets/images/MastercardLogo.png")}
             style={styles.mastercardLogo}
             resizeMode="contain"
           />
@@ -289,7 +291,7 @@ export default function CardListScreen() {
           <ActionButton
             title="Replace"
             icon={<ReplaceCardSVG />}
-            onPress={() => { }}
+            onPress={() => { navigation.navigate('ReplaceCard') }}
           />
 
           <ActionButton
@@ -308,6 +310,7 @@ export default function CardListScreen() {
           />
         </View>
       </ScrollView>
+      <CustomLoader loading={isLoading} />
     </>
   );
 }

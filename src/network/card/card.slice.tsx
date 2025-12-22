@@ -3,7 +3,7 @@ import { cardApi } from "./card.api";
 
 interface CardState {
   // Add card-related state here
-  cards: Card[];
+  cards: any[];
 }
 
 const initialState: CardState = {

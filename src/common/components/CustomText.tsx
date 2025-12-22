@@ -1,6 +1,6 @@
 // components/CustomText.tsx
 import React from "react";
-import { Text, TextProps, TextStyle } from "react-native";
+import { Text, TextProps, TextStyle, StyleProp } from "react-native";
 import { Typography } from "../../theme/typography";
 import { useTheme } from "../../theme/ThemeProvider";
 
@@ -31,7 +31,7 @@ export enum TextType {
 interface Props extends TextProps {
     type: TextType;
     colorOverride?: string;
-    style?: TextStyle | TextStyle[];
+    style?: StyleProp<TextStyle>;
     numberOfLines?: number;
     uppercase?: boolean;
 }
