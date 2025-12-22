@@ -59,8 +59,8 @@ const LoginScreen = () => {
             <View style={styles.slide}>
                 <Image source={item.image} style={styles.image} resizeMode="contain" />
                 <View style={styles.textContainer}>
-                    <CustomText type={TextType.ScreenLarge}>{item.title}</CustomText>
-                    <CustomText type={TextType.ScreenMedium}>{item.description}</CustomText>
+                    <CustomText type={TextType.ScreenHeadlineMedium}>{item.title}</CustomText>
+                    <CustomText type={TextType.ScreenDisplayMedium}>{item.description}</CustomText>
                 </View>
             </View>
         );

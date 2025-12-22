@@ -3,23 +3,24 @@ import { cardApi } from "./card.api";
 
 interface CardState {
   // Add card-related state here
+  cards: Card[];
 }
 
-const initialState: CardState = {};
+const initialState: CardState = {
+  cards: [],
+};
 
 export const cardSlice = createSlice({
   name: "card",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Add matchers for card API endpoints here
-    // Example:
-    // builder.addMatcher(
-    //   cardApi.endpoints.getCards.matchFulfilled,
-    //   (state, { payload }) => {
-    //     state.cards = payload;
-    //   }
-    // );
+    builder.addMatcher(
+      cardApi.endpoints.getCards.matchFulfilled,
+      (state, { payload }) => {
+        state.cards = payload;
+      }
+    );
   },
 });
 

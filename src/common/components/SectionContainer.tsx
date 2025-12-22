@@ -7,6 +7,7 @@ import {
     ListRenderItemInfo,
     StyleProp,
     ViewStyle,
+    TouchableOpacity,
 } from "react-native";
 import { ms } from "react-native-size-matters";
 import CustomText, { TextType } from "./CustomText";
@@ -26,14 +27,18 @@ export type SectionItem = {
 
 interface Props {
     title?: string;
+    rightTitle?: string;
+    onRightTitlePress?: () => void;
     items: SectionItem[];
     style?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<ViewStyle>;
-    ListEmptyComponent?: React.ReactNode;
+    ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
 }
 
 export default function SectionContainer({
     title,
+    rightTitle,
+    onRightTitlePress,
     items,
     style,
     contentStyle,
@@ -61,6 +66,13 @@ export default function SectionContainer({
                     <CustomText type={TextType.SectionTitle}>
                         {title}
                     </CustomText>
+                    {rightTitle && (
+                        <TouchableOpacity onPress={onRightTitlePress}>
+                            <CustomText type={TextType.ActionLabel} style={{ color: colors.primary }}>
+                                {rightTitle}
+                            </CustomText>
+                        </TouchableOpacity>
+                    )}
                 </View>
             ) : null}
 
@@ -68,6 +80,7 @@ export default function SectionContainer({
                 data={items}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
+                scrollEnabled={false}
                 ListEmptyComponent={ListEmptyComponent ?? null}
                 ItemSeparatorComponent={() => <View style={{ height: Spacing.s }} />}
                 contentContainerStyle={[
@@ -100,6 +113,9 @@ const styles = StyleSheet.create({
     },
     headerRow: {
         paddingVertical: ms(10),
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     content: {
         width: "100%",

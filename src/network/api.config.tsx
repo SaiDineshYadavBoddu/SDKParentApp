@@ -1,6 +1,7 @@
 // Or from '@reduxjs/toolkit/query' if not using the auto-generated hooks
 import { createApi, fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { AppConfig } from "../config/appConfig";
+import { getAccessToken } from "../context/AuthContext";
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
@@ -9,9 +10,14 @@ const dynamicBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
-    baseUrl: "https://jsonplaceholder.typicode.com",
+    baseUrl: "https://sit.corporate.un.infradev.w4.az.network.ae/api/v1",
     prepareHeaders: (headers, { getState: _getState }) => {
       headers.set("Content-Type", "application/json");
+      const token = getAccessToken();
+      console.log("🚀 ~ dynamicBaseQuery ~ token:", token);
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
       return headers;
     },
   });

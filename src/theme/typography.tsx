@@ -48,7 +48,7 @@ export const Typography = {
         fontWeight: "600",
     },
     titleSmall: {
-        fontSize: ms(10),
+        fontSize: ms(14),
         lineHeight: ms(16),
         fontWeight: "300",
     },

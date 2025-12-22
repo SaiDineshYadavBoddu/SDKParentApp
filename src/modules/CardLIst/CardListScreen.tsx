@@ -9,6 +9,7 @@ import {
   Dimensions,
   ListRenderItem,
   Animated,
+  Text,
 } from "react-native";
 import { ms } from "react-native-size-matters";
 import SectionContainer, { SectionItem } from "../../common/components/SectionContainer";
@@ -22,6 +23,9 @@ import FreezeCardSVG from "../../assets/svgs/FreezeCardSVG";
 import ManageCardSVG from "../../assets/svgs/ManageCardSVG";
 import CustomImage from "../../common/components/CustomImage";
 import NotificationSVG from "../../assets/svgs/NotificationSVG";
+import { useGetCardsQuery } from "../../network/card/card.api";
+import { useAuth } from "../../context/AuthContext";
+import CurrencySVG from "../../assets/svgs/CurrencySVG";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_MARGIN = ms(5);
@@ -29,9 +33,23 @@ const CARD_WIDTH = SCREEN_WIDTH * 0.85;
 const SNAP_INTERVAL = CARD_WIDTH + (CARD_MARGIN * 2);
 const SIDE_SPACER = (SCREEN_WIDTH - SNAP_INTERVAL) / 2;
 
+const formatAmount = (amount: string | number) => {
+  const [integer, decimal] = String(amount).split('.');
+  return { integer, decimal: decimal ? `.${decimal}` : '' };
+};
+
 export default function CardListScreen() {
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = React.useRef(new Animated.Value(0)).current;
+  const { signOut } = useAuth();
+
+  const { data, isLoading, error } = useGetCardsQuery({
+    pageSize: 10,
+    pageNumber: 0,
+    sortProperty: "cardholderName",
+  });
+
+  console.log("🚀 ~ CardListScreen ~ data:", data)
 
   const toggleCardVisibility = (id: string) => {
     setVisibleCardIds(prev => {
@@ -54,9 +72,12 @@ export default function CardListScreen() {
           {txn.title}
         </CustomText>
 
-        <CustomText type={TextType.CardTitle}>
-          ₦ {txn.amount}
-        </CustomText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}>
+          <CurrencySVG width={ms(14)} height={ms(14)} />
+          <CustomText type={TextType.CardTitle}>
+            {txn.amount}
+          </CustomText>
+        </View>
       </>
     ),
 
@@ -117,13 +138,21 @@ export default function CardListScreen() {
             resizeMode="cover"
           />
 
+          <Image
+            source={require("../../assets/images/LogoDefault.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+
           <TouchableOpacity
             onPress={() => toggleCardVisibility(item.id)}
             style={styles.toggle}
           >
-            <CustomImage
-              source={require("../../assets/images/eye.png")}
-              style={styles.toggleImage}
+            <CustomIcon
+              type="feather"
+              name={showDetails ? "eye" : "eye-off"}
+              size={ms(24)}
+              color="white"
             />
           </TouchableOpacity>
           <View style={styles.cardDetails}>
@@ -141,6 +170,11 @@ export default function CardListScreen() {
               {item.holderName}
             </CustomText>
           </View>
+          <Image
+            source={require("../../assets/images/MastercardLogo.png")}
+            style={styles.mastercardLogo}
+            resizeMode="contain"
+          />
         </Animated.View>
       </View>
     );
@@ -153,7 +187,9 @@ export default function CardListScreen() {
           My Cards
         </CustomText>
         <View style={{ paddingTop: ms(10) }}>
-          <NotificationSVG />
+          <TouchableOpacity onPress={() => { signOut() }}>
+            <NotificationSVG />
+          </TouchableOpacity>
         </View>
       </View>
       <ScrollView
@@ -161,9 +197,22 @@ export default function CardListScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.balanceContainer}>
-          <CustomText type={TextType.ScreenHeadlineLarge}>
-            ₦ 50,250.77
-          </CustomText>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}>
+            <CurrencySVG width={ms(24)} height={ms(24)} style={{ transform: [{ translateY: ms(4) }] }} />
+            {(() => {
+              const { integer, decimal } = formatAmount("50,250.77");
+              return (
+                <Text>
+                  <CustomText type={TextType.ScreenHeadlineLarge}>
+                    {integer}
+                  </CustomText>
+                  <CustomText type={TextType.ScreenHeadlineSmall}>
+                    {decimal}
+                  </CustomText>
+                </Text>
+              )
+            })()}
+          </View>
 
           <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, paddingTop: Spacing.m }}>
             <CustomText type={TextType.ScreenDisplaySmall}>
@@ -253,6 +302,8 @@ export default function CardListScreen() {
         <View style={styles.transactionContainer}>
           <SectionContainer
             title="Recent Transactions"
+            rightTitle="View All"
+            onRightTitlePress={() => { }}
             items={transactionItems}
           />
         </View>
@@ -263,7 +314,7 @@ export default function CardListScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: Spacing.l,
+    paddingBottom: Spacing.xxl,
   },
 
   header: {
@@ -317,13 +368,24 @@ const styles = StyleSheet.create({
 
   toggle: {
     position: "absolute",
-    right: Spacing.xs,
-    top: Spacing.l,
+    right: Spacing.xl,
+    top: Spacing.xl,
   },
 
-  toggleImage: {
+  logo: {
+    position: "absolute",
+    left: Spacing.xl,
+    top: Spacing.xl,
     width: ms(90),
-    height: ms(90),
+    height: ms(24),
+  },
+
+  mastercardLogo: {
+    position: "absolute",
+    right: Spacing.xl,
+    bottom: Spacing.xl,
+    width: ms(44),
+    height: ms(26),
   },
 
   cardDetails: {
@@ -335,12 +397,14 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: "row",
     marginBottom: Spacing.xl,
-    justifyContent: "space-around",
+    justifyContent: "center",
     paddingHorizontal: Spacing.l,
+    gap: Spacing.l,
   },
 
   transactionContainer: {
-    paddingHorizontal: Spacing.l
+    paddingHorizontal: Spacing.l,
+    paddingBottom: Spacing.xxl,
   },
 });
 

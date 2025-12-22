@@ -9,7 +9,7 @@ const NavigationContent = () => {
 
     return (
         <NavigationContainer>
-            {!isAuthenticated ? <MainStack /> : <AuthStack />}
+            {isAuthenticated ? <MainStack /> : <AuthStack />}
         </NavigationContainer>
     );
 };

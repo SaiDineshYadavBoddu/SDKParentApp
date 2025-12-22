@@ -25,6 +25,7 @@ export enum TextType {
     OutlinedButton = "OutlinedButton",
 
     Error = "Error",
+    ActionLabel = "ActionLabel",
 }
 
 interface Props extends TextProps {
@@ -75,9 +76,9 @@ export default function CustomText({
 
             // Image overlays
             case TextType.ImageLarge:
-                return { color: "#FFFFFF", text: Typography.titleLarge };
+                return { color: "#FFFFFF", text: Typography.displayLarge };
             case TextType.ImageSmall:
-                return { color: "#FFFFFF", text: Typography.titleMedium };
+                return { color: "#FFFFFF", text: Typography.displayMedium };
 
             // Buttons
             case TextType.Button:
@@ -88,6 +89,9 @@ export default function CustomText({
             // Error
             case TextType.Error:
                 return { color: colors.error, text: Typography.bodySmall };
+
+            case TextType.ActionLabel:
+                return { color: colors.primary, text: Typography.labelLarge };
 
             default:
                 return { color: colors.onBackground, text: Typography.bodyMedium };
