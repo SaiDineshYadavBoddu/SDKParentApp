@@ -13,6 +13,8 @@ import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import InfoSVG from '../../../assets/svgs/InfoSVG';
+import CurrencySVG from '../../../assets/svgs/CurrencySVG';
+import ReplaceCardScreenSVG from '../../../assets/svgs/ReplaceCardScreenSVG';
 import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
 
 
@@ -21,8 +23,8 @@ const ReplaceCardScreen = () => {
     const { colors } = useTheme();
     const navigation = useNavigation();
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
-    const [selectedReason, setSelectedReason] = useState<string | undefined>();
-    const [tempReason, setTempReason] = useState<string | undefined>();
+    const [selectedReason, setSelectedReason] = useState<string | undefined>("");
+    const [tempReason, setTempReason] = useState<string | undefined>("");
     const [isSuccess, setIsSuccess] = useState(false);
 
     const handleConfirm = () => {
@@ -55,6 +57,9 @@ const ReplaceCardScreen = () => {
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.iconContainer}>
+                    <ReplaceCardScreenSVG width={ms(48)} height={ms(48)} color={colors.primary} />
+                </View>
                 <CustomText type={TextType.ScreenHeadlineSmall} style={styles.title}>
                     {t('replaceCard.title')}
                 </CustomText>
@@ -63,9 +68,9 @@ const ReplaceCardScreen = () => {
                 </CustomText>
 
                 <CustomDropdown
-                    label={t('replaceCard.selectReason')}
+                    label={t('replaceCard.selectReasonForReplacement')}
                     placeholder={t('common.select')}
-                    selectedValue={selectedReason}
+                    selectedValue={selectedReason ? t(`replaceCard.reasons.${selectedReason}`) : undefined}
                     onPress={() => {
                         setTempReason(selectedReason);
                         setBottomSheetVisible(true);
@@ -79,7 +84,9 @@ const ReplaceCardScreen = () => {
                             <InfoSVG width={ms(20)} height={ms(20)} />
                         </View>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
-                            {t('replaceCard.feeAmount')}
+                            {t('replaceCard.feePrefix')}
+                            <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
+                            {t('replaceCard.feeSuffix')}
                         </CustomText>
                     </View>
                 )}
@@ -159,6 +166,10 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: Spacing.l,
         paddingTop: Spacing.m,
+        paddingBottom: Spacing.xl,
+    },
+    iconContainer: {
+        marginBottom: Spacing.m,
     },
     title: {
         fontSize: ms(24),
@@ -205,7 +216,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#0169B2',
     },
     submitButtonDisabled: {
-        backgroundColor: '#EAEFF5',
+        backgroundColor: '#E0E0E0',
     },
     bottomSheetContent: {
         width: '100%',

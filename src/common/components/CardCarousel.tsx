@@ -18,17 +18,19 @@ const SIDE_SPACER = (SCREEN_WIDTH - SNAP_INTERVAL) / 2;
 
 interface CardData {
     id: string;
-    cardNumber: string;
-    maskedNumber: string;
-    expiry: string;
-    holderName: string;
+    cardIdentifier: string;
+    maskedPan: string;
+    expiryDate: string;
+    cardholderName: string;
+    cvv: string;
 }
 
 interface CardCarouselProps {
     data: CardData[];
+    onIndexChange?: (index: number) => void;
 }
 
-const CardCarousel: React.FC<CardCarouselProps> = ({ data }) => {
+const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
     const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
     const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -64,7 +66,16 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data }) => {
                 }}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                    { useNativeDriver: false }
+                    {
+                        useNativeDriver: false,
+                        listener: (event: any) => {
+                            const offsetX = event.nativeEvent.contentOffset.x;
+                            const index = Math.round(offsetX / SNAP_INTERVAL);
+                            if (onIndexChange) {
+                                onIndexChange(index);
+                            }
+                        },
+                    }
                 )}
                 scrollEventThrottle={16}
                 removeClippedSubviews={false}

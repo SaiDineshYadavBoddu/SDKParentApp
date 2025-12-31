@@ -66,7 +66,7 @@ export default function FlexibleCard({
 
                     {middle ? (
                         <>
-                            <View style={{ height: Spacing.s }} />
+                            <View style={{ height: Spacing.xs }} />
                             <View style={styles.fullRow}>{middle}</View>
                         </>
                     ) : null}

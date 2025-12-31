@@ -13,10 +13,12 @@ import { Spacing } from "../../theme/spacing";
 
 interface CardData {
     id: string;
-    cardNumber: string;
-    maskedNumber: string;
-    expiry: string;
-    holderName: string;
+    cardIdentifier: string;
+    maskedPan: string;
+    expiryDate: string;
+    cvv: string;
+    cardholderName: string;
+    brand?: string;
 }
 
 interface PaymentCardProps {
@@ -112,18 +114,38 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
                         type={TextType.ImageLarge}
                         style={{ paddingBottom: Spacing.s }}
                     >
-                        {isDetailsVisible ? item.cardNumber : item.maskedNumber}
+                        {isDetailsVisible ? item.cardIdentifier : (() => {
+                            let masked = item.maskedPan || "";
+                            if (masked.length >= 6) {
+                                // Mask 5th and 6th characters (index 4 and 5)
+                                masked = masked.substring(0, 4) + "**" + masked.substring(6);
+                            }
+                            // Basic formatting: grouping by 4 if possible, otherwise just return
+                            return masked.replace(/(.{4})/g, '$1 ').trim();
+                        })()}
                     </CustomText>
 
-                    <CustomText
-                        type={TextType.ImageSmall}
-                        style={{ paddingBottom: Spacing.xl }}
-                    >
-                        {isDetailsVisible ? item.expiry : "**/**"}
-                    </CustomText>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.xl }}>
+                        <CustomText type={TextType.ImageSmall}>
+                            {(() => {
+                                if (!isDetailsVisible) return "**/**";
+                                const date = item.expiryDate || "";
+                                const parts = date.split("-");
+                                if (parts.length >= 2) {
+                                    const year = parts[0].slice(-2);
+                                    const month = parts[1];
+                                    return `${month}/${year}`;
+                                }
+                                return date;
+                            })()}
+                        </CustomText>
+                        <CustomText type={TextType.ImageSmall} style={{ marginLeft: ms(15) }}>
+                            {isDetailsVisible ? (item.cvv || "***") : "***"}
+                        </CustomText>
+                    </View>
 
                     <CustomText type={TextType.ImageSmall}>
-                        {item.holderName}
+                        {item.cardholderName}
                     </CustomText>
                 </View>
 

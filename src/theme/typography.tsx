@@ -38,19 +38,19 @@ export const Typography = {
 
     // Titles
     titleLarge: {
-        fontSize: ms(18),
-        lineHeight: ms(24),
+        fontSize: ms(16),
+        lineHeight: ms(22),
         fontWeight: "700",
     },
     titleMedium: {
-        fontSize: ms(16),
-        lineHeight: ms(22),
-        fontWeight: "600",
+        fontSize: ms(14),
+        lineHeight: ms(20),
+        fontWeight: "500",
     },
     titleSmall: {
-        fontSize: ms(14),
-        lineHeight: ms(16),
-        fontWeight: "300",
+        fontSize: ms(12),
+        lineHeight: ms(18),
+        fontWeight: "200",
     },
 
     // Body

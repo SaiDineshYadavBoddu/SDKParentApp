@@ -25,17 +25,27 @@ import CustomLoader from "../../../common/components/CustomLoader";
 import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
-import { MOCK_CARDS, MOCK_TRANSACTIONS } from "../../../constants/mockData";
+import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
 
 export default function CardListScreen() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const navigation = useNavigation<any>();
+  const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
   const { data, isLoading, error } = useGetCardsQuery({
+    cardStatus: [
+      "Pending Activation",
+      "Active",
+      "Dormant",
+      "Blocked",
+      "Closed",
+      "Pending Closure",
+    ],
     pageSize: 10,
     pageNumber: 0,
     sortProperty: "cardholderName",
+    sortDirection: "ASC",
   });
 
   const transactionItems: SectionItem[] = MOCK_TRANSACTIONS.map(txn => ({
@@ -117,13 +127,20 @@ export default function CardListScreen() {
           </CustomText>
         </View>
 
-        <CardCarousel data={MOCK_CARDS} />
+        <CardCarousel
+          data={data?.content || []}
+          onIndexChange={(index) => setActiveCardIndex(index)}
+        />
 
         <View style={styles.actionsRow}>
           <ActionButton
             title={t('cardList.manage')}
             icon={<ManageCardSVG />}
-            onPress={() => { }}
+            onPress={() => {
+              if (data?.content && data.content[activeCardIndex]) {
+                navigation.navigate('ManageCard', { card: data.content[activeCardIndex] })
+              }
+            }}
           />
 
           <ActionButton

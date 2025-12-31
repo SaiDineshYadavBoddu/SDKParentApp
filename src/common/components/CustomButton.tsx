@@ -46,8 +46,9 @@ export default function CustomButton({
     const textType =
         variant === "primary" ? TextType.Button : TextType.OutlinedButton;
 
-    const textColor =
-        variant === "primary" ? colors.onPrimary : colors.primary;
+    const textColor = isDisabled
+        ? colors.textColorDisabled
+        : (variant === "primary" ? colors.onPrimary : colors.primary);
 
     return (
         <TouchableOpacity
@@ -56,7 +57,7 @@ export default function CustomButton({
             activeOpacity={0.86}
             style={[
                 styles.container,
-                { backgroundColor, opacity: isDisabled ? 0.5 : 1 },
+                { backgroundColor },
                 border,
                 style,
             ]}
