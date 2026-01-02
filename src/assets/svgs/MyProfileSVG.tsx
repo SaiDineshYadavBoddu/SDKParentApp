@@ -13,7 +13,7 @@ function MyProfileSVG(props: any) {
         >
             <Path
                 d="M3.667 17.233a4.4 4.4 0 014.4-4.4h5.866a4.4 4.4 0 014.4 4.4 2.933 2.933 0 01-2.933 2.934H6.6a2.933 2.933 0 01-2.933-2.934zM14.667 5.5a3.667 3.667 0 11-7.334 0 3.667 3.667 0 017.334 0z"
-                stroke="#4A4A4A"
+                stroke={props.color || "#4A4A4A"}
                 strokeWidth={1.375}
                 strokeLinecap="round"
                 strokeLinejoin="round"

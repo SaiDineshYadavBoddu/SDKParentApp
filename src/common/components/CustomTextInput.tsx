@@ -32,6 +32,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     rightIcon,
     onFocus,
     onBlur,
+    multiline,
     ...rest
 }) => {
     const { colors } = useTheme();
@@ -69,6 +70,10 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     {
                         borderColor,
                         backgroundColor: colors.surface,
+                        height: multiline ? undefined : ms(48),
+                        minHeight: ms(48),
+                        alignItems: multiline ? 'flex-start' : 'center',
+                        paddingVertical: multiline ? Spacing.s : 0,
                     },
                 ]}
             >
@@ -83,6 +88,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     placeholderTextColor={colors.textColorDisabled}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    multiline={multiline}
                     {...rest}
                 />
                 {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
         borderWidth: ms(1),
         borderRadius: ms(8),
         paddingHorizontal: Spacing.m,
-        height: ms(48),
+        // height removed from here, handled dynamically
     },
     input: {
         flex: 1,

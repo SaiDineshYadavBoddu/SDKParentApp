@@ -1,7 +1,7 @@
 import * as React from "react"
 import Svg, { Path } from "react-native-svg"
 
-function BlockCardSVG(props: any) {
+function CloseCardSVG(props: any) {
     return (
         <Svg
             width={24}
@@ -22,4 +22,4 @@ function BlockCardSVG(props: any) {
     )
 }
 
-export default BlockCardSVG
+export default CloseCardSVG

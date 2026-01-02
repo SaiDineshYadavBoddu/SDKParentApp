@@ -4,6 +4,7 @@ import CardListScreen from '../modules/CardList/Screens/CardListScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import ReplaceCardScreen from '../modules/CardManagement/Screens/ReplaceCardScreen.tsx';
 import ManageCardScreen from '../modules/CardManagement/Screens/ManageCardScreen.tsx';
+import CloseCardScreen from '../modules/CardManagement/Screens/CloseCardScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ const MainStack = () => {
             <Stack.Screen name="BottomTabs" component={BottomTabNavigator} />
             <Stack.Screen name="ReplaceCard" component={ReplaceCardScreen} />
             <Stack.Screen name="ManageCard" component={ManageCardScreen} />
+            <Stack.Screen name="CloseCard" component={CloseCardScreen} />
             <Stack.Screen name="CardList" component={CardListScreen} />
         </Stack.Navigator>
     );

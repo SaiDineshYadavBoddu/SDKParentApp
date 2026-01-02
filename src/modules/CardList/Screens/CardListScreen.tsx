@@ -25,7 +25,7 @@ import CustomLoader from "../../../common/components/CustomLoader";
 import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
-import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
+import { MOCK_TRANSACTIONS, MOCK_CARDS } from "../../../constants/mockData";
 
 export default function CardListScreen() {
   const { t } = useTranslation();
@@ -128,7 +128,7 @@ export default function CardListScreen() {
         </View>
 
         <CardCarousel
-          data={data?.content || []}
+          data={MOCK_CARDS}
           onIndexChange={(index) => setActiveCardIndex(index)}
         />
 
@@ -137,8 +137,8 @@ export default function CardListScreen() {
             title={t('cardList.manage')}
             icon={<ManageCardSVG />}
             onPress={() => {
-              if (data?.content && data.content[activeCardIndex]) {
-                navigation.navigate('ManageCard', { card: data.content[activeCardIndex] })
+              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
+                navigation.navigate('ManageCard', { card: MOCK_CARDS[activeCardIndex] })
               }
             }}
           />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms } from 'react-native-size-matters';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -12,16 +13,18 @@ import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
-import InfoSVG from '../../../assets/svgs/InfoSVG';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
 import ReplaceCardScreenSVG from '../../../assets/svgs/ReplaceCardScreenSVG';
+import CustomBackButton from '../../../common/components/CustomBackButton';
 import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
+import CustomWarning from '../../../common/components/CustomWarning';
 
 
 const ReplaceCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
     const [selectedReason, setSelectedReason] = useState<string | undefined>("");
     const [tempReason, setTempReason] = useState<string | undefined>("");
@@ -49,11 +52,13 @@ const ReplaceCardScreen = () => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.container, {
+            backgroundColor: colors.background,
+            paddingTop: Math.max(ms(20), insets.top), // Ensure minimum padding or safe area
+            paddingHorizontal: Spacing.l
+        }]}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <CustomIcon type="feather" name="arrow-left" size={ms(24)} color={colors.onBackground} />
-                </TouchableOpacity>
+                <CustomBackButton style={styles.backButton} />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -79,22 +84,19 @@ const ReplaceCardScreen = () => {
                 />
 
                 {selectedReason && (
-                    <View style={styles.infoBox}>
-                        <View style={styles.infoIcon}>
-                            <InfoSVG width={ms(20)} height={ms(20)} />
-                        </View>
+                    <CustomWarning>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
                             {t('replaceCard.feePrefix')}
                             <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
                             {t('replaceCard.feeSuffix')}
                         </CustomText>
-                    </View>
+                    </CustomWarning>
                 )}
             </ScrollView>
 
-            <View style={styles.bottomButtonContainer}>
+            <View style={[styles.bottomButtonContainer, { paddingBottom: Math.max(ms(60), insets.bottom + Spacing.l) }]}>
                 <CustomButton
-                    title={t('common.submit')}
+                    title={t('replaceCard.submit')}
                     onPress={handleSubmit}
                     disabled={!selectedReason}
                     style={selectedReason ? styles.submitButtonActive : styles.submitButtonDisabled}
@@ -127,14 +129,11 @@ const ReplaceCardScreen = () => {
                         </View>
                     ))}
 
-                    <View style={styles.bottomSheetInfoBox}>
-                        <View style={styles.infoIcon}>
-                            <InfoSVG width={ms(20)} height={ms(20)} />
-                        </View>
+                    <CustomWarning style={{ marginTop: Spacing.m, marginBottom: ms(24) }}>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
                             {t('replaceCard.feeAmount')}
                         </CustomText>
-                    </View>
+                    </CustomWarning>
 
                     <CustomButton
                         title={t('common.confirm')}
@@ -155,8 +154,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        paddingTop: ms(60),
-        paddingHorizontal: Spacing.l,
+        // Padding handled by container
     },
     backButton: {
         width: ms(40),
@@ -164,7 +162,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     scrollContent: {
-        paddingHorizontal: Spacing.l,
         paddingTop: Spacing.m,
         paddingBottom: Spacing.xl,
     },
@@ -183,34 +180,15 @@ const styles = StyleSheet.create({
     dropdown: {
         marginBottom: ms(24),
     },
-    infoBox: {
-        flexDirection: 'row',
-        backgroundColor: '#FFF9E6',
-        padding: Spacing.m,
-        borderRadius: ms(8),
-        alignItems: 'flex-start',
-    },
-    bottomSheetInfoBox: {
-        flexDirection: 'row',
-        backgroundColor: '#FFF9E6',
-        padding: Spacing.m,
-        borderRadius: ms(8),
-        alignItems: 'flex-start',
-        marginTop: Spacing.m,
-        marginBottom: ms(24),
-    },
-    infoIcon: {
-        marginRight: Spacing.s,
-        marginTop: ms(2),
-    },
+    // Removed infoBox, bottomSheetInfoBox, infoIcon as they are replaced by CustomWarning styles
     infoText: {
         flex: 1,
         color: '#856404',
         lineHeight: ms(18),
     },
     bottomButtonContainer: {
-        padding: Spacing.l,
-        paddingBottom: ms(60),
+        paddingTop: Spacing.l,
+        // Padding bottom handled dynamically in style prop or add safe area here if strictly using style
     },
     submitButtonActive: {
         backgroundColor: '#0169B2',

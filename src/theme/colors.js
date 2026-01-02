@@ -22,6 +22,7 @@ export const lightColors = {
 
     textColor: "#000000",
     textColorDisabled: "#B3B3B3",
+    warningContainer: "#FEF8E6",
 };
 
 export const darkColors = {
@@ -48,4 +49,5 @@ export const darkColors = {
 
     textColor: "#FFFFFF",
     textColorDisabled: "#B3B3B3",
+    warningContainer: "#4A3B00", // Darker yellow/brown for dark mode
 };

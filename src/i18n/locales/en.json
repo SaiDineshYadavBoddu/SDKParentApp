@@ -4,7 +4,9 @@
         "submit": "Submit",
         "confirm": "Confirm",
         "cancel": "Cancel",
-        "select": "Select"
+        "select": "Select",
+        "message": "Message",
+        "continue": "Continue"
     },
     "cardList": {
         "title": "My Cards",
@@ -59,7 +61,15 @@
         "limitsDesc": "View your usage limit on card",
         "resetPin": "Reset PIN",
         "resetPinDesc": "Reset your card PIN",
-        "block": "Block Card",
-        "blockDesc": "Block your card permanently"
+        "closeCard": "Close Card",
+        "closeCardDesc": "Close your card permanently"
+    },
+    "closeCard": {
+        "title": "Close Card",
+        "subtitle": "Are you sure you want to close this card?",
+        "warning": "Note: This will permanently close your card. Transactions and actions will be unavailable. To use your card again, you will need to request a new one.",
+        "reasonPlaceholder": "Optional",
+        "successTitle": "Card closed successfully",
+        "successSubtitle": "Your card has been permanently closed."
     }
 }

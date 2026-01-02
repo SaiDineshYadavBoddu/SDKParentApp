@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -12,8 +13,9 @@ import CustomImage from '../../../common/components/CustomImage';
 import CardUsageSVG from '../../../assets/svgs/CardUsageSVG';
 import TransactionLimitsSVG from '../../../assets/svgs/TransactionLimitsSVG';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
-import BlockCardSVG from '../../../assets/svgs/BlockCardSVG';
+import BlockCardSVG from '../../../assets/svgs/CloseCardSVG';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
+import CustomBackButton from '../../../common/components/CustomBackButton';
 import PaymentCard from '../../../common/components/PaymentCard';
 import { Animated } from 'react-native';
 
@@ -22,7 +24,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ManageCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const navigation = useNavigation();
+    const insets = useSafeAreaInsets();
+    const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const { card } = route.params || {};
     const [isDetailsVisible, setIsDetailsVisible] = useState(false);
@@ -52,10 +55,10 @@ const ManageCardScreen = () => {
             subtitle: t('manageCard.resetPinDesc'),
         },
         {
-            id: 'block',
+            id: 'close_card',
             Icon: BlockCardSVG,
-            title: t('manageCard.block'),
-            subtitle: t('manageCard.blockDesc'),
+            title: t('manageCard.closeCard'),
+            subtitle: t('manageCard.closeCardDesc'),
         }
     ];
 
@@ -65,17 +68,23 @@ const ManageCardScreen = () => {
         top: <CustomText type={TextType.CardTitle}>{control.title}</CustomText>,
         middle: <CustomText type={TextType.CardSubtitle}>{control.subtitle}</CustomText>,
         end: <ChevronSVG width={ms(20)} height={ms(20)} />,
-        onPress: () => { }
+        onPress: () => {
+            if (control.id === 'close_card') {
+                navigation.navigate('CloseCard', { card });
+            }
+        }
     }));
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.container, {
+            backgroundColor: colors.background,
+            paddingTop: Math.max(ms(20), insets.top),
+            paddingHorizontal: Spacing.l
+        }]}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <CustomIcon type="feather" name="arrow-left" size={ms(24)} color={colors.onBackground} />
-                </TouchableOpacity>
+                <CustomBackButton style={styles.backButton} />
                 <CustomText type={TextType.ScreenHeadlineSmall} style={styles.headerTitle}>
-                    {t('manageCard.title') || 'Manage Card'}
+                    {t('manageCard.title')}
                 </CustomText>
             </View>
 
@@ -95,7 +104,7 @@ const ManageCardScreen = () => {
 
                 <View style={styles.controlsContainer}>
                     <SectionContainer
-                        title={t('manageCard.controlsTitle') || 'Card Controls'}
+                        title={t('manageCard.controlsTitle')}
                         items={controlItems}
                     />
                 </View>
@@ -111,8 +120,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        paddingTop: ms(60),
-        paddingHorizontal: Spacing.l,
         flexDirection: 'row',
         alignItems: 'center',
     },
@@ -129,12 +136,10 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.xxl,
     },
     cardContainer: {
-        paddingHorizontal: Spacing.l,
         paddingTop: Spacing.xl,
         alignItems: 'center',
     },
     controlsContainer: {
         marginTop: ms(30),
-        paddingHorizontal: Spacing.l,
     },
 });
