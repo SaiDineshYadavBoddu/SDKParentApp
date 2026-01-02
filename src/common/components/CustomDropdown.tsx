@@ -19,6 +19,7 @@ interface CustomDropdownProps {
     onPress: () => void;
     containerStyle?: StyleProp<ViewStyle>;
     error?: string;
+    innerContainerStyle?: StyleProp<ViewStyle>;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -28,6 +29,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     onPress,
     containerStyle,
     error,
+    innerContainerStyle,
 }) => {
     const { colors } = useTheme();
 
@@ -50,6 +52,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                         borderColor: error ? colors.error : colors.primaryContainer,
                         backgroundColor: colors.surface,
                     },
+                    innerContainerStyle
                 ]}
             >
                 <CustomText

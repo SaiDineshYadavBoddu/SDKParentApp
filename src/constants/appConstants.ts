@@ -25,3 +25,11 @@ export const REPLACE_CARD_REASONS = [
     "damaged",
     "fraud"
 ];
+
+export const TOPICS = [
+    "topic1",
+    "topic2",
+    "topic3",
+    "topic4",
+    "topic5"
+];

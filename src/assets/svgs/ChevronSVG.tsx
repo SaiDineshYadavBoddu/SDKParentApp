@@ -12,8 +12,8 @@ function ChevronSVG(props: any) {
             {...props}
         >
             <Path
-                opacity={0.9}
-                d="M10 6l6 6-6 6"
+                // opacity={0.9}
+                d="M10 6L16 12L10 18"
                 stroke="#0069B1"
                 strokeWidth={1.5}
                 strokeLinecap="round"

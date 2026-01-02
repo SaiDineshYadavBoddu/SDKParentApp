@@ -61,5 +61,23 @@
         "resetPinDesc": "Reset your card PIN",
         "block": "Block Card",
         "blockDesc": "Block your card permanently"
+    },
+    "profile": {
+        "headerTitle": "My Profile"
+    },
+    "support": {
+        "title": "Support",
+        "description": "Request a callback for your queries",
+        "supportDescription": "Please select a topic and describe your question the fields below. We will contact you as soon as possible.",
+        "contactNumber": "Contact Number",
+        "selectTopic": "Select Topic",
+        "selectTopicDesc": "Describe your request",
+        "topics": {
+            "topic1": "Topic 1",
+            "topic2": "Topic 2",
+            "topic3": "Topic 3",
+            "topic4": "Topic 4",
+            "topic5": "Topic 5"
+        }
     }
 }

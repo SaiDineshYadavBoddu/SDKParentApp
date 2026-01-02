@@ -30,28 +30,31 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
     children,
 }) => {
     const { colors } = useTheme();
+    const [showModal, setShowModal] = React.useState(visible);
     const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
     const opacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         if (visible) {
+            setShowModal(true);
             Animated.parallel([
                 Animated.timing(opacity, {
                     toValue: 1,
-                    duration: 300,
+                    duration: 250,
                     useNativeDriver: true,
                 }),
-                Animated.timing(translateY, {
+                Animated.spring(translateY, {
                     toValue: 0,
-                    duration: 300,
                     useNativeDriver: true,
+                    tension: 50,
+                    friction: 8,
                 }),
             ]).start();
         } else {
             Animated.parallel([
                 Animated.timing(opacity, {
                     toValue: 0,
-                    duration: 250,
+                    duration: 200,
                     useNativeDriver: true,
                 }),
                 Animated.timing(translateY, {
@@ -59,19 +62,25 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
                     duration: 250,
                     useNativeDriver: true,
                 }),
-            ]).start(() => { });
+            ]).start(() => {
+                setShowModal(false);
+            });
         }
     }, [visible, translateY, opacity]);
 
+    const handleClose = () => {
+        onClose();
+    };
+
     return (
         <Modal
-            visible={visible}
+            visible={showModal}
             transparent={true}
             animationType="none"
-            onRequestClose={onClose}
+            onRequestClose={handleClose}
         >
             <View style={styles.container}>
-                <TouchableWithoutFeedback onPress={onClose}>
+                <TouchableWithoutFeedback onPress={handleClose}>
                     <Animated.View
                         style={[
                             styles.backdrop,
@@ -95,7 +104,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
                         {title && (
                             <CustomText type={TextType.SectionTitle}>{title}</CustomText>
                         )}
-                        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                             <CustomIcon
                                 type="feather"
                                 name="x"

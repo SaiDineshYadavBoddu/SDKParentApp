@@ -23,16 +23,18 @@ export type SectionItem = {
     end?: React.ReactNode;
     body?: React.ReactNode;
     onPress?: () => void;
+    style?: StyleProp<ViewStyle>;
 };
 
 interface Props {
-    title?: string;
+    title?: string; // ... existing props
     rightTitle?: string;
     onRightTitlePress?: () => void;
     items: SectionItem[];
     style?: StyleProp<ViewStyle>;
     contentStyle?: StyleProp<ViewStyle>;
     ListEmptyComponent?: React.ComponentType<any> | React.ReactElement | null | undefined;
+    ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
 }
 
 export default function SectionContainer({
@@ -43,6 +45,7 @@ export default function SectionContainer({
     style,
     contentStyle,
     ListEmptyComponent,
+    ItemSeparatorComponent,
 }: Props) {
     const { colors } = useTheme();
 
@@ -55,6 +58,7 @@ export default function SectionContainer({
                 end={item.end}
                 body={item.body}
                 onPress={item.onPress}
+                style={item.style}
             />
         );
     };
@@ -82,7 +86,7 @@ export default function SectionContainer({
                 keyExtractor={(item) => item.id}
                 scrollEnabled={false}
                 ListEmptyComponent={ListEmptyComponent ?? null}
-                ItemSeparatorComponent={() => <View style={{ height: Spacing.s }} />}
+                ItemSeparatorComponent={ItemSeparatorComponent ?? (() => <View style={{ height: Spacing.s }} />)}
                 contentContainerStyle={[
                     styles.content,
                     contentStyle,

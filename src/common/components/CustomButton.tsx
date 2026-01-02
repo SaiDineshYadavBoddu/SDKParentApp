@@ -21,6 +21,7 @@ interface Props {
     variant?: ButtonVariant;
     disabled?: boolean;
     loading?: boolean;
+    uppercase?: boolean;
     style?: StyleProp<ViewStyle>;
 }
 
@@ -30,25 +31,34 @@ export default function CustomButton({
     variant = "primary",
     disabled = false,
     loading = false,
+    uppercase = true,
     style,
 }: Props) {
     const { colors } = useTheme();
     const isDisabled = disabled || loading;
 
-    const backgroundColor =
-        variant === "primary" ? colors.primary : "transparent";
+    const backgroundColor = isDisabled
+        ? "#F5F8FA"
+        : variant === "primary"
+            ? colors.primary
+            : "transparent";
 
-    const border =
-        variant === "outlined"
-            ? { borderWidth: ms(1.2), borderColor: colors.primary }
-            : {};
+    const borderColor = isDisabled
+        ? "#E0E4E8"
+        : variant === "outlined"
+            ? colors.primary
+            : "transparent";
 
-    const textType =
-        variant === "primary" ? TextType.Button : TextType.OutlinedButton;
+    const borderWidth = (isDisabled || variant === "outlined") ? ms(1) : 0;
 
     const textColor = isDisabled
         ? colors.textColorDisabled
-        : (variant === "primary" ? colors.onPrimary : colors.primary);
+        : variant === "primary"
+            ? colors.onPrimary
+            : colors.primary;
+
+    const textType =
+        variant === "primary" ? TextType.Button : TextType.OutlinedButton;
 
     return (
         <TouchableOpacity
@@ -57,15 +67,18 @@ export default function CustomButton({
             activeOpacity={0.86}
             style={[
                 styles.container,
-                { backgroundColor },
-                border,
+                {
+                    backgroundColor,
+                    borderColor,
+                    borderWidth,
+                },
                 style,
             ]}
         >
             {loading ? (
                 <ActivityIndicator size="small" color={textColor} />
             ) : (
-                <CustomText type={textType} uppercase style={{ color: textColor }}>
+                <CustomText type={textType} uppercase={uppercase} style={{ color: textColor }}>
                     {title}
                 </CustomText>
             )}

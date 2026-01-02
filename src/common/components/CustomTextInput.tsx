@@ -19,8 +19,10 @@ interface CustomTextInputProps extends TextInputProps {
     error?: string;
     containerStyle?: StyleProp<ViewStyle>;
     inputStyle?: StyleProp<TextStyle>;
+    inputContainerStyle?: StyleProp<ViewStyle>;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
+    multiline?: boolean;
 }
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
@@ -28,10 +30,12 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     error,
     containerStyle,
     inputStyle,
+    inputContainerStyle,
     leftIcon,
     rightIcon,
     onFocus,
     onBlur,
+    multiline,
     ...rest
 }) => {
     const { colors } = useTheme();
@@ -70,6 +74,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                         borderColor,
                         backgroundColor: colors.surface,
                     },
+                    inputContainerStyle
                 ]}
             >
                 {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
@@ -83,6 +88,8 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     placeholderTextColor={colors.textColorDisabled}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    multiline={multiline}
+                    textAlignVertical={multiline ? "top" : "center"}
                     {...rest}
                 />
                 {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}

@@ -85,7 +85,7 @@ export default function CardListScreen() {
     <>
       <View style={styles.header}>
         <CustomText type={TextType.ScreenHeadlineSmall}>
-          {t('cardList.title')}
+          {t('cardList.title')} 
         </CustomText>
         <View style={{ paddingTop: ms(10) }}>
           <TouchableOpacity onPress={() => { signOut() }}>
