@@ -117,6 +117,7 @@ const Support = () => {
                 selectedTopic ? t(`support.topics.${selectedTopic}`) : undefined
               }
               onPress={() => {
+                // Keyboard.dismiss();
                 setTempTopic(selectedTopic);
                 setIsBottomSheetVisible(true);
               }}

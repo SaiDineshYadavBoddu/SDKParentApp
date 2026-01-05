@@ -19,8 +19,9 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 interface CustomBottomSheetProps {
   visible: boolean;
   onClose: () => void;
-  title?: string;
+  title?: string | React.ReactNode;
   children: React.ReactNode;
+  maxHeight?: number;
 }
 
 const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
@@ -28,6 +29,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
   onClose,
   title,
   children,
+  maxHeight = SCREEN_HEIGHT * 0.9,
 }) => {
   const { colors } = useTheme();
   const [showModal, setShowModal] = React.useState(visible);
@@ -43,11 +45,10 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
           duration: 250,
           useNativeDriver: true,
         }),
-        Animated.spring(translateY, {
+        Animated.timing(translateY, {
           toValue: 0,
+          duration: 250,
           useNativeDriver: true,
-          tension: 50,
-          friction: 8,
         }),
       ]).start();
     } else {
@@ -76,6 +77,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
     <Modal
       visible={showModal}
       transparent={true}
+      statusBarTranslucent={true}
       animationType="none"
       onRequestClose={handleClose}
     >
@@ -97,12 +99,17 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
             {
               backgroundColor: colors.background,
               transform: [{ translateY }],
+              maxHeight,
             },
           ]}
         >
           <View style={styles.header}>
             {title && (
-              <CustomText type={TextType.SectionTitle}>{title}</CustomText>
+              typeof title === 'string' ? (
+                <CustomText type={TextType.SectionTitle}>{title}</CustomText>
+              ) : (
+                title
+              )
             )}
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
               <CustomIcon
@@ -133,6 +140,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: ms(24),
     paddingBottom: ms(40), // Safe area approximation
     minHeight: ms(200),
+    elevation: 20,
+    zIndex: 100,
   },
   header: {
     flexDirection: 'row',
@@ -147,6 +156,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing.l,
+    flexShrink: 1,
   },
 });
 

@@ -77,6 +77,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
             alignItems: multiline ? 'flex-start' : 'center',
             paddingVertical: multiline ? Spacing.s : 0,
           },
+          inputContainerStyle
         ]}
       >
         {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}

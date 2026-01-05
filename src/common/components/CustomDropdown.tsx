@@ -51,6 +51,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                         borderColor: error ? colors.error : colors.primaryContainer,
                         backgroundColor: colors.surface,
                     },
+                    innerContainerStyle
                 ]}
             >
                 <CustomText
