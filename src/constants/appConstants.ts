@@ -25,3 +25,10 @@ export const REPLACE_CARD_REASONS = [
     "damaged",
     "fraud"
 ];
+
+export const FREEZE_CARD_REASONS = [
+    "no_spend",
+    "misplaced",
+    "stolen",
+    "fraud"
+];

@@ -14,6 +14,7 @@ import CloseCardSVG from '../../../assets/svgs/CloseCardSVG';
 import CustomBackButton from '../../../common/components/CustomBackButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import CustomWarning from '../../../common/components/CustomWarning';
+import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -61,14 +62,7 @@ const CloseCardScreen = () => {
                     {t('closeCard.subtitle')}
                 </CustomText>
 
-                <View style={styles.cardItemContainer}>
-                    <View style={styles.cardIcon}>
-                        <CustomImage source={require('../../../assets/images/SmallCard.png')} style={{ width: ms(34), height: ms(24) }} resizeMode="contain" />
-                    </View>
-                    <CustomText type={TextType.CardTitle}>
-                        {card?.maskedPan}
-                    </CustomText>
-                </View>
+                <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
                 <CustomWarning message={t('closeCard.warning')} style={{ marginBottom: ms(24) }} />
 
@@ -119,21 +113,6 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         marginBottom: ms(24),
-    },
-    cardItemContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: Spacing.m,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        borderRadius: ms(12),
-        marginBottom: ms(24),
-    },
-    cardIcon: {
-        marginRight: Spacing.m,
-    },
-    maskedPan: {
-        fontWeight: '500',
     },
     footer: {
         padding: Spacing.m,

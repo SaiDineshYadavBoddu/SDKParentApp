@@ -71,7 +71,7 @@ const CustomRadioButton: React.FC<CustomRadioButtonProps> = ({
             </View>
             {label && (
                 <CustomText
-                    type={TextType.CardSubtitle}
+                    type={TextType.CardText}
                     style={[styles.label, { color: colors.onSurface }, labelStyle]}
                 >
                     {label}

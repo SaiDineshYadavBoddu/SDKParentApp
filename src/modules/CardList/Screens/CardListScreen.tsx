@@ -146,13 +146,21 @@ export default function CardListScreen() {
           <ActionButton
             title={t('cardList.replace')}
             icon={<ReplaceCardSVG />}
-            onPress={() => { navigation.navigate('ReplaceCard') }}
+            onPress={() => {
+              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
+                navigation.navigate('ReplaceCard', { card: MOCK_CARDS[activeCardIndex] })
+              }
+            }}
           />
 
           <ActionButton
             title={t('cardList.freeze')}
             icon={<FreezeCardSVG />}
-            onPress={() => { }}
+            onPress={() => {
+              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
+                navigation.navigate('FreezeCard', { card: MOCK_CARDS[activeCardIndex] })
+              }
+            }}
           />
         </View>
 

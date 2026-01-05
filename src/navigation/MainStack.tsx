@@ -7,6 +7,7 @@ import ManageCardScreen from '../modules/CardManagement/Screens/ManageCardScreen
 import CloseCardScreen from '../modules/CardManagement/Screens/CloseCardScreen.tsx';
 import CardUsageScreen from '../modules/CardManagement/Screens/CardUsageScreen';
 import TransactionLimitsScreen from '../modules/CardManagement/Screens/TransactionLimitsScreen';
+import FreezeCardScreen from '../modules/CardManagement/Screens/FreezeCardScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ const MainStack = () => {
             <Stack.Screen name="CloseCard" component={CloseCardScreen} />
             <Stack.Screen name="CardUsage" component={CardUsageScreen} />
             <Stack.Screen name="TransactionLimits" component={TransactionLimitsScreen} />
+            <Stack.Screen name="FreezeCard" component={FreezeCardScreen} />
             <Stack.Screen name="CardList" component={CardListScreen} />
         </Stack.Navigator>
     );

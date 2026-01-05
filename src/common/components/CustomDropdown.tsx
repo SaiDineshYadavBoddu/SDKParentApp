@@ -36,7 +36,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
             {label && (
                 <CustomText
                     type={TextType.CardSubtitle}
-                    style={[styles.label, { color: colors.onSurface }]}
+                    style={styles.label}
                 >
                     {label}
                 </CustomText>

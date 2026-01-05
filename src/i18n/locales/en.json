@@ -6,7 +6,8 @@
         "cancel": "Cancel",
         "select": "Select",
         "message": "Message",
-        "continue": "Continue"
+        "continue": "Continue",
+        "cardNumber": "Card Number"
     },
     "cardList": {
         "title": "My Cards",
@@ -86,5 +87,22 @@
         "single": "Single Transaction",
         "remaining": "Remaining",
         "currency": "AED"
+    },
+    "freezeCard": {
+        "title": "Freeze Card",
+        "subtitle": "In case of a lost, stolen card",
+        "selectReason": "Freeze reason",
+        "reasonLabel": "Reason",
+        "warningTemp": "This will temporarily block your card",
+        "warningPerm": "This will permanently block your card",
+        "successTitle": "Card frozen successfully",
+        "successSubtitleTemp": "Your card has been temporarily frozen. You can unfreeze it at any time from the app.",
+        "successSubtitlePerm": "Your card has been permanently frozen. You will need to request a new card to use it again.",
+        "reasons": {
+            "no_spend": "No spend expected/ Staff member out of office",
+            "misplaced": "Suspected loss of card (misplaced)",
+            "stolen": "Suspected stolen card",
+            "fraud": "Fraud on the card"
+        }
     }
 }

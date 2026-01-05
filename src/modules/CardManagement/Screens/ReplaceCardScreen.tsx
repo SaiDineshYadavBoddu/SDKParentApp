@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms } from 'react-native-size-matters';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -18,12 +18,15 @@ import ReplaceCardScreenSVG from '../../../assets/svgs/ReplaceCardScreenSVG';
 import CustomBackButton from '../../../common/components/CustomBackButton';
 import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
 import CustomWarning from '../../../common/components/CustomWarning';
+import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
 
 const ReplaceCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const navigation = useNavigation();
+    const route = useRoute<any>();
+    const { card } = route.params || {};
     const insets = useSafeAreaInsets();
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
     const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
@@ -68,6 +71,8 @@ const ReplaceCardScreen = () => {
                     {t('replaceCard.description')}
                 </CustomText>
 
+                <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
+
                 <CustomDropdown
                     label={t('replaceCard.selectReasonForReplacement')}
                     placeholder={t('common.select')}
@@ -104,23 +109,19 @@ const ReplaceCardScreen = () => {
             >
                 <View style={styles.bottomSheetContent}>
                     {REPLACE_CARD_REASONS.map((reason) => (
-                        <View
+                        <CustomRadioButton
                             key={reason}
-                            style={[
-                                styles.radioItemContainer,
+                            label={t(`replaceCard.reasons.${reason}`)}
+                            selected={tempReason === reason}
+                            onPress={() => setTempReason(reason)}
+                            containerStyle={[
+                                styles.radioButton,
                                 {
                                     borderColor: tempReason === reason ? colors.primary : '#E0E0E0',
                                     borderWidth: tempReason === reason ? ms(1.5) : ms(1),
                                 }
                             ]}
-                        >
-                            <CustomRadioButton
-                                label={t(`replaceCard.reasons.${reason}`)}
-                                selected={tempReason === reason}
-                                onPress={() => setTempReason(reason)}
-                                containerStyle={styles.radioButton}
-                            />
-                        </View>
+                        />
                     ))}
 
                     <CustomWarning style={{ marginTop: Spacing.m, marginBottom: ms(24) }}>
@@ -192,14 +193,16 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     radioItemContainer: {
-        borderRadius: ms(12),
-        marginBottom: Spacing.m,
-        paddingHorizontal: Spacing.m,
-        height: ms(56),
-        justifyContent: 'center',
+        // borderRadius: ms(12),
+        // marginBottom: Spacing.m,
     },
     radioButton: {
         marginVertical: 0,
+        height: ms(56),
+        paddingHorizontal: Spacing.m,
+        width: '100%',
+        borderRadius: ms(12),
+        marginBottom: Spacing.m,
     },
     confirmButton: {
         width: '100%',
