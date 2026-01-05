@@ -1,83 +1,83 @@
 {
-    "common": {
-        "done": "Done",
-        "submit": "Submit",
-        "confirm": "Confirm",
-        "cancel": "Cancel",
-        "select": "Select"
-    },
-    "cardList": {
-        "title": "My Cards",
-        "availableBalance": "Available balance",
-        "active": "Active",
-        "recentTransactions": "Recent Transactions",
-        "viewAll": "View All",
-        "manage": "Manage",
-        "replace": "Replace",
-        "freeze": "Freeze"
-    },
-    "replaceCard": {
-        "title": "Replace Card",
-        "description": "In case of a damaged card",
-        "selectReason": "Select Reason",
-        "selectReasonForReplacement": "Select the reason for card replacement",
-        "replacementFee": "Replacement fee",
-        "feePrefix": "Card replacement fee is ",
-        "feeSuffix": "25.00. The fee will be deducted from the replaced card.",
-        "successTitle": "Card replacement request submitted successfully",
-        "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
-        "reasons": {
-            "lost": "Card lost",
-            "stolen": "Card is stolen",
-            "damaged": "Card damaged",
-            "fraud": "Fraud on the card"
-        }
-    },
-    "onboarding": {
-        "step1": {
-            "title": "Accept Payments",
-            "description": "Tap or link, seamless payments"
-        },
-        "step2": {
-            "title": "Track Every Transaction",
-            "description": "Clear, fast and reliable tracking"
-        },
-        "step3": {
-            "title": "Instant Settlements",
-            "description": "Withdraw funds anytime, instantly"
-        }
-    },
-    "login": {
-        "loginButton": "Log In"
-    },
-    "manageCard": {
-        "title": "Manage Card",
-        "controlsTitle": "Card Controls",
-        "usage": "Card Usage",
-        "usageDesc": "View your usage for the card",
-        "limits": "Transaction Limits",
-        "limitsDesc": "View your usage limit on card",
-        "resetPin": "Reset PIN",
-        "resetPinDesc": "Reset your card PIN",
-        "block": "Block Card",
-        "blockDesc": "Block your card permanently"
-    },
-    "profile": {
-        "headerTitle": "My Profile"
-    },
-    "support": {
-        "title": "Support",
-        "description": "Request a callback for your queries",
-        "supportDescription": "Please select a topic and describe your question the fields below. We will contact you as soon as possible.",
-        "contactNumber": "Contact Number",
-        "selectTopic": "Select Topic",
-        "selectTopicDesc": "Describe your request",
-        "topics": {
-            "topic1": "Topic 1",
-            "topic2": "Topic 2",
-            "topic3": "Topic 3",
-            "topic4": "Topic 4",
-            "topic5": "Topic 5"
-        }
+  "common": {
+    "done": "Done",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "select": "Select"
+  },
+  "cardList": {
+    "title": "My Cards",
+    "availableBalance": "Available balance",
+    "active": "Active",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "manage": "Manage",
+    "replace": "Replace",
+    "freeze": "Freeze"
+  },
+  "replaceCard": {
+    "title": "Replace Card",
+    "description": "In case of a damaged card",
+    "selectReason": "Select Reason",
+    "selectReasonForReplacement": "Select the reason for card replacement",
+    "replacementFee": "Replacement fee",
+    "feePrefix": "Card replacement fee is ",
+    "feeSuffix": "25.00. The fee will be deducted from the replaced card.",
+    "successTitle": "Card replacement request submitted successfully",
+    "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
+    "reasons": {
+      "lost": "Card lost",
+      "stolen": "Card is stolen",
+      "damaged": "Card damaged",
+      "fraud": "Fraud on the card"
     }
+  },
+  "onboarding": {
+    "step1": {
+      "title": "Accept Payments",
+      "description": "Tap or link, seamless payments"
+    },
+    "step2": {
+      "title": "Track Every Transaction",
+      "description": "Clear, fast and reliable tracking"
+    },
+    "step3": {
+      "title": "Instant Settlements",
+      "description": "Withdraw funds anytime, instantly"
+    }
+  },
+  "login": {
+    "loginButton": "Log In"
+  },
+  "manageCard": {
+    "title": "Manage Card",
+    "controlsTitle": "Card Controls",
+    "usage": "Card Usage",
+    "usageDesc": "View your usage for the card",
+    "limits": "Transaction Limits",
+    "limitsDesc": "View your usage limit on card",
+    "resetPin": "Reset PIN",
+    "resetPinDesc": "Reset your card PIN",
+    "block": "Block Card",
+    "blockDesc": "Block your card permanently"
+  },
+  "profile": {
+    "headerTitle": "My Profile"
+  },
+  "support": {
+    "title": "Support",
+    "description": "Request a callback for your queries",
+    "supportDescription": "Please select a topic and describe your question the fields below. We will contact you as soon as possible.",
+    "contactNumber": "Contact Number",
+    "selectTopic": "Select Topic",
+    "selectTopicDesc": "Describe your request",
+    "topics": {
+      "topic1": "Topic 1",
+      "topic2": "Topic 2",
+      "topic3": "Topic 3",
+      "topic4": "Topic 4",
+      "topic5": "Topic 5"
+    }
+  }
 }

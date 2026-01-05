@@ -5,21 +5,21 @@ import MainStack from './MainStack';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 const NavigationContent = () => {
-    const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-    return (
-        <NavigationContainer>
-            {isAuthenticated ? <MainStack /> : <AuthStack />}
-        </NavigationContainer>
-    );
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <MainStack /> : <AuthStack />}
+    </NavigationContainer>
+  );
 };
 
 const RootNavigator = () => {
-    return (
-        <AuthProvider>
-            <NavigationContent />
-        </AuthProvider>
-    );
+  return (
+    <AuthProvider>
+      <NavigationContent />
+    </AuthProvider>
+  );
 };
 
 export default RootNavigator;

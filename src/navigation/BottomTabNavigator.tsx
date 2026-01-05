@@ -22,52 +22,55 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
-    return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                headerShown: false,
-                tabBarShowLabel: true,
-                tabBarActiveTintColor: '#0056D2', // Primary Blue inferred
-                tabBarInactiveTintColor: '#666',
-                tabBarStyle: [styles.tabBar, { height: 60 + insets.bottom, paddingBottom: insets.bottom + 5 }],
-                tabBarLabelStyle: styles.tabBarLabel,
-                tabBarIcon: ({ focused, color, size }) => {
-                    if (route.name === 'My Cards') {
-                        return <MyCardsSVG width={24} height={24} color={color} />;
-                    } else if (route.name === 'Requests') {
-                        return <RequestsSVG width={24} height={24} color={color} />;
-                    } else if (route.name === 'Transactions') {
-                        return <TransactionsSVG width={24} height={24} color={color} />;
-                    } else if (route.name === 'My Profile') {
-                        return <MyProfileSVG width={24} height={24} color={color} />;
-                    }
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: '#0056D2', // Primary Blue inferred
+        tabBarInactiveTintColor: '#666',
+        tabBarStyle: [
+          styles.tabBar,
+          { height: 60 + insets.bottom, paddingBottom: insets.bottom + 5 },
+        ],
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarIcon: ({ focused, color, size }) => {
+          if (route.name === 'My Cards') {
+            return <MyCardsSVG width={24} height={24} color={color} />;
+          } else if (route.name === 'Requests') {
+            return <RequestsSVG width={24} height={24} color={color} />;
+          } else if (route.name === 'Transactions') {
+            return <TransactionsSVG width={24} height={24} color={color} />;
+          } else if (route.name === 'My Profile') {
+            return <MyProfileSVG width={24} height={24} color={color} />;
+          }
 
-                    return <View />;
-                },
-            })}
-        >
-            <Tab.Screen name="My Cards" component={CardListScreen} />
-            <Tab.Screen name="Transactions" component={TransactionsScreen} />
-            <Tab.Screen name="Requests" component={RequestsScreen} />
-            <Tab.Screen name="My Profile" component={ProfileScreen} />
-        </Tab.Navigator>
-    );
+          return <View />;
+        },
+      })}
+    >
+      <Tab.Screen name="My Cards" component={CardListScreen} />
+      <Tab.Screen name="Transactions" component={TransactionsScreen} />
+      <Tab.Screen name="Requests" component={RequestsScreen} />
+      <Tab.Screen name="My Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
 };
 
 const styles = StyleSheet.create({
-    tabBar: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    tabBarLabel: {
-        fontSize: 12,
-        fontWeight: '500',
-        marginBottom: 5,
-    },
+  tabBar: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 5,
+  },
 });
 
 export default BottomTabNavigator;

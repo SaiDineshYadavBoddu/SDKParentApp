@@ -1,20 +1,17 @@
-import { backendApi } from "../api.config";
-import { API_ENDPOINTS } from "../endpoint.const";
+import { backendApi } from '../api.config';
+import { API_ENDPOINTS } from '../endpoint.const';
 
 export const cardApi = backendApi.injectEndpoints({
   overrideExisting: true,
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getCards: builder.query<any, any>({
-      query: (params) => ({
+      query: params => ({
         url: API_ENDPOINTS.GET_CARDS,
-        method: "GET",
+        method: 'GET',
         params,
       }),
     }),
   }),
 });
 
-export const {
-  useGetCardsQuery,
-} = cardApi;
-
+export const { useGetCardsQuery } = cardApi;

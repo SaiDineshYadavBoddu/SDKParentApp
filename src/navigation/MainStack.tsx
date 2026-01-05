@@ -10,24 +10,26 @@ import Addresses from '../modules/Profile/Screens/Addresses.tsx';
 import PersonalDetails from '../modules/Profile/Screens/PersonalDetails.tsx';
 import PersonalDocuments from '../modules/Profile/Screens/PersonalDocuments.tsx';
 import Support from '../modules/Profile/Screens/Support.tsx';
+import ContactUs from '../modules/Profile/Screens/ContactUs.tsx';
 
 const Stack = createStackNavigator();
 
 const MainStack = () => {
-    return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="BottomTabs" component={BottomTabNavigator} />
-            <Stack.Screen name="ReplaceCard" component={ReplaceCardScreen} />
-            <Stack.Screen name="ManageCard" component={ManageCardScreen} />
-            <Stack.Screen name="CardList" component={CardListScreen} />
-            <Stack.Screen name="ChangeCompany" component={ChangeCompany} />
-            <Stack.Screen name="ContactDetails" component={ContactDetails} />
-            <Stack.Screen name="PersonalDetails" component={PersonalDetails} />
-            <Stack.Screen name="Addresses" component={Addresses} />
-            <Stack.Screen name="PersonalDocuments" component={PersonalDocuments} />
-            <Stack.Screen name="Support" component={Support} />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="BottomTabs" component={BottomTabNavigator} />
+      <Stack.Screen name="ReplaceCard" component={ReplaceCardScreen} />
+      <Stack.Screen name="ManageCard" component={ManageCardScreen} />
+      <Stack.Screen name="CardList" component={CardListScreen} />
+      <Stack.Screen name="ChangeCompany" component={ChangeCompany} />
+      <Stack.Screen name="ContactDetails" component={ContactDetails} />
+      <Stack.Screen name="PersonalDetails" component={PersonalDetails} />
+      <Stack.Screen name="Addresses" component={Addresses} />
+      <Stack.Screen name="PersonalDocuments" component={PersonalDocuments} />
+      <Stack.Screen name="Support" component={Support} />
+      <Stack.Screen name="ContactUs" component={ContactUs} />
+    </Stack.Navigator>
+  );
 };
 
 export default MainStack;
