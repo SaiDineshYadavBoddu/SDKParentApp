@@ -26,7 +26,7 @@ const ReplaceCardScreen = () => {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
-    const [selectedReason, setSelectedReason] = useState<string | undefined>("");
+    const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
     const [tempReason, setTempReason] = useState<string | undefined>("");
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -52,23 +52,19 @@ const ReplaceCardScreen = () => {
     }
 
     return (
-        <View style={[styles.container, {
-            backgroundColor: colors.background,
-            paddingTop: Math.max(ms(20), insets.top), // Ensure minimum padding or safe area
-            paddingHorizontal: Spacing.l
-        }]}>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.header}>
-                <CustomBackButton style={styles.backButton} />
+                <CustomBackButton />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.iconContainer}>
-                    <ReplaceCardScreenSVG width={ms(48)} height={ms(48)} color={colors.primary} />
+                    <ReplaceCardScreenSVG width={ms(40)} height={ms(40)} color={colors.primary} />
                 </View>
-                <CustomText type={TextType.ScreenHeadlineSmall} style={styles.title}>
+                <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
                     {t('replaceCard.title')}
                 </CustomText>
-                <CustomText type={TextType.CardText} style={styles.subtitle}>
+                <CustomText type={TextType.ScreenDisplaySmall} style={styles.subtitle}>
                     {t('replaceCard.description')}
                 </CustomText>
 
@@ -83,20 +79,18 @@ const ReplaceCardScreen = () => {
                     containerStyle={styles.dropdown}
                 />
 
-                {selectedReason && (
-                    <CustomWarning>
-                        <CustomText type={TextType.CardText} style={styles.infoText}>
-                            {t('replaceCard.feePrefix')}
-                            <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
-                            {t('replaceCard.feeSuffix')}
-                        </CustomText>
-                    </CustomWarning>
-                )}
+                <CustomWarning>
+                    <CustomText type={TextType.CardText} style={styles.infoText}>
+                        {t('replaceCard.feePrefix')}
+                        <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
+                        {t('replaceCard.feeSuffix')}
+                    </CustomText>
+                </CustomWarning>
             </ScrollView>
 
-            <View style={[styles.bottomButtonContainer, { paddingBottom: Math.max(ms(60), insets.bottom + Spacing.l) }]}>
+            <View style={[styles.bottomButtonContainer, { paddingBottom: Math.max(Spacing.l, insets.bottom) }]}>
                 <CustomButton
-                    title={t('replaceCard.submit')}
+                    title={t('common.submit')}
                     onPress={handleSubmit}
                     disabled={!selectedReason}
                     style={selectedReason ? styles.submitButtonActive : styles.submitButtonDisabled}
@@ -116,7 +110,7 @@ const ReplaceCardScreen = () => {
                                 styles.radioItemContainer,
                                 {
                                     borderColor: tempReason === reason ? colors.primary : '#E0E0E0',
-                                    borderWidth: tempReason === reason ? ms(1) : ms(0.5),
+                                    borderWidth: tempReason === reason ? ms(1.5) : ms(1),
                                 }
                             ]}
                         >
@@ -131,7 +125,9 @@ const ReplaceCardScreen = () => {
 
                     <CustomWarning style={{ marginTop: Spacing.m, marginBottom: ms(24) }}>
                         <CustomText type={TextType.CardText} style={styles.infoText}>
-                            {t('replaceCard.feeAmount')}
+                            {t('replaceCard.feePrefix')}
+                            <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
+                            {t('replaceCard.feeSuffix')}
                         </CustomText>
                     </CustomWarning>
 
@@ -152,30 +148,25 @@ export default ReplaceCardScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingHorizontal: Spacing.s,
     },
     header: {
-        // Padding handled by container
-    },
-    backButton: {
-        width: ms(40),
-        height: ms(40),
-        justifyContent: 'center',
+        paddingTop: ms(20),
+        paddingHorizontal: Spacing.m,
     },
     scrollContent: {
-        paddingTop: Spacing.m,
-        paddingBottom: Spacing.xl,
+        paddingHorizontal: Spacing.m,
+        paddingBottom: Spacing.xxl,
+        paddingTop: ms(20),
     },
     iconContainer: {
-        marginBottom: Spacing.m,
+        marginBottom: ms(20),
     },
     title: {
-        fontSize: ms(24),
-        fontWeight: 'bold',
-        marginBottom: Spacing.xs,
+        marginBottom: ms(8),
     },
     subtitle: {
-        color: '#757575',
-        marginBottom: ms(32),
+        marginBottom: ms(24),
     },
     dropdown: {
         marginBottom: ms(24),
@@ -187,8 +178,9 @@ const styles = StyleSheet.create({
         lineHeight: ms(18),
     },
     bottomButtonContainer: {
-        paddingTop: Spacing.l,
-        // Padding bottom handled dynamically in style prop or add safe area here if strictly using style
+        padding: Spacing.m,
+        borderTopWidth: 1,
+        borderTopColor: '#F0F0F0',
     },
     submitButtonActive: {
         backgroundColor: '#0169B2',

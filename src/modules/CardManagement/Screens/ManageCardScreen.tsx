@@ -71,6 +71,10 @@ const ManageCardScreen = () => {
         onPress: () => {
             if (control.id === 'close_card') {
                 navigation.navigate('CloseCard', { card });
+            } else if (control.id === 'usage') {
+                navigation.navigate('CardUsage', { card });
+            } else if (control.id === 'limits') {
+                navigation.navigate('TransactionLimits', { card });
             }
         }
     }));

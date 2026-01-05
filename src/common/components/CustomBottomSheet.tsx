@@ -7,8 +7,10 @@ import {
     Dimensions,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    ScrollView,
 } from "react-native";
 import { ms } from "react-native-size-matters";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../theme/ThemeProvider";
 import { Spacing } from "../../theme/spacing";
 import CustomText, { TextType } from "./CustomText";
@@ -21,6 +23,7 @@ interface CustomBottomSheetProps {
     onClose: () => void;
     title?: string;
     children: React.ReactNode;
+    scrollEnabled?: boolean;
 }
 
 const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
@@ -28,8 +31,10 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
     onClose,
     title,
     children,
+    scrollEnabled = true,
 }) => {
     const { colors } = useTheme();
+    const insets = useSafeAreaInsets();
     const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
     const opacity = useRef(new Animated.Value(0)).current;
 
@@ -82,15 +87,12 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
                         ]}
                     />
                 </TouchableWithoutFeedback>
-                <Animated.View
-                    style={[
-                        styles.sheet,
-                        {
-                            backgroundColor: colors.background,
-                            transform: [{ translateY }],
-                        },
-                    ]}
-                >
+                <Animated.View style={[styles.sheet, {
+                    backgroundColor: colors.background,
+                    paddingBottom: Math.max(Spacing.l, insets.bottom),
+                    transform: [{ translateY }],
+                    maxHeight: SCREEN_HEIGHT * 0.8,
+                }]}>
                     <View style={styles.header}>
                         {title && (
                             <CustomText type={TextType.SectionTitle}>{title}</CustomText>
@@ -104,7 +106,13 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
                             />
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.content}>{children}</View>
+                    <View style={styles.content}>
+                        {scrollEnabled ? (
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                {children}
+                            </ScrollView>
+                        ) : children}
+                    </View>
                 </Animated.View>
             </View>
         </Modal>
@@ -122,7 +130,6 @@ const styles = StyleSheet.create({
     sheet: {
         borderTopLeftRadius: ms(24),
         borderTopRightRadius: ms(24),
-        paddingBottom: ms(40), // Safe area approximation
         minHeight: ms(200),
     },
     header: {

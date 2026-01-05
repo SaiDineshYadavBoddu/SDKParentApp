@@ -25,7 +25,8 @@
         "selectReasonForReplacement": "Select the reason for card replacement",
         "replacementFee": "Replacement fee",
         "feePrefix": "Card replacement fee is ",
-        "feeSuffix": "25.00. The fee will be deducted from the replaced card.",
+        "feeSuffix": "26.00. The fee will be deducted from the replaced card.",
+        "feeAmount": "Card replacement fee is 26.00. The fee will be deducted from the replaced card.",
         "successTitle": "Card replacement request submitted successfully",
         "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
         "reasons": {
@@ -71,5 +72,19 @@
         "reasonPlaceholder": "Optional",
         "successTitle": "Card closed successfully",
         "successSubtitle": "Your card has been permanently closed."
+    },
+    "cardUsage": {
+        "title": "Card Usage",
+        "online": "Online Transactions",
+        "contactless": "Contactless transactions",
+        "foreign": "Foreign transactions"
+    },
+    "transactionLimits": {
+        "title": "Transaction Limits",
+        "daily": "Daily limit",
+        "weekly": "Weekly limit",
+        "single": "Single Transaction",
+        "remaining": "Remaining",
+        "currency": "AED"
     }
 }

@@ -42,8 +42,7 @@ const CloseCardScreen = () => {
     return (
         <View style={[styles.container, {
             backgroundColor: colors.background,
-            paddingTop: insets.top, // Use safe area inset for top
-            // paddingHorizontal removed to avoid double padding with children
+            paddingTop: insets.top,
         }]}>
             <View style={styles.header}>
                 <CustomBackButton />

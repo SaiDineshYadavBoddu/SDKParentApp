@@ -5,6 +5,8 @@ import BottomTabNavigator from './BottomTabNavigator';
 import ReplaceCardScreen from '../modules/CardManagement/Screens/ReplaceCardScreen.tsx';
 import ManageCardScreen from '../modules/CardManagement/Screens/ManageCardScreen.tsx';
 import CloseCardScreen from '../modules/CardManagement/Screens/CloseCardScreen.tsx';
+import CardUsageScreen from '../modules/CardManagement/Screens/CardUsageScreen';
+import TransactionLimitsScreen from '../modules/CardManagement/Screens/TransactionLimitsScreen';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +17,8 @@ const MainStack = () => {
             <Stack.Screen name="ReplaceCard" component={ReplaceCardScreen} />
             <Stack.Screen name="ManageCard" component={ManageCardScreen} />
             <Stack.Screen name="CloseCard" component={CloseCardScreen} />
+            <Stack.Screen name="CardUsage" component={CardUsageScreen} />
+            <Stack.Screen name="TransactionLimits" component={TransactionLimitsScreen} />
             <Stack.Screen name="CardList" component={CardListScreen} />
         </Stack.Navigator>
     );
