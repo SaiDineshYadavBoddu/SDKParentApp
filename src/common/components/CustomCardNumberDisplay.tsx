@@ -43,7 +43,6 @@ export default CustomCardNumberDisplay;
 const styles = StyleSheet.create({
     cardItemContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
         padding: Spacing.m,
         borderWidth: 1,
         borderColor: '#E0E0E0',
@@ -51,6 +50,7 @@ const styles = StyleSheet.create({
         marginBottom: ms(24),
     },
     cardIcon: {
-        marginRight: Spacing.m,
+        marginRight: ms(3),
+        justifyContent: 'center',
     },
 });

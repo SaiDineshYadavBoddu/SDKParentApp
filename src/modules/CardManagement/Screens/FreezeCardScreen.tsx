@@ -84,6 +84,13 @@ const FreezeCardScreen = () => {
                     }}
                     containerStyle={styles.dropdown}
                 />
+
+                {selectedReason && (
+                    <CustomWarning
+                        style={{ marginTop: Spacing.m }}
+                        message={isPermanent ? t('freezeCard.warningPerm') : t('freezeCard.warningTemp')}
+                    />
+                )}
             </ScrollView>
 
             <View style={[styles.bottomButtonContainer, { paddingBottom: Math.max(Spacing.l, insets.bottom) }]}>
@@ -117,10 +124,12 @@ const FreezeCardScreen = () => {
                         />
                     ))}
 
-                    <CustomWarning
-                        style={{ marginTop: Spacing.m, marginBottom: ms(24) }}
-                        message={tempIsPermanent ? t('freezeCard.warningPerm') : t('freezeCard.warningTemp')}
-                    />
+                    {tempReason && (
+                        <CustomWarning
+                            style={{ marginTop: Spacing.m, marginBottom: ms(24) }}
+                            message={tempIsPermanent ? t('freezeCard.warningPerm') : t('freezeCard.warningTemp')}
+                        />
+                    )}
 
                     <CustomButton
                         title={t('common.confirm')}
