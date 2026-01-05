@@ -71,8 +71,8 @@ const CustomRadioButton: React.FC<CustomRadioButtonProps> = ({
             </View>
             {label && (
                 <CustomText
-                    type={TextType.CardText}
-                    style={[styles.label, { color: colors.onSurface }, labelStyle]}
+                    type={TextType.Label}
+                    style={styles.label}
                 >
                     {label}
                 </CustomText>
@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
         // inner circle sizing is handled in the component for better reactivity
     },
     label: {
-        marginLeft: Spacing.s,
+        marginLeft: ms(8),
+        marginBottom: 0,
     },
 });
 

@@ -19,7 +19,7 @@ const CustomCardNumberDisplay: React.FC<CustomCardNumberDisplayProps> = ({
 
     return (
         <View style={containerStyle}>
-            <CustomText type={TextType.ScreenDisplaySmall}>
+            <CustomText type={TextType.Label}>
                 {t('common.cardNumber')}
             </CustomText>
             <View style={styles.cardItemContainer}>
@@ -52,8 +52,5 @@ const styles = StyleSheet.create({
     },
     cardIcon: {
         marginRight: Spacing.m,
-    },
-    label: {
-        marginBottom: ms(8),
     },
 });

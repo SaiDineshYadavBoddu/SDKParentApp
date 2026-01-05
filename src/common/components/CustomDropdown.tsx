@@ -35,8 +35,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         <View style={[styles.mainContainer, containerStyle]}>
             {label && (
                 <CustomText
-                    type={TextType.CardSubtitle}
-                    style={styles.label}
+                    type={TextType.Label}
                 >
                     {label}
                 </CustomText>
@@ -82,10 +81,6 @@ const styles = StyleSheet.create({
     mainContainer: {
         marginBottom: Spacing.m,
         width: "100%",
-    },
-    label: {
-        marginBottom: Spacing.xs,
-        fontWeight: "600",
     },
     dropdownContainer: {
         flexDirection: "row",

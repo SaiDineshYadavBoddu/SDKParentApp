@@ -1,6 +1,7 @@
 // components/CustomText.tsx
 import React from "react";
 import { Text, TextProps, TextStyle, StyleProp } from "react-native";
+import { ms } from "react-native-size-matters";
 import { Typography } from "../../theme/typography";
 import { useTheme } from "../../theme/ThemeProvider";
 
@@ -26,6 +27,7 @@ export enum TextType {
 
     Error = "Error",
     ActionLabel = "ActionLabel",
+    Label = "Label",
 }
 
 interface Props extends TextProps {
@@ -92,6 +94,8 @@ export default function CustomText({
 
             case TextType.ActionLabel:
                 return { color: colors.primary, text: Typography.labelLarge };
+            case TextType.Label:
+                return { color: colors.onBackground, text: { ...Typography.bodySmall, fontWeight: "600", marginBottom: ms(5) } };
 
             default:
                 return { color: colors.onBackground, text: Typography.bodyMedium };
