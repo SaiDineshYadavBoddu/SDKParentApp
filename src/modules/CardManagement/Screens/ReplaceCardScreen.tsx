@@ -55,7 +55,7 @@ const ReplaceCardScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <View style={styles.header}>
         <CustomBackButton />
       </View>
@@ -121,7 +121,7 @@ const ReplaceCardScreen = () => {
               containerStyle={[
                 styles.radioButton,
                 {
-                  borderColor: tempReason === reason ? colors.primary : '#E0E0E0',
+                  borderColor: tempReason === reason ? colors.primary : colors.outline,
                   borderWidth: tempReason === reason ? ms(1.5) : ms(1),
                 }
               ]}

@@ -55,7 +55,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     ? colors.error
     : isFocused
       ? colors.primary
-      : colors.primaryContainer;
+      : colors.outline;
 
   return (
     <View style={[styles.mainContainer, containerStyle]}>

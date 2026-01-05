@@ -5,6 +5,7 @@ import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
 import CustomImage from './CustomImage';
+import { useTheme } from '../../theme/ThemeProvider';
 
 interface CustomCardNumberDisplayProps {
     maskedPan?: string;
@@ -16,13 +17,14 @@ const CustomCardNumberDisplay: React.FC<CustomCardNumberDisplayProps> = ({
     containerStyle
 }) => {
     const { t } = useTranslation();
+    const { colors } = useTheme();
 
     return (
         <View style={containerStyle}>
             <CustomText type={TextType.Label}>
                 {t('common.cardNumber')}
             </CustomText>
-            <View style={styles.cardItemContainer}>
+            <View style={[styles.cardItemContainer, { borderColor: colors.outline }]}>
                 <View style={styles.cardIcon}>
                     <CustomImage
                         source={require('../../assets/images/SmallCard.png')}
@@ -45,7 +47,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: Spacing.m,
         borderWidth: 1,
-        borderColor: '#E0E0E0',
         borderRadius: ms(12),
         marginBottom: ms(24),
     },

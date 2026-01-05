@@ -105,7 +105,7 @@ const FreezeCardScreen = () => {
             <CustomBottomSheet
                 visible={isBottomSheetVisible}
                 onClose={() => setBottomSheetVisible(false)}
-                title={t('freezeCard.selectReason')}
+                title={t('replaceCard.selectReason')}
             >
                 <View style={styles.bottomSheetContent}>
                     {FREEZE_CARD_REASONS.map((reason) => (
@@ -117,7 +117,7 @@ const FreezeCardScreen = () => {
                             containerStyle={[
                                 styles.radioButton,
                                 {
-                                    borderColor: tempReason === reason ? colors.primary : '#E0E0E0',
+                                    borderColor: tempReason === reason ? colors.primary : colors.outline,
                                     borderWidth: tempReason === reason ? ms(1.5) : ms(1),
                                 }
                             ]}
