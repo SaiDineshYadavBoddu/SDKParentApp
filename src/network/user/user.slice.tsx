@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { userApi } from "./user.api";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { userApi } from './user.api';
 
 interface Post {
   id: number;
@@ -17,16 +17,15 @@ const initialState: UserState = {
 };
 
 export const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addMatcher(
       userApi.endpoints.getPosts.matchFulfilled,
       (state, { payload }: PayloadAction<Post[]>) => {
         state.postDetails = payload;
-      }
+      },
     );
   },
 });
-

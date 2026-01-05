@@ -4,6 +4,6 @@
  * @returns An object containing the integer and decimal parts.
  */
 export const formatAmount = (amount: string | number) => {
-    const [integer, decimal] = String(amount).split('.');
-    return { integer, decimal: decimal ? `.${decimal}` : '' };
+  const [integer, decimal] = String(amount).split('.');
+  return { integer, decimal: decimal ? `.${decimal}` : '' };
 };

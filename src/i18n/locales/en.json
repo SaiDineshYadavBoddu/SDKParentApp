@@ -1,108 +1,108 @@
 {
-    "common": {
-        "done": "Done",
-        "submit": "Submit",
-        "confirm": "Confirm",
-        "cancel": "Cancel",
-        "select": "Select",
-        "message": "Message",
-        "continue": "Continue",
-        "cardNumber": "Card Number"
-    },
-    "cardList": {
-        "title": "My Cards",
-        "availableBalance": "Available balance",
-        "active": "Active",
-        "recentTransactions": "Recent Transactions",
-        "viewAll": "View All",
-        "manage": "Manage",
-        "replace": "Replace",
-        "freeze": "Freeze"
-    },
-    "replaceCard": {
-        "title": "Replace Card",
-        "description": "In case of a damaged card",
-        "selectReason": "Select Reason",
-        "selectReasonForReplacement": "Select the reason for card replacement",
-        "replacementFee": "Replacement fee",
-        "feePrefix": "Card replacement fee is ",
-        "feeSuffix": "26.00. The fee will be deducted from the replaced card.",
-        "feeAmount": "Card replacement fee is 26.00. The fee will be deducted from the replaced card.",
-        "successTitle": "Card replacement request submitted successfully",
-        "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
-        "reasons": {
-            "lost": "Card lost",
-            "stolen": "Card is stolen",
-            "damaged": "Card damaged",
-            "fraud": "Fraud on the card"
-        }
-    },
-    "onboarding": {
-        "step1": {
-            "title": "Accept Payments",
-            "description": "Tap or link, seamless payments"
-        },
-        "step2": {
-            "title": "Track Every Transaction",
-            "description": "Clear, fast and reliable tracking"
-        },
-        "step3": {
-            "title": "Instant Settlements",
-            "description": "Withdraw funds anytime, instantly"
-        }
-    },
-    "login": {
-        "loginButton": "Log In"
-    },
-    "manageCard": {
-        "title": "Manage Card",
-        "controlsTitle": "Card Controls",
-        "usage": "Card Usage",
-        "usageDesc": "View your usage for the card",
-        "limits": "Transaction Limits",
-        "limitsDesc": "View your usage limit on card",
-        "resetPin": "Reset PIN",
-        "resetPinDesc": "Reset your card PIN",
-        "closeCard": "Close Card",
-        "closeCardDesc": "Close your card permanently"
-    },
-    "closeCard": {
-        "title": "Close Card",
-        "subtitle": "Are you sure you want to close this card?",
-        "warning": "Note: This will permanently close your card. Transactions and actions will be unavailable. To use your card again, you will need to request a new one.",
-        "reasonPlaceholder": "Optional",
-        "successTitle": "Card closed successfully",
-        "successSubtitle": "Your card has been permanently closed."
-    },
-    "cardUsage": {
-        "title": "Card Usage",
-        "online": "Online Transactions",
-        "contactless": "Contactless transactions",
-        "foreign": "Foreign transactions"
-    },
-    "transactionLimits": {
-        "title": "Transaction Limits",
-        "daily": "Daily limit",
-        "weekly": "Weekly limit",
-        "single": "Single Transaction",
-        "remaining": "Remaining",
-        "currency": "AED"
-    },
-    "freezeCard": {
-        "title": "Freeze Card",
-        "subtitle": "In case of a lost, stolen card",
-        "selectReason": "Freeze reason",
-        "reasonLabel": "Reason",
-        "warningTemp": "This will temporarily block your card",
-        "warningPerm": "This will permanently block your card",
-        "successTitle": "Card frozen successfully",
-        "successSubtitleTemp": "Your card has been temporarily frozen. You can unfreeze it at any time from the app.",
-        "successSubtitlePerm": "Your card has been permanently frozen. You will need to request a new card to use it again.",
-        "reasons": {
-            "no_spend": "No spend expected/ Staff member out of office",
-            "misplaced": "Suspected loss of card (misplaced)",
-            "stolen": "Suspected stolen card",
-            "fraud": "Fraud on the card"
-        }
+  "common": {
+    "done": "Done",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "select": "Select",
+    "message": "Message",
+    "continue": "Continue",
+    "cardNumber": "Card Number"
+  },
+  "cardList": {
+    "title": "My Cards",
+    "availableBalance": "Available balance",
+    "active": "Active",
+    "recentTransactions": "Recent Transactions",
+    "viewAll": "View All",
+    "manage": "Manage",
+    "replace": "Replace",
+    "freeze": "Freeze"
+  },
+  "replaceCard": {
+    "title": "Replace Card",
+    "description": "In case of a damaged card",
+    "selectReason": "Select Reason",
+    "selectReasonForReplacement": "Select the reason for card replacement",
+    "replacementFee": "Replacement fee",
+    "feePrefix": "Card replacement fee is ",
+    "feeSuffix": "26.00. The fee will be deducted from the replaced card.",
+    "feeAmount": "Card replacement fee is 26.00. The fee will be deducted from the replaced card.",
+    "successTitle": "Card replacement request submitted successfully",
+    "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
+    "reasons": {
+      "lost": "Card lost",
+      "stolen": "Card is stolen",
+      "damaged": "Card damaged",
+      "fraud": "Fraud on the card"
     }
+  },
+  "onboarding": {
+    "step1": {
+      "title": "Accept Payments",
+      "description": "Tap or link, seamless payments"
+    },
+    "step2": {
+      "title": "Track Every Transaction",
+      "description": "Clear, fast and reliable tracking"
+    },
+    "step3": {
+      "title": "Instant Settlements",
+      "description": "Withdraw funds anytime, instantly"
+    }
+  },
+  "login": {
+    "loginButton": "Log In"
+  },
+  "manageCard": {
+    "title": "Manage Card",
+    "controlsTitle": "Card Controls",
+    "usage": "Card Usage",
+    "usageDesc": "View your usage for the card",
+    "limits": "Transaction Limits",
+    "limitsDesc": "View your usage limit on card",
+    "resetPin": "Reset PIN",
+    "resetPinDesc": "Reset your card PIN",
+    "closeCard": "Close Card",
+    "closeCardDesc": "Close your card permanently"
+  },
+  "closeCard": {
+    "title": "Close Card",
+    "subtitle": "Are you sure you want to close this card?",
+    "warning": "Note: This will permanently close your card. Transactions and actions will be unavailable. To use your card again, you will need to request a new one.",
+    "reasonPlaceholder": "Optional",
+    "successTitle": "Card closed successfully",
+    "successSubtitle": "Your card has been permanently closed."
+  },
+  "cardUsage": {
+    "title": "Card Usage",
+    "online": "Online Transactions",
+    "contactless": "Contactless transactions",
+    "foreign": "Foreign transactions"
+  },
+  "transactionLimits": {
+    "title": "Transaction Limits",
+    "daily": "Daily limit",
+    "weekly": "Weekly limit",
+    "single": "Single Transaction",
+    "remaining": "Remaining",
+    "currency": "AED"
+  },
+  "freezeCard": {
+    "title": "Freeze Card",
+    "subtitle": "In case of a lost, stolen card",
+    "selectReason": "Freeze reason",
+    "reasonLabel": "Reason",
+    "warningTemp": "This will temporarily block your card",
+    "warningPerm": "This will permanently block your card",
+    "successTitle": "Card frozen successfully",
+    "successSubtitleTemp": "Your card has been temporarily frozen. You can unfreeze it at any time from the app.",
+    "successSubtitlePerm": "Your card has been permanently frozen. You will need to request a new card to use it again.",
+    "reasons": {
+      "no_spend": "No spend expected/ Staff member out of office",
+      "misplaced": "Suspected loss of card (misplaced)",
+      "stolen": "Suspected stolen card",
+      "fraud": "Fraud on the card"
+    }
+  }
 }

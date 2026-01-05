@@ -1,7 +1,7 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { userSlice } from "../network/user/user.slice";
-import { cardSlice } from "../network/card/card.slice";
-import { backendApi } from "../network/api.config";
+import { configureStore } from '@reduxjs/toolkit';
+import { userSlice } from '../network/user/user.slice';
+import { cardSlice } from '../network/card/card.slice';
+import { backendApi } from '../network/api.config';
 
 export const store = configureStore({
   reducer: {
@@ -9,6 +9,6 @@ export const store = configureStore({
     [userSlice.name]: userSlice.reducer,
     [cardSlice.name]: cardSlice.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(backendApi.middleware),
 });

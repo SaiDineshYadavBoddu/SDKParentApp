@@ -1,5 +1,5 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ScrollView,
   View,
@@ -35,17 +35,17 @@ export default function CardListScreen() {
 
   const { data, isLoading, error } = useGetCardsQuery({
     cardStatus: [
-      "Pending Activation",
-      "Active",
-      "Dormant",
-      "Blocked",
-      "Closed",
-      "Pending Closure",
+      'Pending Activation',
+      'Active',
+      'Dormant',
+      'Blocked',
+      'Closed',
+      'Pending Closure',
     ],
     pageSize: 10,
     pageNumber: 0,
-    sortProperty: "cardholderName",
-    sortDirection: "ASC",
+    sortProperty: 'cardholderName',
+    sortDirection: 'ASC',
   });
 
   const transactionItems: SectionItem[] = MOCK_TRANSACTIONS.map(txn => ({
@@ -53,28 +53,22 @@ export default function CardListScreen() {
 
     top: (
       <>
-        <CustomText type={TextType.CardTitle}>
-          {txn.title}
-        </CustomText>
+        <CustomText type={TextType.CardTitle}>{txn.title}</CustomText>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}
+        >
           <CurrencySVG width={ms(14)} height={ms(14)} />
-          <CustomText type={TextType.CardTitle}>
-            {txn.amount}
-          </CustomText>
+          <CustomText type={TextType.CardTitle}>{txn.amount}</CustomText>
         </View>
       </>
     ),
 
     middle: (
       <>
-        <CustomText type={TextType.CardSubtitle}>
-          {txn.txnId}
-        </CustomText>
+        <CustomText type={TextType.CardSubtitle}>{txn.txnId}</CustomText>
 
-        <CustomText type={TextType.CardSubtitle}>
-          {txn.date}
-        </CustomText>
+        <CustomText type={TextType.CardSubtitle}>{txn.date}</CustomText>
       </>
     ),
 
@@ -88,7 +82,11 @@ export default function CardListScreen() {
           {t('cardList.title')}
         </CustomText>
         <View style={{ paddingTop: ms(10) }}>
-          <TouchableOpacity onPress={() => { signOut() }}>
+          <TouchableOpacity
+            onPress={() => {
+              signOut();
+            }}
+          >
             <NotificationSVG />
           </TouchableOpacity>
         </View>
@@ -98,10 +96,16 @@ export default function CardListScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.balanceContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}>
-            <CurrencySVG width={ms(24)} height={ms(24)} style={{ transform: [{ translateY: ms(4) }] }} />
+          <View
+            style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
+          >
+            <CurrencySVG
+              width={ms(24)}
+              height={ms(24)}
+              style={{ transform: [{ translateY: ms(4) }] }}
+            />
             {(() => {
-              const { integer, decimal } = formatAmount("50,250.77");
+              const { integer, decimal } = formatAmount('50,250.77');
               return (
                 <Text>
                   <CustomText type={TextType.ScreenHeadlineLarge}>
@@ -111,11 +115,18 @@ export default function CardListScreen() {
                     {decimal}
                   </CustomText>
                 </Text>
-              )
+              );
             })()}
           </View>
 
-          <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, paddingTop: Spacing.m }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: Spacing.xs,
+              paddingTop: Spacing.m,
+            }}
+          >
             <CustomText type={TextType.ScreenDisplaySmall}>
               {t('cardList.availableBalance')}
             </CustomText>
@@ -184,24 +195,24 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginVertical: Spacing.xxl,
     paddingHorizontal: Spacing.l,
   },
 
   balanceContainer: {
     marginBottom: Spacing.l,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: Spacing.l,
   },
 
   actionsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: Spacing.xl,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: Spacing.l,
     gap: Spacing.l,
   },

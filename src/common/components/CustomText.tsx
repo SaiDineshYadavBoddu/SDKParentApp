@@ -6,24 +6,24 @@ import { Typography } from "../../theme/typography";
 import { useTheme } from "../../theme/ThemeProvider";
 
 export enum TextType {
-    ScreenHeadlineLarge = "ScreenHeadlineLarge",
-    ScreenHeadlineMedium = "ScreenHeadlineMedium",
-    ScreenHeadlineSmall = "ScreenHeadlineSmall",
+    ScreenHeadlineLarge = 'ScreenHeadlineLarge',
+    ScreenHeadlineMedium = 'ScreenHeadlineMedium',
+    ScreenHeadlineSmall = 'ScreenHeadlineSmall',
 
-    ScreenDisplayLarge = "ScreenDisplayLarge",
-    ScreenDisplayMedium = "ScreenDisplayMedium",
-    ScreenDisplaySmall = "ScreenDisplaySmall",
+    ScreenDisplayLarge = 'ScreenDisplayLarge',
+    ScreenDisplayMedium = 'ScreenDisplayMedium',
+    ScreenDisplaySmall = 'ScreenDisplaySmall',
 
-    SectionTitle = "SectionTitle",
-    CardTitle = "CardTitle",
-    CardSubtitle = "CardSubtitle",
-    CardText = "CardText",
+    SectionTitle = 'SectionTitle',
+    CardTitle = 'CardTitle',
+    CardSubtitle = 'CardSubtitle',
+    CardText = 'CardText',
 
-    ImageLarge = "ImageLarge",
-    ImageSmall = "ImageSmall",
+    ImageLarge = 'ImageLarge',
+    ImageSmall = 'ImageSmall',
 
-    Button = "Button",
-    OutlinedButton = "OutlinedButton",
+    Button = 'Button',
+    OutlinedButton = 'OutlinedButton',
 
     Error = "Error",
     ActionLabel = "ActionLabel",
@@ -78,9 +78,9 @@ export default function CustomText({
 
             // Image overlays
             case TextType.ImageLarge:
-                return { color: "#FFFFFF", text: Typography.displayLarge };
+                return { color: '#FFFFFF', text: Typography.displayLarge };
             case TextType.ImageSmall:
-                return { color: "#FFFFFF", text: Typography.displayMedium };
+                return { color: '#FFFFFF', text: Typography.displayMedium };
 
             // Buttons
             case TextType.Button:
@@ -105,7 +105,7 @@ export default function CustomText({
     const { text, color } = getStyle();
 
     const outputText =
-        uppercase && typeof children === "string"
+        uppercase && typeof children === 'string'
             ? children.toUpperCase()
             : children;
 
@@ -114,11 +114,7 @@ export default function CustomText({
             {...rest}
             allowFontScaling={false}
             numberOfLines={numberOfLines}
-            style={[
-                text as TextStyle,
-                { color: colorOverride ?? color },
-                style,
-            ]}
+            style={[text as TextStyle, { color: colorOverride ?? color }, style]}
         >
             {outputText}
         </Text>

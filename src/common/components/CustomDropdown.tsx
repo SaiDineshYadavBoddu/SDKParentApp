@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react';
 import {
     TouchableOpacity,
     View,
     StyleSheet,
     StyleProp,
     ViewStyle,
-} from "react-native";
-import { ms } from "react-native-size-matters";
-import { useTheme } from "../../theme/ThemeProvider";
-import { Spacing } from "../../theme/spacing";
-import CustomText, { TextType } from "./CustomText";
-import CustomIcon from "./CustomIcon";
+} from 'react-native';
+import { ms } from 'react-native-size-matters';
+import { useTheme } from '../../theme/ThemeProvider';
+import { Spacing } from '../../theme/spacing';
+import CustomText, { TextType } from './CustomText';
+import CustomIcon from './CustomIcon';
 
 interface CustomDropdownProps {
     label?: string;
@@ -19,15 +19,17 @@ interface CustomDropdownProps {
     onPress: () => void;
     containerStyle?: StyleProp<ViewStyle>;
     error?: string;
+    innerContainerStyle?: StyleProp<ViewStyle>;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
     label,
-    placeholder = "Select",
+    placeholder = 'Select',
     selectedValue,
     onPress,
     containerStyle,
     error,
+    innerContainerStyle,
 }) => {
     const { colors } = useTheme();
 

@@ -1,53 +1,53 @@
 export const lightColors = {
-    primary: "#0069B1",
-    onPrimary: "#FFFFFF",
+  primary: '#0069B1',
+  onPrimary: '#FFFFFF',
 
-    primaryContainer: "#D2E4FF",
-    onPrimaryContainer: "#001D37",
+  primaryContainer: '#D2E4FF',
+  onPrimaryContainer: '#001D37',
 
-    background: "#FFFFFF",
-    onBackground: "#000000",
+  background: '#FFFFFF',
+  onBackground: '#000000',
 
-    backgroundVariant: "#C8E4F7",
-    onBackgroundVariant: "#000000",
+  backgroundVariant: '#C8E4F7',
+  onBackgroundVariant: '#000000',
 
-    surface: "#FFFFFF",
-    onSurface: "#1A1C1E",
+  surface: '#FFFFFF',
+  onSurface: '#1A1C1E',
 
-    error: "#BA1A1A",
-    onError: "#FFFFFF",
+  error: '#BA1A1A',
+  onError: '#FFFFFF',
 
-    errorContainer: "#FFDAD6",
-    onErrorContainer: "#410002",
+  errorContainer: '#FFDAD6',
+  onErrorContainer: '#410002',
 
-    textColor: "#000000",
-    textColorDisabled: "#B3B3B3",
-    warningContainer: "#FEF8E6",
+  textColor: "#000000",
+  textColorDisabled: "#B3B3B3",
+  warningContainer: "#FEF8E6",
 };
 
 export const darkColors = {
-    primary: "#9FCAFF",
-    onPrimary: "#003259",
+  primary: '#9FCAFF',
+  onPrimary: '#003259',
 
-    primaryContainer: "#004A7E",
-    onPrimaryContainer: "#D2E4FF",
+  primaryContainer: '#004A7E',
+  onPrimaryContainer: '#D2E4FF',
 
-    background: "#1A1C1E",
-    onBackground: "#E2E2E6",
+  background: '#1A1C1E',
+  onBackground: '#E2E2E6',
 
-    backgroundVariant: "#394b57ff",
-    onBackgroundVariant: "#ffffff",
+  backgroundVariant: '#394b57ff',
+  onBackgroundVariant: '#ffffff',
 
-    surface: "#43474E",
-    onSurface: "#C3C6CF",
+  surface: '#43474E',
+  onSurface: '#C3C6CF',
 
-    error: "#FFB4AB",
-    onError: "#690005",
+  error: '#FFB4AB',
+  onError: '#690005',
 
-    errorContainer: "#93000A",
-    onErrorContainer: "#FFB4AB",
+  errorContainer: '#93000A',
+  onErrorContainer: '#FFB4AB',
 
-    textColor: "#FFFFFF",
-    textColorDisabled: "#B3B3B3",
-    warningContainer: "#4A3B00", // Darker yellow/brown for dark mode
+  textColor: "#FFFFFF",
+  textColorDisabled: "#B3B3B3",
+  warningContainer: "#4A3B00", // Darker yellow/brown for dark mode
 };

@@ -5,5 +5,5 @@
  * @returns The current slide index.
  */
 export const getSlideIndex = (offsetX: number, width: number): number => {
-    return Math.ceil(offsetX / width);
+  return Math.ceil(offsetX / width);
 };

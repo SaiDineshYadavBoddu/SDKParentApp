@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { cardApi } from "./card.api";
+import { createSlice } from '@reduxjs/toolkit';
+import { cardApi } from './card.api';
 
 interface CardState {
   // Add card-related state here
@@ -11,16 +11,15 @@ const initialState: CardState = {
 };
 
 export const cardSlice = createSlice({
-  name: "card",
+  name: 'card',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addMatcher(
       cardApi.endpoints.getCards.matchFulfilled,
       (state, { payload }) => {
         state.cards = payload;
-      }
+      },
     );
   },
 });
-
