@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import SectionContainer, {
@@ -11,10 +10,10 @@ export default function UserData() {
   const { colors } = useTheme();
 
   const renderAvatar = () => (
-    <View style={[styles.avatar, { backgroundColor: '#000000' }]}>
+    <View style={[styles.avatar, { backgroundColor: colors.onBackground }]}>
       <CustomText
         type={TextType.ScreenHeadlineSmall}
-        style={{ color: '#FFFFFF' }}
+        style={{ color: colors.background }}
       >
         S
       </CustomText>
@@ -26,10 +25,10 @@ export default function UserData() {
       <CustomText type={TextType.CardTitle} style={styles.name}>
         Sharmil Panayan
       </CustomText>
-      <CustomText type={TextType.CardText} style={styles.details}>
+      <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
         +971-467-433-2684
       </CustomText>
-      <CustomText type={TextType.CardText} style={styles.details}>
+      <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
         sharmil200@yopmail.com
       </CustomText>
     </View>
@@ -75,7 +74,5 @@ const styles = StyleSheet.create({
     gap: ms(4),
   },
   name: {},
-  details: {
-    color: '#666666', // Using a grey color for details to match likely design
-  },
+  details: {},
 });

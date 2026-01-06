@@ -7,7 +7,9 @@
     "select": "Select",
     "message": "Message",
     "continue": "Continue",
-    "cardNumber": "Card Number"
+    "cardNumber": "Card Number",
+    "reset": "Reset",
+    "apply": "Apply"
   },
   "cardList": {
     "title": "My Cards",
@@ -106,7 +108,146 @@
     }
   },
   "profile": {
-    "headerTitle": "My Profile"
+    "headerTitle": "My Profile",
+    "sections": {
+      "accountSettings": "Account Settings",
+      "information": "Information & Documents",
+      "contact": "Contact & Support"
+    },
+    "items": {
+      "changeCompany": {
+        "title": "Change Company",
+        "subtitle": "Change your company"
+      },
+      "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Change your account password"
+      },
+      "contactDetails": {
+        "title": "Contact Details",
+        "subtitle": "View your contact details"
+      },
+      "personalDetails": {
+        "title": "Personal Details",
+        "subtitle": "View or edit your personal information"
+      },
+      "addresses": {
+        "title": "Addresses",
+        "subtitle": "View your addresses"
+      },
+      "personalDocs": {
+        "title": "Personal Documents",
+        "subtitle": "View or update your document information"
+      },
+      "support": {
+        "title": "Support",
+        "subtitle": "Request a callback for your queries"
+      },
+      "contactUs": {
+        "title": "Contact Us",
+        "subtitle": "Call or email us"
+      },
+      "logout": "Log out"
+    },
+    "details": {
+      "personal": {
+        "title": "Personal Details",
+        "fields": {
+          "salutation": "Title",
+          "firstName": "First name",
+          "middleName": "Middle name",
+          "lastName": "Last name",
+          "citizenship": "Citizenship",
+          "dob": "Date of birth",
+          "pob": "Place of birth"
+        }
+      },
+      "contact": {
+        "title": "Contact Details",
+        "fields": {
+          "customerId": "Customer ID",
+          "userId": "User ID",
+          "email": "Email",
+          "mobile": "Mobile phone number",
+          "work": "Work phone number",
+          "change": "Change"
+        }
+      },
+      "addresses": {
+        "title": "Addresses",
+        "fields": {
+          "type": "Address type",
+          "line": "Address line",
+          "zip": "Zip code",
+          "city": "City",
+          "country": "Country",
+          "state": "State",
+          "home": "Home"
+        }
+      },
+      "documents": {
+        "title": "Personal Documents",
+        "fields": {
+          "document": "Document",
+          "passportNumber": "Passport number",
+          "expiryDate": "Expiry date",
+          "passport": "Passport"
+        }
+      },
+      "changeCompany": {
+        "title": "Select Company",
+        "searchPlaceholder": "Search for company name"
+      },
+      "contactUs": {
+        "title": "Contact Us",
+        "companyName": "Network International",
+        "companySubtitle": "Leading payment solutions",
+        "headOffice": {
+          "title": "Head office",
+          "address": "PO Box 123456\nDubai, United Arab Emirates",
+          "viewMaps": "View on Google Maps"
+        },
+        "operatingHours": {
+          "title": "Operating Hours",
+          "weekday": "Monday - Friday, 9 AM - 6 PM",
+          "saturday": "Saturday: 9:00 AM - 2:00 PM",
+          "sunday": "Sunday: Closed"
+        },
+        "phoneSupport": {
+          "title": "Phone Support",
+          "availability": "24/7 Support",
+          "uaeTollFree": {
+            "label": "UAE Toll-Free Contact Center",
+            "displayNumber": "800-4448",
+            "phoneNumber": "8004448"
+          },
+          "uaeInternational": {
+            "label": "UAE International Line",
+            "displayNumber": "+971 4 597 4000",
+            "phoneNumber": "+97145974000"
+          }
+        },
+        "emailSupport": {
+          "title": "Email Support",
+          "merchant": {
+            "label": "Merchant Services – SME",
+            "email": "sbcustomer@network.ae"
+          },
+          "government": {
+            "label": "Government Support",
+            "email": "nigovernment@network.global"
+          },
+          "ecommerce": {
+            "label": "Ecommerce/Payment Gateway",
+            "email": "ecomsupport@network.global"
+          },
+          "issuer": {
+            "label": "Issuer Services",
+            "email": "salesteam.middleeast@network.global"
+          }
+        }
+      }
+    }
   },
   "support": {
     "title": "Support",
@@ -122,5 +263,39 @@
       "topic4": "Topic 4",
       "topic5": "Topic 5"
     }
+  },
+  "requests": {
+      "title": "My Requests",
+      "searchPlaceholder": "Requester, Approved or ID",
+      "count": "Requests",
+      "idPrefix": "Request",
+      "filters": {
+        "title": "Filters",
+        "selectStatus": "Select Status",
+        "selectType": "Select Request Type",
+        "dateRange": "Select a date range",
+        "statusLabel": "Status",
+        "typeLabel": "Request type",
+        "apply": "Apply Filters"
+      },
+      "status": {
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "inProgress": "In progress",
+        "resolved": "Resolved"
+      },
+      "types": {
+        "activation": "Activation",
+        "cardUnblocking": "Card unblocking",
+        "replacement": "Replacement",
+        "dispute": "Dispute"
+      },
+      "detailSheet": {
+        "detailsTitle": "Details",
+        "decisionTitle": "Decision Details"
+      }
+  },
+  "datePicker": {
+    "selectRange": "Select Date Range"
   }
 }

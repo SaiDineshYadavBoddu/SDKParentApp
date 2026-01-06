@@ -9,6 +9,7 @@ import PaymentCard from '../../../common/components/PaymentCard';
 import RequestInfoGroup, { RequestDetail } from './RequestInfoGroup';
 import Accordion from '../../../common/components/Accordion';
 import RequestTimeline, { TimelineEvent } from './RequestTimeline';
+import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     request,
 }) => {
     const { colors } = useTheme();
+    const { t } = useTranslation();
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
 
@@ -46,18 +48,18 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         cardholderName: 'Jonathan Paul',
     };
 
-    const getStatusColors = (status: string) => {
+    const getStatusColors = (status: string, colors: any) => {
         switch (status) {
-            case 'Activation':
-                return { backgroundColor: '#F0E7F6', textColor: '#C09BD8' };
-            case 'Card unblocking':
-                return { backgroundColor: '#FFF1B8', textColor: '#C97A20' };
+            case 'activation':
+                return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
+            case 'cardUnblocking':
+                return { backgroundColor: colors.onStatusUnblocking, textColor: colors.statusUnblocking };
             default:
-                return { backgroundColor: '#F5F7F9', textColor: '#757575' };
+                return { backgroundColor: colors.screenBackground, textColor: colors.tertiaryText };
         }
     };
 
-    const { backgroundColor, textColor } = getStatusColors(request.badgeText);
+    const { backgroundColor, textColor } = getStatusColors(request.badgeText, colors);
 
     return (
         <CustomBottomSheet
@@ -67,12 +69,12 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
             title={
                 <View style={styles.headerTitleRow}>
                     <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                        Request {request.requestNumber}
+                        {t('requests.idPrefix')} {request.requestNumber}
                     </CustomText>
                     <View style={[styles.badge, { backgroundColor }]}>
                         <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
                         <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
-                            {request.badgeText}
+                            {t(`requests.types.${request.badgeText}`)}
                         </CustomText>
                     </View>
                 </View>
@@ -102,14 +104,14 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                 </View>
 
                 {/* Technical Details Accordion */}
-                <Accordion title="Details">
+                <Accordion title={t('requests.detailSheet.detailsTitle')}>
                     <View style={styles.detailsGrid}>
                         {request.technicalDetails?.map((item, index) => (
                             <View key={index} style={styles.gridItem}>
-                                <CustomText type={TextType.Label} style={styles.gridLabel}>
+                                <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]}>
                                     {item.label}:
                                 </CustomText>
-                                <CustomText type={TextType.Label} style={styles.gridValue} numberOfLines={1} ellipsizeMode="tail">
+                                <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]} numberOfLines={1} ellipsizeMode="tail">
                                     {item.value}
                                 </CustomText>
                             </View>
@@ -118,7 +120,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                 </Accordion>
 
                 {/* Decision Details Accordion */}
-                <Accordion title="Decision Details">
+                <Accordion title={t('requests.detailSheet.decisionTitle')}>
                     {request.timeline && <RequestTimeline events={request.timeline} />}
                 </Accordion>
             </ScrollView>
@@ -176,13 +178,11 @@ const styles = StyleSheet.create({
     },
     gridLabel: {
         fontSize: ms(12),
-        color: '#9E9E9E',
         fontWeight: '400',
     },
     gridValue: {
         fontSize: ms(14),
         fontWeight: '700',
-        color: '#000',
     },
 });
 

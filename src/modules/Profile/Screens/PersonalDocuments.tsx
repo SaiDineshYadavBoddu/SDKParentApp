@@ -3,26 +3,28 @@ import { useNavigation } from '@react-navigation/native';
 import DetailsScreen, {
   DetailsSection,
 } from '../../../common/components/DetailsScreen';
+import { useTranslation } from 'react-i18next';
 
 export default function PersonalDocuments() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const sections: DetailsSection[] = [
     {
       items: [
         {
           id: '1',
-          label: 'Document',
+          label: t('profile.details.documents.fields.document'),
           value: 'Passport',
         },
         {
           id: '2',
-          label: 'Passport number',
+          label: t('profile.details.documents.fields.passportNumber'),
           value: '934343249482432',
         },
         {
           id: '3',
-          label: 'Expiry date',
+          label: t('profile.details.documents.fields.expiryDate'),
           value: '04/12/2025',
         },
       ],
@@ -31,7 +33,7 @@ export default function PersonalDocuments() {
 
   return (
     <DetailsScreen
-      title="Personal Documents"
+      title={t('profile.details.documents.title')}
       sections={sections}
       onBackPress={() => navigation.goBack()}
     />

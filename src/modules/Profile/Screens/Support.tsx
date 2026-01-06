@@ -44,7 +44,7 @@ const Support = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader
-        title="Support"
+        title={t('profile.items.support.title')}
         titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
         onBackPress={() => navigation.goBack()}
         rightContent={
@@ -78,7 +78,7 @@ const Support = () => {
             </CustomText>
             <CustomText
               type={TextType.ScreenDisplaySmall}
-              style={{ color: '#4A4A4A' }}
+              style={{ color: colors.secondaryText }}
             >
               {t('support.description')}
             </CustomText>
@@ -100,7 +100,7 @@ const Support = () => {
               label={t('support.contactNumber')}
               keyboardType="number-pad"
               inputStyle={styles.inputContainer}
-              inputContainerStyle={styles.inputContainerStyle}
+              inputContainerStyle={[styles.inputContainerStyle, { borderColor: colors.outline }]}
               leftIcon={
                 <View style={styles.leftIconContainer}>
                   <UAESVG width={ms(24)} height={ms(18)} />
@@ -122,15 +122,16 @@ const Support = () => {
                 setIsBottomSheetVisible(true);
               }}
               containerStyle={styles.dropdown}
-              innerContainerStyle={styles.innerContainer}
+              innerContainerStyle={[styles.innerContainer, { borderColor: colors.outline }]}
             />
             <CustomTextInput
               label={t('support.selectTopicDesc')}
               multiline={true}
               inputContainerStyle={{
-                borderColor: '#E0E0E0',
+                borderColor: colors.outline,
                 padding: ms(8),
                 height: ms(120),
+                backgroundColor: colors.surface,
               }}
             />
           </View>
@@ -182,7 +183,6 @@ const Support = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   content: {
     paddingHorizontal: ms(36),
@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
     marginBottom: ms(24),
   },
   innerContainer: {
-    borderColor: '#E0E0E0',
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -233,7 +232,6 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   inputContainerStyle: {
-    borderColor: '#E0E0E0',
   },
 });
 

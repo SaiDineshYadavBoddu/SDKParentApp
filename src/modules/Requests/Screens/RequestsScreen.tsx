@@ -26,6 +26,7 @@ import RequestInfoGroup, {
 } from '../Components/RequestInfoGroup';
 import RequestDetailBottomSheet from '../Components/RequestDetailBottomSheet';
 import { TimelineEvent } from '../Components/RequestTimeline';
+import { useTranslation } from 'react-i18next';
 
 // Types
 type RequestStatus = 'Activation' | 'In progress' | 'Card unblocking' | 'Resolved';
@@ -39,20 +40,20 @@ type RequestItem = {
   timeline?: TimelineEvent[];
 };
 
-const STATUS_OPTIONS = ['Approved', 'Rejected', 'In progress', 'Resolved'];
-const REQUEST_TYPE_OPTIONS = ['Activation', 'Card unblocking', 'Replacement', 'Dispute'];
+const STATUS_OPTIONS = ['approved', 'rejected', 'inProgress', 'resolved'];
+const REQUEST_TYPE_OPTIONS = ['activation', 'cardUnblocking', 'replacement', 'dispute'];
 
 // Mock data based on the UI
 const REQUESTS_DATA: RequestItem[] = [
   {
     id: '1',
     requestNumber: '#2644',
-    badgeText: 'Activation',
+    badgeText: 'activation',
     details: [
       {
         userName: 'Sharmil Panayan',
         userIconType: 'clock',
-        statusText: 'In progress',
+        status: 'inProgress',
       },
       {
         userName: 'Marcin Parakaran',
@@ -79,12 +80,12 @@ const REQUESTS_DATA: RequestItem[] = [
   {
     id: '2',
     requestNumber: '#2644',
-    badgeText: 'Card unblocking',
+    badgeText: 'cardUnblocking',
     details: [
       {
         userName: 'Sharmil Panayan',
         userIconType: 'clock',
-        statusText: 'Resolved',
+        status: 'resolved',
       },
       {
         userName: 'Marcin Parakaran',
@@ -109,12 +110,13 @@ const REQUESTS_DATA: RequestItem[] = [
 
 const RequestsScreen = () => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
   const [filterView, setFilterView] = useState<'main' | 'status' | 'type'>('main');
 
-  const [selectedStatus, setSelectedStatus] = useState('Approved');
-  const [selectedRequestType, setSelectedRequestType] = useState('Approved');
+  const [selectedStatus, setSelectedStatus] = useState('approved');
+  const [selectedRequestType, setSelectedRequestType] = useState('cardUnblocking');
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [isDetailSheetVisible, setIsDetailSheetVisible] = useState(false);
 
@@ -145,8 +147,8 @@ const RequestsScreen = () => {
 
   const resetFilters = () => {
     const dates = getInitialDates();
-    setSelectedStatus('Approved');
-    setSelectedRequestType('Approved');
+    setSelectedStatus('approved');
+    setSelectedRequestType('cardUnblocking');
     setStartDate(dates.start);
     setEndDate(dates.end);
     setFilterView('main');
@@ -188,7 +190,7 @@ const RequestsScreen = () => {
   // Local renderIcon removed, now imported from RequestInfoGroup
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
-    const { backgroundColor, textColor } = getStatusColors(item.badgeText);
+    const { backgroundColor, textColor } = getStatusColors(item.badgeText, colors);
 
     return (
       <TouchableOpacity
@@ -197,17 +199,17 @@ const RequestsScreen = () => {
           setSelectedRequest(item);
           setIsDetailSheetVisible(true);
         }}
-        style={styles.requestCard}
+        style={[styles.requestCard, { backgroundColor: colors.surface }]}
       >
         {/* Header Row */}
         <View style={styles.headerRow}>
-          <CustomText type={TextType.CardTitle} style={styles.requestID}>
-            Request {item.requestNumber}
+          <CustomText type={TextType.CardTitle} style={[styles.requestID, { color: colors.onSurface }]}>
+            {t('requests.idPrefix')} {item.requestNumber}
           </CustomText>
           <View style={[styles.badge, { backgroundColor }]}>
             <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
             <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
-              {item.badgeText}
+              {t(`requests.types.${item.badgeText}`)}
             </CustomText>
           </View>
         </View>
@@ -219,9 +221,9 @@ const RequestsScreen = () => {
   };
 
   return (
-    <View style={{ backgroundColor: '#F5F7F9', flex: 1 }}>
+    <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
       <CustomHeader
-        title="My Requests"
+        title={t('requests.title')}
         rightContent={
           <TouchableOpacity style={styles.rightButton}>
             <NotificationSVG width={ms(24)} height={ms(24)} />
@@ -233,15 +235,15 @@ const RequestsScreen = () => {
         {/* Search Row */}
         <View style={styles.searchRow}>
           <CustomTextInput
-            placeholder="Requester, Approved or ID"
+            placeholder={t('requests.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
             containerStyle={styles.searchBar}
-            inputContainerStyle={styles.searchInputContainer}
+            inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
           />
           <TouchableOpacity
-            style={styles.filterButton}
+            style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
             onPress={() => {
               Keyboard.dismiss();
               // Small delay to allow keyboard to start dismissing
@@ -254,8 +256,8 @@ const RequestsScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium]}>
-          {REQUESTS_DATA.length} Requests
+        <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
+          {REQUESTS_DATA.length} {t('requests.count')}
         </CustomText>
 
         <FlatList
@@ -270,16 +272,20 @@ const RequestsScreen = () => {
       <CustomBottomSheet
         visible={isFilterSheetVisible}
         onClose={() => {
-          setIsFilterSheetVisible(false);
-          // Reset values after a small delay to not show changes during closing animation
-          setTimeout(resetFilters, 300);
+          if (filterView !== 'main') {
+            toggleFilterView('main');
+          } else {
+            setIsFilterSheetVisible(false);
+            // Reset values after a small delay to not show changes during closing animation
+            setTimeout(resetFilters, 300);
+          }
         }}
         title={
           filterView === 'status'
-            ? 'Select Status'
+            ? t('requests.filters.selectStatus')
             : filterView === 'type'
-              ? 'Select Request Type'
-              : 'Filters'
+              ? t('requests.filters.selectType')
+              : t('requests.filters.title')
         }
       >
         <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
@@ -290,9 +296,12 @@ const RequestsScreen = () => {
                   key={option}
                   activeOpacity={0.6}
                   delayPressIn={0}
-                  style={[
+                   style={[
                     styles.selectionItem,
-                    { borderColor: selectedStatus === option ? colors.primary : '#E0E0E0' }
+                    {
+                      borderColor: selectedStatus === option ? colors.primary : colors.outline,
+                      backgroundColor: colors.surface
+                    }
                   ]}
                   onPress={() => {
                     setSelectedStatus(option);
@@ -301,7 +310,7 @@ const RequestsScreen = () => {
                 >
                   <View pointerEvents="none">
                     <CustomRadioButton
-                      label={option}
+                      label={t(`requests.status.${option}`)}
                       selected={selectedStatus === option}
                       onPress={() => { }}
                       labelStyle={styles.selectionLabel}
@@ -318,9 +327,12 @@ const RequestsScreen = () => {
                   key={option}
                   activeOpacity={0.6}
                   delayPressIn={0}
-                  style={[
+                   style={[
                     styles.selectionItem,
-                    { borderColor: selectedRequestType === option ? colors.primary : '#E0E0E0' }
+                    {
+                      borderColor: selectedRequestType === option ? colors.primary : colors.outline,
+                      backgroundColor: colors.surface
+                    }
                   ]}
                   onPress={() => {
                     setSelectedRequestType(option);
@@ -329,7 +341,7 @@ const RequestsScreen = () => {
                 >
                   <View pointerEvents="none">
                     <CustomRadioButton
-                      label={option}
+                      label={t(`requests.types.${option}`)}
                       selected={selectedRequestType === option}
                       onPress={() => { }}
                       labelStyle={styles.selectionLabel}
@@ -342,8 +354,8 @@ const RequestsScreen = () => {
           ) : (
             <View style={styles.filterContent}>
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={styles.filterLabel}>
-                  Select a date range
+                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                  {t('requests.filters.dateRange')}
                 </CustomText>
                 <TouchableOpacity
                   onPress={() => setIsDatePickerVisible(true)}
@@ -354,7 +366,8 @@ const RequestsScreen = () => {
                     editable={false}
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
-                    inputContainerStyle={styles.filterInputContainer}
+                    inputContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
+                    inputStyle={Typography.displaySmall}
                   />
                 </TouchableOpacity>
 
@@ -373,34 +386,34 @@ const RequestsScreen = () => {
               </View>
 
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={styles.filterLabel}>
-                  Status
+                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                  {t('requests.filters.statusLabel')}
                 </CustomText>
                 <CustomDropdown
                   label=""
-                  selectedValue={selectedStatus}
+                  selectedValue={t(`requests.status.${selectedStatus}`)}
                   onPress={() => toggleFilterView('status')}
-                  innerContainerStyle={styles.filterInputContainer}
+                  innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
                   containerStyle={{ marginBottom: 0 }}
                 />
               </View>
 
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={styles.filterLabel}>
-                  Request type
+                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                  {t('requests.filters.typeLabel')}
                 </CustomText>
                 <CustomDropdown
                   label=""
-                  selectedValue={selectedRequestType}
+                  selectedValue={t(`requests.types.${selectedRequestType}`)}
                   onPress={() => toggleFilterView('type')}
-                  innerContainerStyle={styles.filterInputContainer}
+                  innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
                   containerStyle={{ marginBottom: 0 }}
                 />
               </View>
 
               <View style={styles.filterActions}>
                 <CustomButton
-                  title="Reset"
+                  title={t('common.reset')}
                   variant="outlined"
                   onPress={() => {
                     // setIsFilterSheetVisible(false);
@@ -410,7 +423,7 @@ const RequestsScreen = () => {
                   uppercase={false}
                 />
                 <CustomButton
-                  title="Apply Filters"
+                  title={t('requests.filters.apply')}
                   onPress={() => setIsFilterSheetVisible(false)}
                   style={styles.applyButton}
                   uppercase={false}
@@ -449,16 +462,14 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   searchInputContainer: {
-    borderColor: '#E0E0E0',
-    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderRadius: ms(8),
   },
   filterButton: {
-    backgroundColor: '#E3F2FD',
     padding: ms(10),
     borderRadius: ms(8),
   },
   requestCountText: {
-    color: '#9E9E9E',
     marginVertical: Spacing.m,
   },
   listContent: {
@@ -466,7 +477,6 @@ const styles = StyleSheet.create({
     gap: Spacing.m,
   },
   requestCard: {
-    backgroundColor: '#fff',
     borderRadius: ms(16),
     padding: ms(16),
     gap: Spacing.m,
@@ -497,35 +507,6 @@ const styles = StyleSheet.create({
     fontSize: ms(11),
     fontWeight: '500',
   },
-  detailsContainer: {
-    gap: Spacing.s,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-  },
-  leftColumn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    width: '65%',
-  },
-  rightColumn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    flex: 1,
-    width: '35%',
-  },
-  detailText: {
-    color: '#616161',
-    fontSize: ms(13),
-  },
-  statusText: {
-    fontSize: ms(13),
-    fontWeight: '500',
-  },
   filterContent: {
     gap: Spacing.xl,
     paddingBottom: Spacing.m,
@@ -535,11 +516,9 @@ const styles = StyleSheet.create({
   },
   filterLabel: {
     fontWeight: '600',
-    color: '#000',
     marginBottom: 0,
   },
   filterInputContainer: {
-    borderColor: '#E0E0E0',
     height: ms(48),
   },
   filterActions: {
@@ -558,7 +537,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.l,
   },
   selectionItem: {
-    backgroundColor: '#fff',
     borderRadius: ms(12),
     padding: ms(12),
     borderWidth: 1,
@@ -567,7 +545,6 @@ const styles = StyleSheet.create({
   selectionLabel: {
     fontSize: ms(16),
     fontWeight: '500',
-    color: '#000',
   },
   rangeInputWrapper: {
     width: '100%',

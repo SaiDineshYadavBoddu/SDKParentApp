@@ -23,6 +23,26 @@ export const lightColors = {
   textColor: "#000000",
   textColorDisabled: "#B3B3B3",
   warningContainer: "#FEF8E6",
+
+  outline: '#E0E0E0',
+  secondaryText: '#616161',
+  tertiaryText: '#9E9E9E',
+  screenBackground: '#F5F7F9',
+
+  // Status/Badge colors
+  statusInProgress: '#2E84BF',
+  onStatusInProgress: '#E3F2FD',
+
+  statusResolved: '#2FBF71',
+  onStatusResolved: '#E8F5E9',
+
+  statusActivation: '#C09BD8',
+  onStatusActivation: '#F0E7F6',
+
+  statusUnblocking: '#C97A20',
+  onStatusUnblocking: '#FFF1B8',
+
+  filterButtonBg: '#E3F2FD',
 };
 
 export const darkColors = {
@@ -50,4 +70,24 @@ export const darkColors = {
   textColor: "#FFFFFF",
   textColorDisabled: "#B3B3B3",
   warningContainer: "#4A3B00", // Darker yellow/brown for dark mode
+
+  outline: '#44474F',
+  secondaryText: '#C4C6CF',
+  tertiaryText: '#8E9199',
+  screenBackground: '#111318',
+
+  // Status/Badge colors (Dark mode versions)
+  statusInProgress: '#D2E4FF',
+  onStatusInProgress: '#004A7E',
+
+  statusResolved: '#B4F2BE',
+  onStatusResolved: '#00522B',
+
+  statusActivation: '#E9DDFF',
+  onStatusActivation: '#4A325F',
+
+  statusUnblocking: '#FFDE9C',
+  onStatusUnblocking: '#584400',
+
+  filterButtonBg: '#1D242B',
 };

@@ -18,6 +18,7 @@ import CloseSVG from '../../../assets/svgs/CloseSVG';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import CustomButton from '../../../common/components/CustomButton';
+import { useTranslation } from 'react-i18next';
 
 interface Company {
   id: string;
@@ -37,6 +38,7 @@ const COMPANIES: Company[] = [
 export default function ChangeCompany() {
   const navigation = useNavigation();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(
     null,
@@ -56,7 +58,7 @@ export default function ChangeCompany() {
         styles.card,
         {
           borderColor:
-            selectedCompanyId === item.id ? colors.primary : '#EFEFEF',
+            selectedCompanyId === item.id ? colors.primary : colors.outline,
         },
       ]}
       onPress={() => handleSelectCompany(item.id)}
@@ -74,7 +76,7 @@ export default function ChangeCompany() {
 
   return (
     <TouchableNativeFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         {/* Header */}
         <View>
           <View style={styles.header}>
@@ -82,7 +84,7 @@ export default function ChangeCompany() {
               type={TextType.ScreenHeadlineSmall}
               style={styles.headerTitle}
             >
-              Select Company
+              {t('profile.details.changeCompany.title')}
             </CustomText>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <CloseSVG
@@ -95,13 +97,13 @@ export default function ChangeCompany() {
 
           {/* Search Bar */}
           <CustomTextInput
-            placeholder="Search for company name"
+            placeholder={t('profile.details.changeCompany.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
             containerStyle={styles.searchContainer}
             inputStyle={styles.searchInput}
-            inputContainerStyle={styles.searchInputContainer}
+            inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline }]}
           />
         </View>
 
@@ -122,7 +124,7 @@ export default function ChangeCompany() {
           {/* Confirm Button */}
           <View style={styles.buttonContainer}>
             <CustomButton
-              title="Confirm"
+              title={t('common.confirm')}
               onPress={() => {
                 console.log('Confirmed Company ID:', selectedCompanyId);
                 navigation.goBack();
@@ -141,14 +143,13 @@ export default function ChangeCompany() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Design shows white background
   },
+
   container: {
     flex: 1,
     paddingHorizontal: Spacing.l,
     paddingVertical: Spacing.xxl,
     gap: Spacing.xxl,
-    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -164,7 +165,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.m,
   },
   searchInputContainer: {
-    borderColor: '#C1C1C1',
   },
   searchInput: {
     fontSize: ms(14),

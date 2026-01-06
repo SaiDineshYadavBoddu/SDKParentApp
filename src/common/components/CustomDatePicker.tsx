@@ -5,6 +5,7 @@ import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../theme/ThemeProvider';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
+import { useTranslation } from 'react-i18next';
 
 interface CustomDatePickerProps {
     visible: boolean;
@@ -26,6 +27,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     maxDate,
 }) => {
     const { colors } = useTheme();
+    const { t } = useTranslation();
     const [selectedStartDate, setSelectedStartDate] = useState(initialStartDate);
     const [selectedEndDate, setSelectedEndDate] = useState(initialEndDate);
 
@@ -88,7 +90,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             <View style={styles.modalOverlay}>
                 <View style={[styles.calendarContainer, { backgroundColor: colors.background }]}>
                     <View style={styles.header}>
-                        <CustomText type={TextType.SectionTitle}>Select Date Range</CustomText>
+                        <CustomText type={TextType.SectionTitle}>{t('datePicker.selectRange')}</CustomText>
                     </View>
 
                     <Calendar
@@ -121,10 +123,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 
                     <View style={styles.footer}>
                         <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                            <CustomText type={TextType.Label} style={{ color: colors.onBackground }}>Cancel</CustomText>
+                            <CustomText type={TextType.Label} style={{ color: colors.onBackground }}>{t('common.cancel')}</CustomText>
                         </TouchableOpacity>
                         <CustomButton
-                            title="Apply"
+                            title={t('common.apply')}
                             onPress={() => onApply(selectedStartDate, selectedEndDate)}
                             disabled={!selectedStartDate || !selectedEndDate}
                             style={styles.applyButton}

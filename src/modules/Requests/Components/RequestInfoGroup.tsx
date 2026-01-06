@@ -8,11 +8,13 @@ import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
 import ResolvedSVG from '../../../assets/svgs/ResolvedSVG';
 import InProgressSVG from '../../../assets/svgs/InProgressSVG';
 import { Spacing } from '../../../theme/spacing';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../theme/ThemeProvider';
 
 export type RequestDetail = {
     userName: string;
     userIconType: 'clock' | 'check';
-    statusText?: string;
+    status?: string;
     dateText?: string;
 };
 
@@ -35,68 +37,70 @@ export const renderIcon = (type: string) => {
 
 export const getProgressStatusIcon = (status: string) => {
     switch (status) {
-        case 'In progress':
+        case 'inProgress':
             return <InProgressSVG width={ms(16)} height={ms(16)} />;
-        case 'Resolved':
+        case 'resolved':
             return <ResolvedSVG width={ms(16)} height={ms(16)} />;
         default:
             return null;
     }
 };
 
-export const getProgressStatusColor = (status: string) => {
+export const getProgressStatusColor = (status: string, colors: any) => {
     switch (status) {
-        case 'In progress':
-            return '#2E84BF';
-        case 'Resolved':
-            return '#2FBF71';
+        case 'inProgress':
+            return colors.statusInProgress;
+        case 'resolved':
+            return colors.statusResolved;
         default:
-            return '#757575';
+            return colors.tertiaryText;
     }
 };
 
-export const getStatusColors = (status: string) => {
+export const getStatusColors = (status: string, colors: any) => {
     switch (status) {
-        case 'Activation':
-            return { backgroundColor: '#F0E7F6', textColor: '#C09BD8' };
-        case 'Card unblocking':
-            return { backgroundColor: '#FFF1B8', textColor: '#C97A20' };
+        case 'activation':
+            return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
+        case 'cardUnblocking':
+            return { backgroundColor: colors.onStatusUnblocking, textColor: colors.statusUnblocking };
         default:
-            return { backgroundColor: '#F5F7F9', textColor: '#757575' };
+            return { backgroundColor: colors.screenBackground, textColor: colors.tertiaryText };
     }
 };
 
 const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ details }) => {
+    const { t } = useTranslation();
+    const { colors } = useTheme();
     return (
         <View style={styles.detailsContainer}>
             {details.map((detail, index) => {
-                const statusColor = detail.statusText ? getProgressStatusColor(detail.statusText) : '#757575';
+                const statusColor = detail.status ? getProgressStatusColor(detail.status, colors) : colors.tertiaryText;
                 return (
                     <View key={index} style={styles.detailRow}>
                         {/* Left Column */}
                         <View style={styles.leftColumn}>
                             {renderIcon(detail.userIconType)}
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.detailText}>
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
                                 {detail.userName}
                             </CustomText>
                         </View>
 
                         {/* Right Column */}
                         <View style={styles.rightColumn}>
-                            {detail.statusText ? (
+                            {detail.status ? (
                                 <>
-                                    {getProgressStatusIcon(detail.statusText)}
+                                    {getProgressStatusIcon(detail.status)}
                                     <CustomText
                                         type={TextType.ScreenDisplaySmall}
                                         style={[styles.statusText, { color: statusColor }]}
                                     >
-                                        {detail.statusText}
+                                        {t(`requests.status.${detail.status}`)}
                                     </CustomText>
                                 </>
                             ) : detail.dateText ? (
                                 <>
                                     {renderIcon('calendar')}
-                                    <CustomText type={TextType.ScreenDisplaySmall} style={styles.detailText}>
+                                    <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
                                         {detail.dateText}
                                     </CustomText>
                                 </>
@@ -132,7 +136,6 @@ const styles = StyleSheet.create({
         width: '35%',
     },
     detailText: {
-        color: '#616161',
         fontSize: ms(13),
     },
     statusText: {

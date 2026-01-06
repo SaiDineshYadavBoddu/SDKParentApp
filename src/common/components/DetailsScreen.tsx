@@ -37,14 +37,14 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
     <View
       style={{
         height: 1,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: colors.outline,
         marginHorizontal: Spacing.l,
       }}
     />
   );
 
   const renderLabel = (label: string) => (
-    <CustomText type={TextType.CardTitle} style={{ marginBottom: ms(4) }}>
+    <CustomText type={TextType.CardTitle} style={{ marginBottom: ms(4), color: colors.onSurface }}>
       {t(label)}
     </CustomText>
   );
@@ -52,7 +52,7 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
   const renderValue = (value: string) => (
     <CustomText
       type={TextType.CardText}
-      style={{ color: value ? '#8E8E8E' : colors.textColor }}
+      style={{ color: value ? colors.secondaryText : colors.textColor }}
     >
       {value ?? '-'}
     </CustomText>
@@ -113,7 +113,7 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
               <SectionContainer
                 items={sectionItems}
                 style={styles.card}
-                contentStyle={styles.cardContent}
+                contentStyle={[styles.cardContent, { backgroundColor: colors.surface }]}
                 ItemSeparatorComponent={Separator}
               />
             </View>
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   cardContent: {
-    backgroundColor: '#FFFFFF',
     paddingVertical: ms(16),
   },
   rightButton: {

@@ -7,12 +7,9 @@ import {
   TextStyle,
 } from 'react-native';
 import CustomText, { TextType } from './CustomText';
-import MenuHamburgerSVG from '../../assets/svgs/MenuHamburgerSVG';
-import ChevronSVG from '../../assets/svgs/ChevronSVG';
 import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
 import { Spacing } from '../../theme/spacing';
-import { useTheme } from '../../theme/ThemeProvider';
 import ChevronLeftSVG from '../../assets/svgs/ChevronLeftSVG';
 
 interface Props {
@@ -31,7 +28,6 @@ export default function CustomHeader({
   rightContent,
 }: Props) {
   const { t } = useTranslation();
-  const { colors } = useTheme();
 
   return (
     <View style={styles.header}>
