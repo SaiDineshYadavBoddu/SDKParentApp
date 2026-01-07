@@ -3,46 +3,48 @@ import { useNavigation } from '@react-navigation/native';
 import DetailsScreen, {
   DetailsSection,
 } from '../../../common/components/DetailsScreen';
+import { useTranslation } from 'react-i18next';
 
 export default function PersonalDetails() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const sections: DetailsSection[] = [
     {
       items: [
         {
           id: '1',
-          label: 'Title',
+          label: t('profile.details.personal.fields.salutation'),
           value: '',
         },
         {
           id: '2',
-          label: 'First name',
+          label: t('profile.details.personal.fields.firstName'),
           value: 'Sharmil',
         },
         {
           id: '3',
-          label: 'Middle name',
+          label: t('profile.details.personal.fields.middleName'),
           value: '',
         },
         {
           id: '4',
-          label: 'Last name',
+          label: t('profile.details.personal.fields.lastName'),
           value: 'panayan',
         },
         {
           id: '5',
-          label: 'Citizenship',
+          label: t('profile.details.personal.fields.citizenship'),
           value: '',
         },
         {
           id: '6',
-          label: 'Date of birth',
+          label: t('profile.details.personal.fields.dob'),
           value: '04/12/1978',
         },
         {
           id: '7',
-          label: 'Place of birth',
+          label: t('profile.details.personal.fields.pob'),
           value: 'Saudi arabia',
         },
       ],
@@ -51,7 +53,7 @@ export default function PersonalDetails() {
 
   return (
     <DetailsScreen
-      title="Personal Details"
+      title={t('profile.details.personal.title')}
       sections={sections}
       onBackPress={() => navigation.goBack()}
     />

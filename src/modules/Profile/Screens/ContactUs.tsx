@@ -14,6 +14,7 @@ import MenuHamburgerSVG from '../../../assets/svgs/MenuHamburgerSVG';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import NetworkLogoSVG from '../../../assets/svgs/NetworkLogoSVG';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomImage from '../../../common/components/CustomImage';
@@ -23,62 +24,41 @@ import EmailSupportSVG from '../../../assets/svgs/EmailSupportSVG';
 // Types for support items
 type PhoneSupportItem = {
     id: string;
-    label: string;
-    subtitle: string;
-    phoneNumber: string;
-    displayNumber: string;
 };
 
 type EmailSupportItem = {
     id: string;
-    label: string;
-    email: string;
 };
 
 // Data arrays
 const PHONE_SUPPORT_DATA: PhoneSupportItem[] = [
     {
-        id: 'uae-toll-free',
-        label: 'UAE Toll-Free Contact Center',
-        subtitle: '24/7 Support',
-        phoneNumber: '8004448',
-        displayNumber: '800-4448',
+        id: 'uaeTollFree',
     },
     {
-        id: 'uae-international',
-        label: 'UAE International Line',
-        subtitle: '24/7 Support',
-        phoneNumber: '+97145974000',
-        displayNumber: '+971 4 597 4000',
+        id: 'uaeInternational',
     },
 ];
 
 const EMAIL_SUPPORT_DATA: EmailSupportItem[] = [
     {
-        id: 'merchant-services',
-        label: 'Merchant Services – SME',
-        email: 'sbcustomer@network.ae',
+        id: 'merchant',
     },
     {
-        id: 'government-support',
-        label: 'Government Support',
-        email: 'nigovernment@network.global',
+        id: 'government',
     },
     {
         id: 'ecommerce',
-        label: 'Ecommerce/Payment Gateway',
-        email: 'ecomsupport@network.global',
     },
     {
-        id: 'issuer-services',
-        label: 'Issuer Services',
-        email: 'salesteam.middleeast@network.global',
+        id: 'issuer',
     },
 ];
 
 const ContactUs = () => {
     const { colors } = useTheme();
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
     const handlePhoneCall = (phoneNumber: string) => {
         Linking.openURL(`tel:${phoneNumber}`);
@@ -98,7 +78,7 @@ const ContactUs = () => {
         <View
             style={{
                 height: 1,
-                backgroundColor: '#E0E0E0',
+                backgroundColor: colors.outline,
             }}
         />
     );
@@ -106,7 +86,7 @@ const ContactUs = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <CustomHeader
-                title="Contact Us"
+                title={t('profile.details.contactUs.title')}
                 titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
                 onBackPress={() => navigation.goBack()}
                 rightContent={
@@ -131,36 +111,30 @@ const ContactUs = () => {
                         <View>
                             <CustomText
                                 type={TextType.ScreenHeadlineMedium}
-                                style={styles.companyName}
+                                style={[styles.companyName, { color: colors.onSurface }]}
                             >
-                                Network International
+                                {t('profile.details.contactUs.companyName')}
                             </CustomText>
                             <CustomText
                                 type={TextType.ScreenDisplaySmall}
-                                style={styles.subtitle}
+                                style={[styles.subtitle, { color: colors.secondaryText }]}
                             >
-                                Leading payment solutions
+                                {t('profile.details.contactUs.companySubtitle')}
                             </CustomText>
                         </View>
                     </View>
 
                     {/* Head Office Section */}
                     <View style={styles.section}>
-                        <CustomText type={TextType.SectionTitle} style={styles.sectionTitle}>
-                            Head office
+                        <CustomText type={TextType.SectionTitle} style={[styles.sectionTitle, { color: colors.onSurface }]}>
+                            {t('profile.details.contactUs.headOffice.title')}
                         </CustomText>
                         <View style={{ gap: Spacing.xs }}>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                Network International
-                            </CustomText>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                PO Box 123456
-                            </CustomText>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                Dubai, United Arab Emirates
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.text, { color: colors.secondaryText }]}>
+                                {t('profile.details.contactUs.headOffice.address')} 
                             </CustomText>
                         </View>
-                        <TouchableOpacity style={styles.mapButton} onPress={handleViewOnMaps}>
+                        <TouchableOpacity style={[styles.mapButton, { backgroundColor: colors.surface, borderColor: colors.outline }]} onPress={handleViewOnMaps}>
                             <CustomImage
                                 source={require('../../../assets/images/GoogleMapsLogo.png')}
                                 resizeMode="contain"
@@ -168,9 +142,9 @@ const ContactUs = () => {
                             />
                             <CustomText
                                 type={TextType.ScreenDisplaySmall}
-                                style={styles.linkText}
+                                style={[styles.linkText, { color: colors.onBackground }]}
                             >
-                                View on Google Maps
+                                {t('profile.details.contactUs.headOffice.viewMaps')}
                             </CustomText>
 
                         </TouchableOpacity>
@@ -179,17 +153,17 @@ const ContactUs = () => {
                     {/* Operating Hours Section */}
                     <View style={styles.section}>
                         <View style={{ gap: Spacing.xs }}>
-                            <CustomText type={TextType.SectionTitle} style={styles.sectionTitle}>
-                                Operating Hours
+                            <CustomText type={TextType.SectionTitle} style={[styles.sectionTitle, { color: colors.onSurface }]}>
+                                {t('profile.details.contactUs.operatingHours.title')}
                             </CustomText>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                Monday - Friday, 9 AM - 6 PM
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.text, { color: colors.secondaryText }]}>
+                                {t('profile.details.contactUs.operatingHours.weekday')}
                             </CustomText>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                Saturday: 9:00 AM -2:00 PM
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.text, { color: colors.secondaryText }]}>
+                                {t('profile.details.contactUs.operatingHours.saturday')}
                             </CustomText>
-                            <CustomText type={TextType.ScreenDisplaySmall} style={styles.text}>
-                                Sunday: Closed
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.text, { color: colors.secondaryText }]}>
+                                {t('profile.details.contactUs.operatingHours.sunday')}
                             </CustomText>
                         </View>
                     </View>
@@ -198,14 +172,14 @@ const ContactUs = () => {
                 {/* Phone Support Section */}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
-                        <View style={[styles.iconContainer, { backgroundColor: '#F5F9FC' }]}>
+                        <View style={[styles.iconContainer, { backgroundColor: colors.filterButtonBg }]}>
                             <PhoneSupportSVG width={ms(24)} height={ms(24)} />
                         </View>
                         <CustomText
                             type={TextType.ScreenDisplayLarge}
-                            style={[styles.sectionTitle, { marginBottom: 0, marginLeft: Spacing.s }]}
+                            style={[styles.sectionTitle, { marginBottom: 0, marginLeft: Spacing.s, color: colors.onSurface }]}
                         >
-                            Phone Support
+                            {t('profile.details.contactUs.phoneSupport.title')}
                         </CustomText>
                     </View>
 
@@ -214,20 +188,20 @@ const ContactUs = () => {
                             <View style={styles.contactInfo}>
                                 <CustomText
                                     type={TextType.ScreenDisplaySmall}
-                                    style={styles.contactLabel}
+                                    style={[styles.contactLabel, { color: colors.onSurface }]}
                                 >
-                                    {item.label}
+                                    {t(`profile.details.contactUs.phoneSupport.${item.id}.label`)}
                                 </CustomText>
                                 <CustomText
                                     type={TextType.ScreenDisplaySmall}
-                                    style={styles.contactSubtitle}
+                                    style={[styles.contactSubtitle, { color: colors.secondaryText }]}
                                 >
-                                    {item.subtitle}
+                                    {t('profile.details.contactUs.phoneSupport.availability')}
                                 </CustomText>
                             </View>
                             <CustomButton
-                                title={item.displayNumber}
-                                onPress={() => handlePhoneCall(item.phoneNumber)}
+                                title={t(`profile.details.contactUs.phoneSupport.${item.id}.displayNumber`)}
+                                onPress={() => handlePhoneCall(t(`profile.details.contactUs.phoneSupport.${item.id}.phoneNumber`))}
                                 variant="primary"
                                 style={styles.phoneButton}
                                 uppercase={false}
@@ -239,14 +213,14 @@ const ContactUs = () => {
                 {/* Email Support Section */}
                 <View style={styles.section}>
                     <View style={styles.sectionHeader}>
-                        <View style={[styles.iconContainer, { backgroundColor: '#F5F9FC' }]}>
+                        <View style={[styles.iconContainer, { backgroundColor: colors.filterButtonBg }]}>
                             <EmailSupportSVG width={ms(24)} height={ms(24)} />
                         </View>
                         <CustomText
                             type={TextType.ScreenDisplayLarge}
-                            style={[styles.sectionTitle, { marginBottom: 0, marginLeft: Spacing.s }]}
+                            style={[styles.sectionTitle, { marginBottom: 0, marginLeft: Spacing.s, color: colors.onSurface }]}
                         >
-                            Email Support
+                            {t('profile.details.contactUs.emailSupport.title')}
                         </CustomText>
                     </View>
 
@@ -254,16 +228,16 @@ const ContactUs = () => {
                         <View key={item.id} style={styles.emailItem}>
                             <CustomText
                                 type={TextType.ScreenDisplaySmall}
-                                style={styles.contactLabel}
+                                style={[styles.contactLabel, { color: colors.onSurface }]}
                             >
-                                {item.label}
+                                {t(`profile.details.contactUs.emailSupport.${item.id}.label`)}
                             </CustomText>
-                            <TouchableOpacity onPress={() => handleEmail(item.email)}>
+                            <TouchableOpacity onPress={() => handleEmail(t(`profile.details.contactUs.emailSupport.${item.id}.email`))}>
                                 <CustomText
                                     type={TextType.ScreenDisplaySmall}
                                     style={styles.emailText}
                                 >
-                                    {item.email}
+                                    {t(`profile.details.contactUs.emailSupport.${item.id}.email`)}
                                 </CustomText>
                             </TouchableOpacity>
                         </View>
@@ -277,7 +251,6 @@ const ContactUs = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
     },
     content: {
         paddingHorizontal: ms(20),
@@ -324,10 +297,8 @@ const styles = StyleSheet.create({
         gap: Spacing.s,
         paddingVertical: ms(8),
         paddingHorizontal: ms(16),
-        backgroundColor: '#fff',
         borderRadius: ms(8),
         borderWidth: ms(1),
-        borderColor: '#E0E0E0',
     },
     linkText: {
         fontWeight: Typography.headlineMedium.fontWeight,

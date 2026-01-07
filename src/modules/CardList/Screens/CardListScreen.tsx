@@ -11,7 +11,6 @@ import { ms } from "react-native-size-matters";
 import SectionContainer, { SectionItem } from "../../../common/components/SectionContainer";
 import CustomText, { TextType } from "../../../common/components/CustomText";
 import ActionButton from "../../../common/components/ActionButton";
-import CustomIcon from "../../../common/components/CustomIcon";
 import { Spacing } from "../../../theme/spacing";
 import InfoSVG from "../../../assets/svgs/InfoSVG";
 import ReplaceCardSVG from "../../../assets/svgs/ReplaceCardSVG";

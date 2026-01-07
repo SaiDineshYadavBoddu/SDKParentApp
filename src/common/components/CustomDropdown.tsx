@@ -10,7 +10,7 @@ import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
-import CustomIcon from './CustomIcon';
+import ChevronDownSVG from '../../assets/svgs/CheveronDownSVG';
 
 interface CustomDropdownProps {
     label?: string;
@@ -51,6 +51,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                         borderColor: error ? colors.error : colors.outline,
                         backgroundColor: colors.surface,
                     },
+                    innerContainerStyle
                 ]}
             >
                 <CustomText
@@ -63,10 +64,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 >
                     {selectedValue || placeholder}
                 </CustomText>
-                <CustomIcon
-                    type="feather"
-                    name="chevron-down"
-                    size={ms(20)}
+                <ChevronDownSVG
+                    width={ms(22)}
+                    height={ms(22)}
                     color={colors.textColorDisabled}
                 />
             </TouchableOpacity>

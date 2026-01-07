@@ -26,7 +26,7 @@ export default function ProfileSection({ title, items }: Props) {
   const { colors } = useTheme();
 
   const renderIcon = (Icon: React.ElementType) => (
-    <View style={[styles.iconContainer, { backgroundColor: '#EDF7FC' }]}>
+    <View style={[styles.iconContainer, { backgroundColor: colors.filterButtonBg }]}>
       <Icon width={ms(24)} height={ms(24)} />
     </View>
   );
@@ -37,7 +37,7 @@ export default function ProfileSection({ title, items }: Props) {
       {subtitle && (
         <CustomText
           type={TextType.CardText}
-          style={{ color: '#4A4A4A', marginTop: ms(2) }}
+          style={{ color: colors.secondaryText, marginTop: ms(2) }}
         >
           {subtitle}
         </CustomText>
@@ -67,6 +67,7 @@ export default function ProfileSection({ title, items }: Props) {
             middle: renderText(item.title, item.subtitle),
             end: renderChevron(),
             onPress: item.onPress,
+            style: styles.innerCard,
           },
         ];
 
@@ -89,6 +90,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: Spacing.l,
     paddingBottom: Spacing.l,
+  },
+  innerCard: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
   },
   header: {
     marginBottom: Spacing.m,

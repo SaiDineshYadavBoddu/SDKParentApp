@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
-import CustomIcon from '../../../common/components/CustomIcon';
 import SectionContainer, {
   SectionItem,
 } from '../../../common/components/SectionContainer';

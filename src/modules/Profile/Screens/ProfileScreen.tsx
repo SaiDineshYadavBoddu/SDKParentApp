@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import CustomText, { TextType } from '../../../common/components/CustomText';
+import { useTheme } from '../../../theme/ThemeProvider';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
-import { t } from 'i18next';
 import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../../theme/spacing';
 import UserData from '../Components/UserData';
 import ProfileSection, { ProfileItemProps } from '../Components/ProfileSection';
+import { useTranslation } from 'react-i18next';
 
 // Icons
 import ChangeCompanySVG from '../../../assets/svgs/ChangeCompanySVG';
@@ -24,51 +24,58 @@ import { useAuth } from '../../../context/AuthContext';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
+  const { colors } = useTheme();
   const { signOut } = useAuth();
+  const { t } = useTranslation();
 
   const accountSettingsItems: ProfileItemProps[] = [
     {
       id: 'change-company',
-      title: 'Change Company',
-      subtitle: 'Change your company',
+      title: t('profile.items.changeCompany.title'),
+      subtitle: t('profile.items.changeCompany.subtitle'),
       Icon: ChangeCompanySVG,
       onPress: () => navigation.navigate('ChangeCompany'),
     },
     {
       id: 'change-password',
-      title: 'Change Password',
-      subtitle: 'Change your account password',
+      title: t('profile.items.changePassword.title'),
+      subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => console.log('Change Password'),
+      onPress: () => navigation.navigate('GenericSelectionScreen', {
+        options: [
+          { id: 'mobile', title: 'genericSelection.options.mobile.title', subtitle: '0567*****00' },
+          { id: 'email', title: 'genericSelection.options.email.title', subtitle: 's*****00@yopmail.com' },
+        ],
+      }),
     },
   ];
 
   const infoItems: ProfileItemProps[] = [
     {
       id: 'contact-details',
-      title: 'Contact Details',
-      subtitle: 'View your contact details',
+      title: t('profile.items.contactDetails.title'),
+      subtitle: t('profile.items.contactDetails.subtitle'),
       Icon: ContactDetailsSVG,
       onPress: () => navigation.navigate('ContactDetails'),
     },
     {
       id: 'personal-details',
-      title: 'Personal Details',
-      subtitle: 'View or edit your personal information',
+      title: t('profile.items.personalDetails.title'),
+      subtitle: t('profile.items.personalDetails.subtitle'),
       Icon: PersonalDetailsSVG,
       onPress: () => navigation.navigate('PersonalDetails'),
     },
     {
       id: 'addresses',
-      title: 'Addresses',
-      subtitle: 'View your addresses',
+      title: t('profile.items.addresses.title'),
+      subtitle: t('profile.items.addresses.subtitle'),
       Icon: AddressesSVG,
       onPress: () => navigation.navigate('Addresses'),
     },
     {
       id: 'personal-docs',
-      title: 'Personal Documents',
-      subtitle: 'View or update your document information',
+      title: t('profile.items.personalDocs.title'),
+      subtitle: t('profile.items.personalDocs.subtitle'),
       Icon: PersonalDocumentsSVG,
       onPress: () => navigation.navigate('PersonalDocuments'),
     },
@@ -77,30 +84,30 @@ const ProfileScreen = () => {
   const contactItems: ProfileItemProps[] = [
     {
       id: 'support',
-      title: 'Support',
-      subtitle: 'Request a callback for your queries',
+      title: t('profile.items.support.title'),
+      subtitle: t('profile.items.support.subtitle'),
       Icon: SupportSVG,
       onPress: () => navigation.navigate('Support'),
     },
     {
       id: 'contact-us',
-      title: 'Contact Us',
-      subtitle: 'Call or email us',
+      title: t('profile.items.contactUs.title'),
+      subtitle: t('profile.items.contactUs.subtitle'),
       Icon: ContactUsSVG,
       onPress: () => navigation.navigate('ContactUs'),
     },
     {
       id: 'logout',
-      title: 'Log out',
+      title: t('profile.items.logout'),
       Icon: LogOutSVG,
       onPress: () => signOut(),
     },
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader
-        title="My Profile"
+        title={t('profile.headerTitle')}
         rightContent={
           <TouchableOpacity style={styles.rightButton}>
             <NotificationSVG width={ms(24)} height={ms(24)} />
@@ -108,18 +115,18 @@ const ProfileScreen = () => {
         }
       />
       <ScrollView
-        style={styles.scrollContainer}
+        style={[styles.scrollContainer, { backgroundColor: colors.screenBackground }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.userData}>
           <UserData />
         </View>
 
-        <ProfileSection title="Account Settings" items={accountSettingsItems} />
+        <ProfileSection title={t('profile.sections.accountSettings')} items={accountSettingsItems} />
 
-        <ProfileSection title="Information & Documents" items={infoItems} />
+        <ProfileSection title={t('profile.sections.information')} items={infoItems} />
 
-        <ProfileSection title="Contact & Support" items={contactItems} />
+        <ProfileSection title={t('profile.sections.contact')} items={contactItems} />
       </ScrollView>
     </View>
   );
@@ -127,13 +134,11 @@ const ProfileScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     flex: 1,
   },
   scrollContainer: {
     flex: 1,
     paddingTop: Spacing.l,
-    backgroundColor: '#F5F9FC',
   },
   userData: {
     paddingHorizontal: Spacing.l,
