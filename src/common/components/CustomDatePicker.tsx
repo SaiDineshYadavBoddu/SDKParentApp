@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Modal, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import CustomBottomSheet from './CustomBottomSheet';
 import { Calendar } from 'react-native-calendars';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -85,89 +86,101 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         }
     }
 
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    };
+
+    const getDaysDifference = () => {
+        if (!selectedStartDate || !selectedEndDate) return '';
+        const start = new Date(selectedStartDate);
+        const end = new Date(selectedEndDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include start day
+        return `(${diffDays} Days)`;
+    };
+
+    const rangeText = selectedStartDate && selectedEndDate 
+        ? `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)} ${getDaysDifference()}`
+        : selectedStartDate 
+            ? formatDate(selectedStartDate)
+            : t('datePicker.selectRange');
+
     return (
-        <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-            <View style={styles.modalOverlay}>
-                <View style={[styles.calendarContainer, { backgroundColor: colors.background }]}>
-                    <View style={styles.header}>
-                        <CustomText type={TextType.SectionTitle}>{t('datePicker.selectRange')}</CustomText>
-                    </View>
+        <CustomBottomSheet visible={visible} onClose={onClose}>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <Calendar
+                    onDayPress={onDayPress}
+                    markingType={'period'}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    markedDates={markedDates}
+                    theme={{
+                        calendarBackground: colors.background,
+                        textSectionTitleColor: colors.secondaryText,
+                        selectedDayBackgroundColor: colors.primary,
+                        selectedDayTextColor: '#ffffff',
+                        todayTextColor: colors.primary,
+                        dayTextColor: colors.onBackground,
+                        textDisabledColor: '#d9e1e8',
+                        dotColor: colors.primary,
+                        selectedDotColor: '#ffffff',
+                        arrowColor: colors.onBackground,
+                        monthTextColor: colors.onBackground,
+                        indicatorColor: colors.primary,
+                        textDayFontWeight: '400',
+                        textMonthFontWeight: '600',
+                        textDayHeaderFontWeight: '400',
+                        textDayFontSize: ms(14),
+                        textMonthFontSize: ms(16),
+                        textDayHeaderFontSize: ms(13),
+                        ['stylesheet.calendar.header' as any]: {
+                            header: {
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                paddingLeft: 10,
+                                paddingRight: 10,
+                                marginTop: 6,
+                                alignItems: 'center',
+                                marginBottom: 10
+                            }
+                        }
+                    }}
+                />
 
-                    <Calendar
-                        onDayPress={onDayPress}
-                        markingType={'period'}
-                        minDate={minDate}
-                        maxDate={maxDate}
-                        markedDates={markedDates}
-                        theme={{
-                            calendarBackground: colors.background,
-                            textSectionTitleColor: '#b6c1cd',
-                            selectedDayBackgroundColor: colors.primary,
-                            selectedDayTextColor: '#ffffff',
-                            todayTextColor: colors.primary,
-                            dayTextColor: colors.onBackground,
-                            textDisabledColor: '#d9e1e8',
-                            dotColor: colors.primary,
-                            selectedDotColor: '#ffffff',
-                            arrowColor: colors.primary,
-                            monthTextColor: colors.primary,
-                            indicatorColor: colors.primary,
-                            textDayFontWeight: '300',
-                            textMonthFontWeight: 'bold',
-                            textDayHeaderFontWeight: '300',
-                            textDayFontSize: 16,
-                            textMonthFontSize: 16,
-                            textDayHeaderFontSize: 16,
-                        }}
+                <View style={styles.footer}>
+                     <View style={styles.rangeInfo}>
+                        <CustomText type={TextType.Label} style={{ textAlign: 'center', marginBottom: ms(8) }}>
+                            {rangeText}
+                        </CustomText>
+                     </View>
+                    <CustomButton
+                        title={t('datePicker.selectRangeButton', { defaultValue: 'Select date range' })}
+                        onPress={() => onApply(selectedStartDate, selectedEndDate)}
+                        disabled={!selectedStartDate || !selectedEndDate}
+                        style={styles.applyButton}
                     />
-
-                    <View style={styles.footer}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                            <CustomText type={TextType.Label} style={{ color: colors.onBackground }}>{t('common.cancel')}</CustomText>
-                        </TouchableOpacity>
-                        <CustomButton
-                            title={t('common.apply')}
-                            onPress={() => onApply(selectedStartDate, selectedEndDate)}
-                            disabled={!selectedStartDate || !selectedEndDate}
-                            style={styles.applyButton}
-                        />
-                    </View>
                 </View>
             </View>
-        </Modal>
+        </CustomBottomSheet>
     );
 };
 
 const styles = StyleSheet.create({
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        padding: ms(20),
-    },
-    calendarContainer: {
-        borderRadius: ms(16),
-        overflow: 'hidden',
-        padding: ms(16),
-    },
-    header: {
+    container: {
         paddingBottom: ms(16),
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-        marginBottom: ms(16),
     },
     footer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
         marginTop: ms(16),
-        gap: ms(16),
+        paddingHorizontal: ms(16),
     },
-    cancelButton: {
-        padding: ms(10),
+    rangeInfo: {
+        marginBottom: ms(16),
+        alignItems: 'center',
     },
     applyButton: {
-        minWidth: ms(100),
+        width: '100%',
     },
 });
 
