@@ -12,7 +12,7 @@ import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
-import CustomIcon from './CustomIcon';
+import CloseSVG from '../../assets/svgs/CloseSVG';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -112,12 +112,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
               )
             )}
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-              <CustomIcon
-                type="feather"
-                name="x"
-                size={ms(24)}
-                color={colors.onBackground}
-              />
+              <CloseSVG width={ms(28)} height={ms(28)} color={colors.onBackground} />
             </TouchableOpacity>
           </View>
           <View style={styles.content}>{children}</View>

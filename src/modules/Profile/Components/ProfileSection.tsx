@@ -67,6 +67,7 @@ export default function ProfileSection({ title, items }: Props) {
             middle: renderText(item.title, item.subtitle),
             end: renderChevron(),
             onPress: item.onPress,
+            style: styles.innerCard,
           },
         ];
 
@@ -89,6 +90,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: Spacing.l,
     paddingBottom: Spacing.l,
+  },
+  innerCard: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
   },
   header: {
     marginBottom: Spacing.m,

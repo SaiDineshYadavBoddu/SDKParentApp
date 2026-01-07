@@ -367,7 +367,7 @@ const RequestsScreen = () => {
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
                     inputContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
-                    inputStyle={Typography.displaySmall}
+                    inputStyle={Typography.bodySmall}
                   />
                 </TouchableOpacity>
 

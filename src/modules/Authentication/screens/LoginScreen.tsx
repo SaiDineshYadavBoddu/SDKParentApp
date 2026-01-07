@@ -8,7 +8,6 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-  SafeAreaView,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -18,6 +17,7 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
 import { getSlideIndex } from '../../../utils/scrollUtils';
 import { LOGIN_ONBOARDING_DATA } from '../../../constants/appConstants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 

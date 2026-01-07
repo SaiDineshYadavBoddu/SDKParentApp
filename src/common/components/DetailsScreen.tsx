@@ -94,7 +94,7 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
             end: item.actionLabel
               ? renderAction(item.actionLabel, item.onActionPress)
               : undefined,
-            style: { paddingHorizontal: Spacing.l, paddingVertical: ms(16) },
+            style: styles.innerCard,
           }));
 
           return (
@@ -145,5 +145,13 @@ const styles = StyleSheet.create({
   rightButton: {
     padding: ms(6),
     marginRight: -ms(6),
+  },
+  innerCard: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    paddingHorizontal: Spacing.l, 
+    paddingVertical: Spacing.l
   },
 });

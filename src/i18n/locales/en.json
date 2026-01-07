@@ -297,5 +297,24 @@
   },
   "datePicker": {
     "selectRange": "Select Date Range"
+  },
+  "genericSelection": {
+    "title": "Select Verification Method",
+    "subtitle": "Please select an option to get your verification code",
+    "options": {
+      "mobile": {
+        "title": "Get code by mobile"
+      },
+      "email": {
+        "title": "Get code by email"
+      }
+    }
+  },
+  "otp": {
+    "title": "Validate via OTP",
+    "subtitle": "We’ve sent you the One time Password (OTP) on {{target}}",
+    "resend": "Resend code",
+    "verify": "Verify OTP",
+    "error": "Incorrect OTP"
   }
 }

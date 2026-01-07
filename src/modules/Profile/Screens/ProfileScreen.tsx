@@ -41,7 +41,12 @@ const ProfileScreen = () => {
       title: t('profile.items.changePassword.title'),
       subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => console.log('Change Password'),
+      onPress: () => navigation.navigate('GenericSelectionScreen', {
+        options: [
+          { id: 'mobile', title: 'genericSelection.options.mobile.title', subtitle: '0567*****00' },
+          { id: 'email', title: 'genericSelection.options.email.title', subtitle: 's*****00@yopmail.com' },
+        ],
+      }),
     },
   ];
 

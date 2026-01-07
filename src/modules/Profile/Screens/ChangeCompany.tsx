@@ -4,7 +4,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  SafeAreaView,
   TouchableNativeFeedback,
   Keyboard,
 } from 'react-native';

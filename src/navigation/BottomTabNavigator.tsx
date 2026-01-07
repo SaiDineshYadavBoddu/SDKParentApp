@@ -54,6 +54,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen name="Transactions" component={TransactionsScreen} />
       <Tab.Screen name="Requests" component={RequestsScreen} />
       <Tab.Screen name="My Profile" component={ProfileScreen} />
+      
     </Tab.Navigator>
   );
 };

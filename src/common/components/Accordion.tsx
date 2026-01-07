@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager, Animated } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from './CustomText';
-import CustomIcon from './CustomIcon';
 import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
+
+import ChevronDownSVG from '../../assets/svgs/CheveronDownSVG';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -29,11 +30,24 @@ const Accordion: React.FC<AccordionProps> = ({
 }) => {
     const { colors } = useTheme();
     const [isExpanded, setIsExpanded] = useState(initiallyExpanded);
+    const animatedController = React.useRef(new Animated.Value(initiallyExpanded ? 1 : 0)).current;
 
     const toggleExpand = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        
+        Animated.timing(animatedController, {
+            toValue: isExpanded ? 0 : 1,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
         setIsExpanded(!isExpanded);
     };
+
+    const arrowTransform = animatedController.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '180deg'],
+    });
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }, containerStyle]}>
@@ -45,12 +59,9 @@ const Accordion: React.FC<AccordionProps> = ({
                 <CustomText type={TextType.SectionTitle} style={styles.title}>
                     {title}
                 </CustomText>
-                <CustomIcon
-                    type="feather"
-                    name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                    size={ms(20)}
-                    color={colors.onBackground}
-                />
+                <Animated.View style={{ transform: [{ rotate: arrowTransform }] }}>
+                    <ChevronDownSVG width={ms(24)} height={ms(24)} color={colors.onBackground} />
+                </Animated.View>
             </TouchableOpacity>
             {isExpanded && (
                 <>

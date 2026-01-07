@@ -7,7 +7,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
-import CustomIcon from '../../../common/components/CustomIcon';
 import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';

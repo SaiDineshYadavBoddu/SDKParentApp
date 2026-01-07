@@ -39,6 +39,7 @@ export default function UserData() {
       id: 'user-info',
       start: renderAvatar(),
       middle: renderUserInfo(),
+      style: styles.innerCard,
     },
   ];
 
@@ -56,6 +57,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: ms(16),
     paddingHorizontal: ms(16),
+  },
+  innerCard: {
+    backgroundColor: 'transparent',
+    elevation: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
   },
   content: {
     paddingVertical: 0,
