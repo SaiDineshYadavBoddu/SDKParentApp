@@ -17,6 +17,7 @@ import TransactionLimitsScreen from '../modules/CardManagement/Screens/Transacti
 import FreezeCardScreen from '../modules/CardManagement/Screens/FreezeCardScreen';
 import GenericSelectionScreen from '../common/components/GenericSelectionScreen.tsx';
 import GenericOTPScreen from '../common/components/GenericOTPScreen.tsx';
+import GenericInfoScreen from '../common/components/GenericInfoScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,7 @@ const MainStack = () => {
       <Stack.Screen name="ContactUs" component={ContactUs} />
       <Stack.Screen name="GenericSelectionScreen" component={GenericSelectionScreen} />
       <Stack.Screen name="GenericOTPScreen" component={GenericOTPScreen} />
+      <Stack.Screen name="GenericInfoScreen" component={GenericInfoScreen} />
     </Stack.Navigator>
   );
 };

@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
 import { MOCK_TRANSACTIONS, MOCK_CARDS } from "../../../constants/mockData";
+import CustomImage from '../../../common/components/CustomImage';
 
 export default function CardListScreen() {
   const { t } = useTranslation();
@@ -117,6 +118,12 @@ export default function CardListScreen() {
               );
             })()}
           </View>
+
+          {/* <CustomImage
+            source={require('../../../assets/images/noInternet.gif')}
+            style={{ width: ms(160), height: ms(160) }}
+            resizeMode="contain"
+          /> */}
 
           <View
             style={{

@@ -43,6 +43,11 @@ export const lightColors = {
   onStatusUnblocking: '#FFF1B8',
 
   filterButtonBg: '#E3F2FD',
+
+  // Inverse colors (Toast/Snackbar)
+  inverseSurface: '#070707',
+  inverseOnSurface: '#FFFFFF',
+  inversePrimary: '#FFFFFF',
 };
 
 export const darkColors = {
@@ -90,4 +95,9 @@ export const darkColors = {
   onStatusUnblocking: '#584400',
 
   filterButtonBg: '#1D242B',
+
+  // Inverse colors (Toast/Snackbar)
+  inverseSurface: '#E6E1E5',
+  inverseOnSurface: '#313033',
+  inversePrimary: '#0069B1',
 };

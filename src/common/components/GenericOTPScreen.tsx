@@ -71,6 +71,10 @@ export default function GenericOTPScreen() {
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+    // Auto-focus prev field on deletion
+    if (!value && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
   };
 
   const handleKeyPress = (e: any, index: number) => {
@@ -103,77 +107,78 @@ export default function GenericOTPScreen() {
         onBackPress={handleBack}
         titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
       />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.topSection}>
-          <View style={styles.iconContainer}>
-            <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
-          </View>
-          <View style={{gap : Spacing.xs}}>
-            <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
-                {t(title)}
-            </CustomText>
-            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
-                {t(subtitle, { target })}
-            </CustomText>
-          </View>
-        </View>
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.topSection}>
+                <View style={styles.iconContainer}>
+                    <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
+                </View>
+                <View style={{gap : Spacing.xs}}>
+                    <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
+                        {t(title)}
+                    </CustomText>
+                    <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
+                        {t(subtitle, { target })}
+                    </CustomText>
+                </View>
+                </View>
 
-        {error && (
-          <CustomText type={TextType.Error} style={styles.errorText}>
-            {t('otp.error')}
-          </CustomText>
-        )}
+                {error && (
+                <CustomText type={TextType.Error} style={styles.errorText}>
+                    {t('otp.error')}
+                </CustomText>
+                )}
 
-        <View style={styles.otpSection}>
-            <View style={styles.otpContainer}>
-            {otp.map((digit, index) => (
-                <TextInput
-                key={index}
-                ref={(ref) => {
-                    inputRefs.current[index] = ref;
-                }}
-                style={[
-                    styles.otpInput,
-                    {
-                    borderColor: error ? colors.error : colors.outline,
-                    color: colors.onSurface,
-                    backgroundColor: colors.surface,
-                    },
-                ]}
-                maxLength={1}
-                keyboardType="number-pad"
-                value={digit}
-                onChangeText={(value) => handleOtpChange(value, index)}
-                onKeyPress={(e) => handleKeyPress(e, index)}
-                textAlign="center"
-                secureTextEntry={true}
-                selectionColor="transparent"
-                cursorColor={colors.primary}
-                selectTextOnFocus={false}
-            />
-            ))}
+                <View style={styles.otpSection}>
+                    <View style={styles.otpContainer}>
+                    
+                    {otp.map((digit, index) => (
+                        <TextInput
+                        key={index}
+                        ref={(ref) => {
+                            inputRefs.current[index] = ref;
+                        }}
+                        style={[
+                            styles.otpInput,
+                            {
+                            borderColor: error ? colors.error : colors.outline,
+                            color: colors.onSurface,
+                            backgroundColor: colors.surface,
+                            },
+                        ]}
+                        maxLength={1}
+                        keyboardType="number-pad"
+                        value={digit}
+                        onChangeText={(value) => handleOtpChange(value, index)}
+                        onKeyPress={(e) => handleKeyPress(e, index)}
+                        textAlign="center"
+                        secureTextEntry={true}
+                        selectionColor="transparent"
+                        cursorColor={colors.primary}
+                        selectTextOnFocus={false}
+                    />
+                    ))}
+                    </View>
+
+                    <TouchableOpacity onPress={onResend} style={styles.resendButton}>
+                    <CustomText type={TextType.ActionLabel} style={styles.resendText}>
+                        {t('otp.resend')}
+                    </CustomText>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+
+            <View style={styles.bottomContainer}>
+                <CustomButton
+                title={t(verifyButtonText)}
+                onPress={handleVerify}
+                loading={isLoading}
+                disabled={otp.join('').length < 6 || isLoading}
+                uppercase={false}
+                />
             </View>
-
-            <TouchableOpacity onPress={onResend} style={styles.resendButton}>
-            <CustomText type={TextType.ActionLabel} style={styles.resendText}>
-                {t('otp.resend')}
-            </CustomText>
-            </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.bottomContainer}>
-        <CustomButton
-          title={t(verifyButtonText)}
-          onPress={handleVerify}
-          loading={isLoading}
-          disabled={otp.join('').length < 6 || isLoading}
-          uppercase={false}
-        />
-      </View>
     </SafeAreaView>
   );
 }

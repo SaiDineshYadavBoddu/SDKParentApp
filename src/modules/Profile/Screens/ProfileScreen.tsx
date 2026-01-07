@@ -21,6 +21,7 @@ import LogOutSVG from '../../../assets/svgs/LogOutSVG';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
+import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
@@ -41,11 +42,18 @@ const ProfileScreen = () => {
       title: t('profile.items.changePassword.title'),
       subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => navigation.navigate('GenericSelectionScreen', {
-        options: [
-          { id: 'mobile', title: 'genericSelection.options.mobile.title', subtitle: '0567*****00' },
-          { id: 'email', title: 'genericSelection.options.email.title', subtitle: 's*****00@yopmail.com' },
-        ],
+      onPress: () => navigation.navigate('GenericInfoScreen', {
+        icon: <NoInternetSVG width={ms(120)} height={ms(120)} />,
+        title: t('noInternet.title'),
+        description: t('noInternet.subtitle'),
+        primaryButton: {
+          title: t('noInternet.primaryButton.title'),
+          onPress: () => navigation.goBack(),
+        },
+        secondaryButton: {
+          title: t('noInternet.secondaryButton.title'),
+          onPress: () => navigation.goBack(),
+        },
       }),
     },
   ];

@@ -9,8 +9,7 @@
     "message": "Message",
     "continue": "Continue",
     "cardNumber": "Card Number",
-    "reset": "Reset",
-    "apply": "Apply"
+    "reset": "Reset"
   },
   "cardList": {
     "title": "My Cards",
@@ -336,5 +335,20 @@
     "resend": "Resend code",
     "verify": "Verify OTP",
     "error": "Incorrect OTP"
+  },
+  "noInternet": {
+    "title": "No Internet Connection",
+    "subtitle": "Check your WiFi or cellular connection and try again. You can also check your device's network settings.",
+    "primaryButton": {
+      "title": "Try again"
+    },
+    "secondaryButton": {
+      "title": "Open Network Settings"
+    },
+    "toast": {
+      "title": "No Internet Connection.",
+      "subtitle": "Check your WiFi or cellular connection and try again.",
+      "primaryButton": "Try Again"
+    }
   }
 }

@@ -8,12 +8,15 @@ import React, {
 import { authorize, logout, AuthConfiguration } from 'react-native-app-auth';
 import { Linking } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
+import NetInfo from '@react-native-community/netinfo';
 
 interface AuthContextData {
   isAuthenticated: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   changePassword: () => Promise<void>;
+  checkIsInternetConnected: () => Promise<void>;
+  isConnected: boolean | null;
   accessToken: string | null;
   idToken: string | null;
 }
@@ -26,6 +29,8 @@ const AuthContext = createContext<AuthContextData>({
   signIn: async () => {},
   signOut: async () => {},
   changePassword: async () => {},
+  checkIsInternetConnected: async () => {},
+  isConnected: null,
   accessToken: null,
   idToken: null,
 });
@@ -34,6 +39,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
 
   const signIn = async () => {
     try {
@@ -93,6 +109,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const checkIsInternetConnected = async () => {
+    const state = await NetInfo.fetch();
+    setIsConnected(state.isConnected);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -100,6 +121,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signOut,
         changePassword,
+        checkIsInternetConnected,
+        isConnected,
         accessToken,
         idToken,
       }}
