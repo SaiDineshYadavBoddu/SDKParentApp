@@ -5,6 +5,7 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "select": "Select",
+    "apply": "Apply",
     "message": "Message",
     "continue": "Continue",
     "cardNumber": "Card Number"
@@ -103,6 +104,25 @@
       "misplaced": "Suspected loss of card (misplaced)",
       "stolen": "Suspected stolen card",
       "fraud": "Fraud on the card"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "selectCard": "Select card",
+    "searchPlaceholder": "Search for a transaction",
+    "filters": "Filters",
+    "selectDateRange": "Select a date range",
+    "transactionStatus": "Transaction Status",
+    "sortBy": "Sort by",
+    "newestToOldest": "Newest to Oldest",
+    "oldestToNewest": "Oldest to Newest",
+    "applyFilters": "Apply Filters",
+    "reset": "Reset",
+    "timeRanges": {
+      "lastWeek": "Last week",
+      "lastMonth": "Last month",
+      "last3Months": "Last 3 months",
+      "custom": "Custom"
     }
   }
 }
