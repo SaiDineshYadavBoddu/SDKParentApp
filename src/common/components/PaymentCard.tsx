@@ -7,12 +7,14 @@ import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
 
 interface CardData {
-  id: string;
   cardIdentifier: string;
   maskedPan: string;
   expiryDate: string;
-  cvv: string;
   cardholderName: string;
+  balance: number;
+  currencyCode: string;
+  cardStatus: string;
+  statusCause?: string;
   brand?: string;
 }
 
@@ -93,7 +95,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         />
 
         <TouchableOpacity
-          onPress={() => onToggleVisibility(item.id)}
+          onPress={() => onToggleVisibility(item.cardIdentifier)}
           style={styles.toggle}
         >
           <CustomIcon
@@ -112,15 +114,15 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             {isDetailsVisible
               ? item.cardIdentifier
               : (() => {
-                  let masked = item.maskedPan || '';
-                  if (masked.length >= 6) {
-                    // Mask 5th and 6th characters (index 4 and 5)
-                    masked =
-                      masked.substring(0, 4) + '**' + masked.substring(6);
-                  }
-                  // Basic formatting: grouping by 4 if possible, otherwise just return
-                  return masked.replace(/(.{4})/g, '$1 ').trim();
-                })()}
+                let masked = item.maskedPan || '';
+                if (masked.length >= 6) {
+                  // Mask 5th and 6th characters (index 4 and 5)
+                  masked =
+                    masked.substring(0, 4) + '**' + masked.substring(6);
+                }
+                // Basic formatting: grouping by 4 if possible, otherwise just return
+                return masked.replace(/(.{4})/g, '$1 ').trim();
+              })()}
           </CustomText>
 
           <View
@@ -147,7 +149,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               type={TextType.ImageSmall}
               style={{ marginLeft: ms(15) }}
             >
-              {isDetailsVisible ? item.cvv || '***' : '***'}
+              {'***'}
             </CustomText>
           </View>
 
@@ -161,6 +163,10 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           style={styles.mastercardLogo}
           resizeMode="contain"
         />
+
+        {(item.cardStatus === 'Blocked' && item.statusCause === 'TempBlocked') && (
+          <View style={styles.blockOverlay} />
+        )}
       </Animated.View>
     </View>
   );
@@ -199,6 +205,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: Spacing.xl,
     bottom: Spacing.xl,
+  },
+  blockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    zIndex: 10,
   },
 });
 

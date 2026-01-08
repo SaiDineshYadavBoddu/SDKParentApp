@@ -17,6 +17,8 @@ import ReplaceCardSVG from "../../../assets/svgs/ReplaceCardSVG";
 import FreezeCardSVG from "../../../assets/svgs/FreezeCardSVG";
 import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
+import BackButtonSVG from "../../../assets/svgs/BackButtonSVG";
+import MenuHamburgerSVG from "../../../assets/svgs/MenuHamburgerSVG";
 import { useGetCardsQuery } from "../../../network/card/card.api";
 import { useAuth } from "../../../context/AuthContext";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
@@ -45,7 +47,18 @@ export default function CardListScreen() {
     pageNumber: 0,
     sortProperty: 'cardholderName',
     sortDirection: 'ASC',
+  }, {
+    pollingInterval: 30000,
+    refetchOnMountOrArgChange: true,
   });
+
+  const cards = MOCK_CARDS; // Using MOCK_CARDS for verification
+  const activeCard = cards[activeCardIndex];
+  const isPendingActivation =
+    activeCard?.cardStatus === 'Pending Activation' ||
+    activeCard?.cardStatus === 'PENDING_ACTIVATION';
+
+  const isTempBlocked = activeCard?.cardStatus === 'Blocked' && activeCard?.statusCause === 'TempBlocked';
 
   const transactionItems: SectionItem[] = MOCK_TRANSACTIONS.map(txn => ({
     id: txn.id,
@@ -77,111 +90,149 @@ export default function CardListScreen() {
   return (
     <>
       <View style={styles.header}>
-        <CustomText type={TextType.ScreenHeadlineSmall}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <BackButtonSVG />
+        </TouchableOpacity>
+        <CustomText type={TextType.ScreenHeadlineSmall} style={{ fontWeight: '600' }}>
           {t('cardList.title')}
         </CustomText>
-        <View style={{ paddingTop: ms(10) }}>
-          <TouchableOpacity
-            onPress={() => {
-              signOut();
-            }}
-          >
-            <NotificationSVG />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            // Handle menu
+          }}
+        >
+          <MenuHamburgerSVG />
+        </TouchableOpacity>
       </View>
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.balanceContainer}>
-          <View
-            style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
-          >
-            <CurrencySVG
-              width={ms(24)}
-              height={ms(24)}
-              style={{ transform: [{ translateY: ms(4) }] }}
-            />
-            {(() => {
-              const { integer, decimal } = formatAmount('50,250.77');
-              return (
-                <Text>
-                  <CustomText type={TextType.ScreenHeadlineLarge}>
-                    {integer}
-                  </CustomText>
-                  <CustomText type={TextType.ScreenHeadlineSmall}>
-                    {decimal}
-                  </CustomText>
-                </Text>
-              );
-            })()}
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: Spacing.xs,
-              paddingTop: Spacing.m,
-            }}
-          >
-            <CustomText type={TextType.ScreenDisplaySmall}>
-              {t('cardList.availableBalance')}
+        {isPendingActivation ? (
+          <View style={styles.statusIndicator}>
+            <View style={styles.statusDot} />
+            <CustomText type={TextType.ScreenHeadlineSmall} style={styles.statusText}>
+              {t('cardList.pendingActivation')}
             </CustomText>
-            <InfoSVG />
+            <InfoSVG width={ms(16)} height={ms(16)} color="#707070" />
           </View>
+        ) : (
+          <View style={styles.balanceContainer}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
+            >
+              <CurrencySVG
+                width={ms(24)}
+                height={ms(24)}
+                style={{ transform: [{ translateY: ms(4) }] }}
+              />
+              {(() => {
+                const { integer, decimal } = formatAmount(activeCard?.balance?.toString() || '0.00');
+                return (
+                  <Text>
+                    <CustomText type={TextType.ScreenHeadlineLarge}>
+                      {integer}
+                    </CustomText>
+                    <CustomText type={TextType.ScreenHeadlineSmall}>
+                      {decimal}
+                    </CustomText>
+                  </Text>
+                );
+              })()}
+            </View>
 
-          <CustomText type={TextType.ScreenDisplaySmall}>
-            {t('cardList.active')}
-          </CustomText>
-        </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: Spacing.xs,
+                paddingTop: Spacing.m,
+              }}
+            >
+              <CustomText type={TextType.ScreenDisplaySmall}>
+                {t('cardList.availableBalance')}
+              </CustomText>
+              <InfoSVG />
+            </View>
+
+            <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
+              {activeCard?.cardStatus === 'Blocked' ? t('cardList.inactive') : (activeCard?.cardStatus || t('cardList.active'))}
+            </CustomText>
+          </View>
+        )}
 
         <CardCarousel
-          data={MOCK_CARDS}
+          data={cards}
           onIndexChange={(index) => setActiveCardIndex(index)}
         />
 
-        <View style={styles.actionsRow}>
-          <ActionButton
-            title={t('cardList.manage')}
-            icon={<ManageCardSVG />}
-            onPress={() => {
-              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
-                navigation.navigate('ManageCard', { card: MOCK_CARDS[activeCardIndex] })
-              }
-            }}
-          />
+        {isPendingActivation ? (
+          <View style={styles.activationCard}>
+            <CustomText type={TextType.SectionTitle} style={styles.activationTitle}>
+              {t('cardList.cardPendingActivation')}
+            </CustomText>
+            <CustomText type={TextType.CardText} style={styles.activationDescription}>
+              {t('cardList.activationInstruction')}
+            </CustomText>
+            <TouchableOpacity
+              style={styles.activateButton}
+              onPress={() => navigation.navigate('ActivateCard', { card: activeCard })}
+            >
+              <CustomText type={TextType.Button} style={styles.activateButtonText}>
+                {t('cardList.activateCard')}
+              </CustomText>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <View style={styles.actionsRow}>
+              <ActionButton
+                title={t('cardList.manage')}
+                icon={<ManageCardSVG />}
+                disabled={isTempBlocked}
+                onPress={() => {
+                  if (activeCard) {
+                    navigation.navigate('ManageCard', { card: activeCard })
+                  }
+                }}
+              />
 
-          <ActionButton
-            title={t('cardList.replace')}
-            icon={<ReplaceCardSVG />}
-            onPress={() => {
-              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
-                navigation.navigate('ReplaceCard', { card: MOCK_CARDS[activeCardIndex] })
-              }
-            }}
-          />
+              <ActionButton
+                title={t('cardList.replace')}
+                icon={<ReplaceCardSVG />}
+                disabled={isTempBlocked}
+                onPress={() => {
+                  if (activeCard) {
+                    navigation.navigate('ReplaceCard', { card: activeCard })
+                  }
+                }}
+              />
 
-          <ActionButton
-            title={t('cardList.freeze')}
-            icon={<FreezeCardSVG />}
-            onPress={() => {
-              if (MOCK_CARDS && MOCK_CARDS[activeCardIndex]) {
-                navigation.navigate('FreezeCard', { card: MOCK_CARDS[activeCardIndex] })
-              }
-            }}
-          />
-        </View>
+              <ActionButton
+                title={isTempBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
+                icon={<FreezeCardSVG color={isTempBlocked ? '#0066b3' : undefined} />}
+                onPress={() => {
+                  if (activeCard) {
+                    navigation.navigate('FreezeCard', { card: activeCard })
+                  }
+                }}
+              />
+            </View>
 
-        <View style={styles.transactionContainer}>
-          <SectionContainer
-            title={t('cardList.recentTransactions')}
-            rightTitle={t('cardList.viewAll')}
-            onRightTitlePress={() => { }}
-            items={transactionItems}
-          />
-        </View>
+            <View style={styles.transactionContainer}>
+              <SectionContainer
+                title={t('cardList.recentTransactions')}
+                rightTitle={t('cardList.viewAll')}
+                onRightTitlePress={() => { }}
+                items={transactionItems}
+              />
+            </View>
+          </>
+        )}
       </ScrollView>
       <CustomLoader loading={isLoading} />
     </>
@@ -219,5 +270,66 @@ const styles = StyleSheet.create({
   transactionContainer: {
     paddingHorizontal: Spacing.l,
     paddingBottom: Spacing.xxl,
+  },
+
+  activationCard: {
+    marginHorizontal: Spacing.l,
+    padding: Spacing.xl,
+    backgroundColor: '#FFFFFF',
+    borderRadius: ms(20),
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+
+  activationTitle: {
+    marginBottom: Spacing.s,
+    textAlign: 'center',
+  },
+
+  activationDescription: {
+    color: '#707070',
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.m,
+  },
+
+  activateButton: {
+    backgroundColor: '#0066b3',
+    paddingVertical: ms(14),
+    paddingHorizontal: ms(24),
+    borderRadius: ms(10),
+    width: '100%',
+    alignItems: 'center',
+  },
+
+  activateButtonText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: ms(6),
+    marginBottom: Spacing.l,
+    marginTop: Spacing.m,
+  },
+
+  statusDot: {
+    width: ms(8),
+    height: ms(8),
+    borderRadius: ms(4),
+    backgroundColor: '#707070',
+  },
+
+  statusText: {
+    color: '#707070',
+    fontSize: ms(14),
   },
 });

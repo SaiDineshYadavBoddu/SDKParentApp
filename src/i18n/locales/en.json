@@ -16,11 +16,17 @@
     "title": "My Cards",
     "availableBalance": "Available balance",
     "active": "Active",
+    "inactive": "In-active",
     "recentTransactions": "Recent Transactions",
     "viewAll": "View All",
     "manage": "Manage",
     "replace": "Replace",
-    "freeze": "Freeze"
+    "freeze": "Freeze",
+    "unfreeze": "Unfreeze",
+    "pendingActivation": "Pending activation",
+    "cardPendingActivation": "Card pending activation",
+    "activationInstruction": "Please make sure the card is physically recieved to activate it",
+    "activateCard": "Activate Card"
   },
   "replaceCard": {
     "title": "Replace Card",

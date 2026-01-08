@@ -12,12 +12,14 @@ const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN * 2;
 const SIDE_SPACER = (SCREEN_WIDTH - SNAP_INTERVAL) / 2;
 
 interface CardData {
-  id: string;
   cardIdentifier: string;
   maskedPan: string;
   expiryDate: string;
   cardholderName: string;
-  cvv: string;
+  balance: number;
+  currencyCode: string;
+  cardStatus: string;
+  statusCause?: string;
 }
 
 interface CardCarouselProps {
@@ -41,8 +43,8 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
       snapInterval={SNAP_INTERVAL}
       cardWidth={CARD_WIDTH}
       cardMargin={CARD_MARGIN}
-      isDetailsVisible={visibleCardIds.has(item.id)}
-      onToggleVisibility={toggleCardVisibility}
+      isDetailsVisible={visibleCardIds.has(item.cardIdentifier)}
+      onToggleVisibility={() => toggleCardVisibility(item.cardIdentifier)}
     />
   );
 
@@ -51,7 +53,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
       <Animated.FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.cardIdentifier}
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={SNAP_INTERVAL}
