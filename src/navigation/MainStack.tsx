@@ -38,8 +38,8 @@ const MainStack = () => {
       <Stack.Screen name="PersonalDocuments" component={PersonalDocuments} />
       <Stack.Screen name="Support" component={Support} />
       <Stack.Screen name="ContactUs" component={ContactUs} />
-      <Stack.Screen name="GenericSelectionScreen" component={GenericSelectionScreen} />
-      <Stack.Screen name="GenericOTPScreen" component={GenericOTPScreen} />
+      {/* <Stack.Screen name="GenericSelectionScreen" component={GenericSelectionScreen} />
+      <Stack.Screen name="GenericOTPScreen" component={GenericOTPScreen} /> */}
     </Stack.Navigator>
   );
 };
