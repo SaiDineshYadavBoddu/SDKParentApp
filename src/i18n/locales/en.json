@@ -288,6 +288,8 @@
     "searchPlaceholder": "Requester, Approved or ID",
     "count": "Requests",
     "idPrefix": "Request",
+    "createdAt": "Created at",
+    "cancelledAt": "Cancelled at",
     "filters": {
       "title": "Filters",
       "selectStatus": "Select Status",
@@ -298,8 +300,13 @@
       "apply": "Apply Filters"
     },
     "status": {
-      "approved": "Approved",
-      "rejected": "Rejected",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "AUTO_APPROVED": "Auto Approved",
+      "CANCELLED": "Cancelled",
+      "PENDING_APPROVAL": "Pending Approval",
+      "DONE": "Completed",
+      "FAILED": "Failed",
       "inProgress": "In progress",
       "resolved": "Resolved"
     },
@@ -350,5 +357,9 @@
       "subtitle": "Check your WiFi or cellular connection and try again.",
       "primaryButton": "Try Again"
     }
+  },
+  "loader": {
+    "title": "Loading...",
+    "subtitle": "Please wait, this should only take a moment."
   }
 }

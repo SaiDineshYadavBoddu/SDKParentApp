@@ -42,6 +42,15 @@ export const lightColors = {
   statusUnblocking: '#C97A20',
   onStatusUnblocking: '#FFF1B8',
 
+  statusBlocked: '#BA1A1A',
+  onStatusBlocked: '#FFDAD6',
+
+  statusReplacement: '#0069B1',
+  onStatusReplacement: '#D2E4FF',
+
+  statusClosure: '#616161',
+  onStatusClosure: '#E0E0E0',
+
   filterButtonBg: '#E3F2FD',
 
   // Inverse colors (Toast/Snackbar)
@@ -93,6 +102,15 @@ export const darkColors = {
 
   statusUnblocking: '#FFDE9C',
   onStatusUnblocking: '#584400',
+
+  statusBlocked: '#FFB4AB',
+  onStatusBlocked: '#690005',
+
+  statusReplacement: '#9FCAFF',
+  onStatusReplacement: '#003259',
+
+  statusClosure: '#C4C6CF',
+  onStatusClosure: '#43474E',
 
   filterButtonBg: '#1D242B',
 

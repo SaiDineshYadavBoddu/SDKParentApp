@@ -22,12 +22,17 @@ import CustomHeader from '../../../common/components/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import CustomLoader from '../../../common/components/CustomLoader';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const { signOut } = useAuth();
   const { t } = useTranslation();
+  const { data: userDetails, isLoading } = useGetUserDetailsQuery();
+
+  console.log(userDetails);
 
   const accountSettingsItems: ProfileItemProps[] = [
     {
@@ -42,23 +47,11 @@ const ProfileScreen = () => {
       title: t('profile.items.changePassword.title'),
       subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => navigation.navigate('GenericInfoScreen', {
-        icon: <NoInternetSVG width={ms(120)} height={ms(120)} />,
-        title: t('noInternet.title'),
-        description: t('noInternet.subtitle'),
-        primaryButton: {
-          title: t('noInternet.primaryButton.title'),
-          onPress: () => navigation.goBack(),
-        },
-        secondaryButton: {
-          title: t('noInternet.secondaryButton.title'),
-          onPress: () => navigation.goBack(),
-        },
-      }),
+      onPress: () => navigation.navigate('ChangePassword'),
     },
   ];
 
-  const infoItems: ProfileItemProps[] = [
+  const infoItems: ProfileItemProps[] = [ 
     {
       id: 'contact-details',
       title: t('profile.items.contactDetails.title'),
@@ -112,8 +105,10 @@ const ProfileScreen = () => {
     },
   ];
 
+  // if(!isLoading) return <CustomLoader loading={isLoading}/>
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.screenBackground }]}>
       <CustomHeader
         title={t('profile.headerTitle')}
         rightContent={
@@ -122,6 +117,7 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         }
       />
+      {isLoading ? <CustomLoader loading={isLoading}/> :
       <ScrollView
         style={[styles.scrollContainer, { backgroundColor: colors.screenBackground }]}
         showsVerticalScrollIndicator={false}
@@ -136,6 +132,8 @@ const ProfileScreen = () => {
 
         <ProfileSection title={t('profile.sections.contact')} items={contactItems} />
       </ScrollView>
+      }
+      {/* <CustomLoader loading={isLoading}/> */}
     </View>
   );
 };

@@ -26,6 +26,7 @@ import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
 import { MOCK_TRANSACTIONS, MOCK_CARDS } from "../../../constants/mockData";
 import CustomImage from '../../../common/components/CustomImage';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 export default function CardListScreen() {
   const { t } = useTranslation();
@@ -33,7 +34,8 @@ export default function CardListScreen() {
   const navigation = useNavigation<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
-  const { data, isLoading, error } = useGetCardsQuery({
+
+  const queryArgs = React.useMemo(() => ({
     cardStatus: [
       'Pending Activation',
       'Active',
@@ -46,7 +48,9 @@ export default function CardListScreen() {
     pageNumber: 0,
     sortProperty: 'cardholderName',
     sortDirection: 'ASC',
-  });
+  }), []);
+
+  const { data, isLoading, isFetching, error } = useGetCardsQuery(queryArgs);
 
   const transactionItems: SectionItem[] = MOCK_TRANSACTIONS.map(txn => ({
     id: txn.id,
@@ -77,20 +81,14 @@ export default function CardListScreen() {
 
   return (
     <>
-      <View style={styles.header}>
-        <CustomText type={TextType.ScreenHeadlineSmall}>
-          {t('cardList.title')}
-        </CustomText>
-        <View style={{ paddingTop: ms(10) }}>
-          <TouchableOpacity
-            onPress={() => {
-              signOut();
-            }}
-          >
-            <NotificationSVG />
+    <CustomHeader 
+        title={t('cardList.title')}
+        rightContent={
+          <TouchableOpacity style={styles.rightButton} onPress={() => {signOut();}}>
+            <NotificationSVG width={ms(24)} height={ms(24)} />
           </TouchableOpacity>
-        </View>
-      </View>
+        }
+    />
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -199,15 +197,10 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: Spacing.xxl,
   },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: Spacing.xxl,
-    paddingHorizontal: Spacing.l,
+  rightButton: {
+    padding: ms(6),
+    marginRight: -ms(6),
   },
-
   balanceContainer: {
     marginBottom: Spacing.l,
     alignItems: 'center',

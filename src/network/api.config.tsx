@@ -16,17 +16,18 @@ const dynamicBaseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
-    baseUrl: 'https://sit.corporate.un.infradev.w4.az.network.ae/api/v1',
+    baseUrl: 'https://sit.corporate.un.infradev.w4.az.network.ae',
     prepareHeaders: (headers, { getState: _getState }) => {
       headers.set('Content-Type', 'application/json');
       const token = getAccessToken();
-      console.log('🚀 ~ dynamicBaseQuery ~ token:', token);
+      console.log('🚀 ~ dynamicBaseQuery ~ token availability:', !!token);
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
       return headers;
     },
   });
+  console.log('🚀 ~ dynamicBaseQuery ~ executing request:', args);
   return rawBaseQuery(args, WebApi, extraOptions);
 };
 
@@ -62,7 +63,7 @@ export const backendApi = createApi({
   //   }
   // },
   baseQuery: baseQueryWithReauth,
-  // refetchOnMountOrArgChange: 30,
+  // refetchOnMountOrArgChange: true,
   tagTypes: ['store_details'],
   endpoints: () => ({}),
 });

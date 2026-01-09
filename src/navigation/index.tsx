@@ -58,7 +58,7 @@ const NavigationContent = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavigationContainer ref={navigationRef}>
-        {!isAuthenticated ? <MainStack /> : <AuthStack />}
+        {isAuthenticated ? <MainStack /> : <AuthStack />}
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (
         <View style={{ position: 'absolute', top: 0, bottom: 10, left: 0, right: 0, backgroundColor: 'white', zIndex: 9999 }}>

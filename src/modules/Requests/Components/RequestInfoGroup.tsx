@@ -2,113 +2,78 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from '../../../common/components/CustomText';
-import ClockSVG from '../../../assets/svgs/ClockSVG';
-import RequestCheckMarkSVG from '../../../assets/svgs/RequestCheckMarkSVG';
-import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
-import ResolvedSVG from '../../../assets/svgs/ResolvedSVG';
-import InProgressSVG from '../../../assets/svgs/InProgressSVG';
 import { Spacing } from '../../../theme/spacing';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../theme/ThemeProvider';
-
-export type RequestDetail = {
-    userName: string;
-    userIconType: 'clock' | 'check';
-    status?: string;
-    dateText?: string;
-};
+import { RequestItem } from '../../../network/requests/request.types';
+import { getProgressStatusIcon, getProgressStatusColor, renderIcon } from '../../../utils/requestUtils';
 
 interface RequestInfoGroupProps {
-    details: RequestDetail[];
+    item: RequestItem;
 }
 
-export const renderIcon = (type: string) => {
-    switch (type) {
-        case 'clock':
-            return <ClockSVG width={ms(16)} height={ms(16)} />;
-        case 'check':
-            return <RequestCheckMarkSVG width={ms(16)} height={ms(16)} />;
-        case 'calendar':
-            return <DatePickerSVG width={ms(16)} height={ms(16)} />;
-        default:
-            return null;
-    }
-};
-
-export const getProgressStatusIcon = (status: string) => {
-    switch (status) {
-        case 'inProgress':
-            return <InProgressSVG width={ms(16)} height={ms(16)} />;
-        case 'resolved':
-            return <ResolvedSVG width={ms(16)} height={ms(16)} />;
-        default:
-            return null;
-    }
-};
-
-export const getProgressStatusColor = (status: string, colors: any) => {
-    switch (status) {
-        case 'inProgress':
-            return colors.statusInProgress;
-        case 'resolved':
-            return colors.statusResolved;
-        default:
-            return colors.tertiaryText;
-    }
-};
-
-export const getStatusColors = (status: string, colors: any) => {
-    switch (status) {
-        case 'activation':
-            return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
-        case 'cardUnblocking':
-            return { backgroundColor: colors.onStatusUnblocking, textColor: colors.statusUnblocking };
-        default:
-            return { backgroundColor: colors.screenBackground, textColor: colors.tertiaryText };
-    }
-};
-
-const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ details }) => {
+const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
+
+    const requesterStatusColor = getProgressStatusColor(item.status, colors);
+
     return (
         <View style={styles.detailsContainer}>
-            {details.map((detail, index) => {
-                const statusColor = detail.status ? getProgressStatusColor(detail.status, colors) : colors.tertiaryText;
-                return (
-                    <View key={index} style={styles.detailRow}>
-                        {/* Left Column */}
+            {/* Requester Row */}
+            <View style={styles.detailRow}>
+                <View style={styles.leftColumn}>
+                    {renderIcon('clock')}
+                    <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
+                        {item.requester}
+                    </CustomText>
+                </View>
+
+                <View style={styles.rightColumn}>
+                    {getProgressStatusIcon(item.status, colors)}
+                    <CustomText
+                        type={TextType.ScreenDisplaySmall}
+                        style={[styles.statusText, { color: requesterStatusColor }]}
+                    >
+                        {t(`requests.status.${item.status}`)}
+                    </CustomText>
+                </View>
+            </View>
+
+            {/* Approver or Creation Row */}
+            <View style={styles.detailRow}>
+                {/* {item.approver ? (
+                    <> */}
                         <View style={styles.leftColumn}>
-                            {renderIcon(detail.userIconType)}
+                            {renderIcon('check')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                {detail.userName}
+                                {item.approver}
                             </CustomText>
                         </View>
-
-                        {/* Right Column */}
                         <View style={styles.rightColumn}>
-                            {detail.status ? (
-                                <>
-                                    {getProgressStatusIcon(detail.status)}
-                                    <CustomText
-                                        type={TextType.ScreenDisplaySmall}
-                                        style={[styles.statusText, { color: statusColor }]}
-                                    >
-                                        {t(`requests.status.${detail.status}`)}
-                                    </CustomText>
-                                </>
-                            ) : detail.dateText ? (
-                                <>
-                                    {renderIcon('calendar')}
-                                    <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                        {detail.dateText}
-                                    </CustomText>
-                                </>
-                            ) : null}
+                            {renderIcon('calendar')}
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
+                                {new Date(item.approval?.approvedAt || item.lastModifiedAt).toLocaleDateString()}
+                            </CustomText>
                         </View>
-                    </View>
-                );
-            })}
+                    {/* </>
+                ) : (
+                    <>
+                        <View style={styles.leftColumn}>
+                            {renderIcon('clock')}
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
+                                {item.status === 'CANCELLED' ? t('requests.cancelledAt') : t('requests.createdAt')}
+                            </CustomText>
+                        </View>
+                        <View style={styles.rightColumn}>
+                            {renderIcon('calendar')}
+                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
+                                {new Date(item.status === 'CANCELLED' ? item.lastModifiedAt : item.createdAt).toLocaleDateString()}
+                            </CustomText>
+                        </View>
+                    </>
+                )} */}
+            </View>
         </View>
     );
 };

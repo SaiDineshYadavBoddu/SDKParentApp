@@ -5,9 +5,13 @@ import DetailsScreen, {
 } from '../../../common/components/DetailsScreen';
 import { useTranslation } from 'react-i18next';
 
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+
 export default function ContactDetails() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { data: userDetails } = useGetUserDetailsQuery();
+  const contact = userDetails?.contactDetails;
 
   const sections: DetailsSection[] = [
     {
@@ -15,29 +19,29 @@ export default function ContactDetails() {
         {
           id: '1',
           label: t('profile.details.contact.fields.customerId'),
-          value: '1733666680969004',
+          value: userDetails?.customerId || '-',
         },
         {
           id: '2',
           label: t('profile.details.contact.fields.userId'),
-          value: 'sharmil200',
+          value: userDetails?.cardName || '-',
           actionLabel: t('profile.details.contact.fields.change'),
           onActionPress: () => console.log('Change User ID'),
         },
         {
           id: '3',
           label: t('profile.details.contact.fields.email'),
-          value: 'sharmil200@yopmail.com',
+          value: contact?.email || '-',
         },
         {
           id: '4',
           label: t('profile.details.contact.fields.mobile'),
-          value: '0567334000',
+          value: contact?.mobilePhone || '-',
         },
         {
           id: '5',
           label: t('profile.details.contact.fields.work'),
-          value: '026444000',
+          value: contact?.workPhone || '-',
         },
       ],
     },

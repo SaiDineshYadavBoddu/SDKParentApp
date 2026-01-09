@@ -26,10 +26,10 @@ const NoInternetToast = ({ visible, onRetry }: Props) => {
         <View style={styles.leftContent}>
           <WifiOffSVG color={colors.inverseOnSurface} />
           <View style={styles.textContainer}>
-            <CustomText type={TextType.CardText} style={[styles.title, { color: colors.inverseOnSurface }]}>
+            <CustomText type={TextType.CardTitle} style={[styles.title, { color: colors.inverseOnSurface }]}>
               {t('noInternet.toast.title')}
             </CustomText>
-            <CustomText type={TextType.CardSubtitle} style={[styles.subtitle, { color: colors.inverseOnSurface }]}>
+            <CustomText type={TextType.CardSubtitle} style={{ color: colors.inverseOnSurface }}>
               {t('noInternet.toast.subtitle')}
             </CustomText>
           </View>
@@ -73,10 +73,6 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: '600',
     marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: ms(10),
-    lineHeight: ms(14),
   },
   retryButton: {
     fontWeight: '600',

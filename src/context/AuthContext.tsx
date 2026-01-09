@@ -9,6 +9,8 @@ import { authorize, logout, AuthConfiguration } from 'react-native-app-auth';
 import { Linking } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
+import { useDispatch } from 'react-redux';
+import { backendApi } from '../network/api.config';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -40,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -86,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       globalAccessToken = null;
       setIdToken(null);
       setIsAuthenticated(false);
+      dispatch(backendApi.util.resetApiState());
     }
   };
 

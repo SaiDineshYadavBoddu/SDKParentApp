@@ -7,7 +7,7 @@ export const cardApi = backendApi.injectEndpoints({
     getCards: builder.query<any, any>({
       query: params => ({
         url: API_ENDPOINTS.GET_CARDS,
-        method: 'GET',
+          method: 'GET',
         params,
       }),
     }),
