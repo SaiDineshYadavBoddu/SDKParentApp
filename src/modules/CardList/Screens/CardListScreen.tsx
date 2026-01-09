@@ -19,14 +19,18 @@ import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
 import BackButtonSVG from "../../../assets/svgs/BackButtonSVG";
 import MenuHamburgerSVG from "../../../assets/svgs/MenuHamburgerSVG";
-import { useGetCardsQuery } from "../../../network/card/card.api";
+import { useGetCardsQuery, useGetTransactionsQuery } from "../../../network/card/card.api";
 import { useAuth } from "../../../context/AuthContext";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
 import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
-import { MOCK_TRANSACTIONS, MOCK_CARDS } from "../../../constants/mockData";
+import { isCardPendingActivation, isCardTempBlocked } from "../../../utils/cardUtils";
+import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
+import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
+import { APP_CONFIG } from "../../../config/appConfig";
+
 
 export default function CardListScreen() {
   const { t } = useTranslation();
@@ -52,40 +56,25 @@ export default function CardListScreen() {
     refetchOnMountOrArgChange: true,
   });
 
-  const cards = MOCK_CARDS; // Using MOCK_CARDS for verification
+  const cards = data?.content || [];
   const activeCard = cards[activeCardIndex];
-  const isPendingActivation =
-    activeCard?.cardStatus === 'Pending Activation' ||
-    activeCard?.cardStatus === 'PENDING_ACTIVATION';
 
-  const isTempBlocked = activeCard?.cardStatus === 'Blocked' && activeCard?.statusCause === 'TempBlocked';
+  const { data: transactionsData, isLoading: isTxnLoading } = useGetTransactionsQuery({
+    cardId: activeCard?.cardIdentifier,
+    pageSize: 4,
+    pageNumber: 0,
+    ...calculateDateRange('lastMonth'),
+  }, {
+    skip: !activeCard?.cardIdentifier || APP_CONFIG.USE_MOCK_TRANSACTIONS,
+  });
+  const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
+  const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
 
-  const transactionItems: SectionItem[] = MOCK_TRANSACTIONS.map(txn => ({
-    id: txn.id,
+  const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
+    ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)
+    : (transactionsData?.content || []);
 
-    top: (
-      <>
-        <CustomText type={TextType.CardTitle}>{txn.title}</CustomText>
-
-        <View
-          style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}
-        >
-          <CurrencySVG width={ms(14)} height={ms(14)} />
-          <CustomText type={TextType.CardTitle}>{txn.amount}</CustomText>
-        </View>
-      </>
-    ),
-
-    middle: (
-      <>
-        <CustomText type={TextType.CardSubtitle}>{txn.txnId}</CustomText>
-
-        <CustomText type={TextType.CardSubtitle}>{txn.date}</CustomText>
-      </>
-    ),
-
-    onPress: () => { },
-  }));
+  const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions);
 
   return (
     <>
@@ -229,6 +218,8 @@ export default function CardListScreen() {
                 rightTitle={t('cardList.viewAll')}
                 onRightTitlePress={() => { }}
                 items={transactionItems}
+                emptyMessage={t('cardList.noTransactions')}
+                loading={isTxnLoading}
               />
             </View>
           </>

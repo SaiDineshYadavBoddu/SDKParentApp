@@ -14,6 +14,7 @@ import CustomText, { TextType } from './CustomText';
 import FlexibleCard from './FlexibleCard';
 import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
+import CustomLoader from './CustomLoader';
 
 export type SectionItem = {
   id: string;
@@ -34,11 +35,13 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   ListEmptyComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
+  | React.ComponentType<any>
+  | React.ReactElement
+  | null
+  | undefined;
   ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
+  emptyMessage?: string;
+  loading?: boolean;
 }
 
 export default function SectionContainer({
@@ -50,6 +53,8 @@ export default function SectionContainer({
   contentStyle,
   ListEmptyComponent,
   ItemSeparatorComponent,
+  emptyMessage,
+  loading,
 }: Props) {
   const { colors } = useTheme();
 
@@ -72,7 +77,7 @@ export default function SectionContainer({
       {title ? (
         <View style={styles.headerRow}>
           <CustomText type={TextType.SectionTitle}>{title}</CustomText>
-          {rightTitle && (
+          {rightTitle && items.length > 0 && (
             <TouchableOpacity onPress={onRightTitlePress}>
               <CustomText
                 type={TextType.ActionLabel}
@@ -90,7 +95,22 @@ export default function SectionContainer({
         renderItem={renderItem}
         keyExtractor={item => item.id}
         scrollEnabled={false}
-        ListEmptyComponent={ListEmptyComponent ?? null}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.emptyContainer}>
+              <CustomLoader loading={true} />
+            </View>
+          ) : (
+            ListEmptyComponent ??
+            (emptyMessage ? (
+              <View style={styles.emptyContainer}>
+                <CustomText type={TextType.CardText} style={styles.emptyText}>
+                  {emptyMessage}
+                </CustomText>
+              </View>
+            ) : null)
+          )
+        }
         ItemSeparatorComponent={
           ItemSeparatorComponent ??
           (() => <View style={{ height: Spacing.s }} />)
@@ -131,5 +151,14 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.m,
+  },
+  emptyText: {
+    color: '#707070',
+    textAlign: 'center',
   },
 });

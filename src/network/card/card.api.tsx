@@ -11,7 +11,14 @@ export const cardApi = backendApi.injectEndpoints({
         params,
       }),
     }),
+    getTransactions: builder.query<any, any>({
+      query: params => ({
+        url: API_ENDPOINTS.GET_TRANSACTIONS,
+        method: 'GET',
+        params,
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery } = cardApi;

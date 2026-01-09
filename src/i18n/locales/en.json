@@ -9,8 +9,7 @@
     "message": "Message",
     "continue": "Continue",
     "cardNumber": "Card Number",
-    "reset": "Reset",
-    "apply": "Apply"
+    "reset": "Reset"
   },
   "cardList": {
     "title": "My Cards",
@@ -23,6 +22,7 @@
     "replace": "Replace",
     "freeze": "Freeze",
     "unfreeze": "Unfreeze",
+    "noTransactions": "There are no transactions available to show in transaction history",
     "pendingActivation": "Pending activation",
     "cardPendingActivation": "Card pending activation",
     "activationInstruction": "Please make sure the card is physically recieved to activate it",
@@ -127,9 +127,10 @@
     "applyFilters": "Apply Filters",
     "reset": "Reset",
     "timeRanges": {
-      "lastWeek": "Last week",
+      "thisMonth": "This month",
       "lastMonth": "Last month",
       "last3Months": "Last 3 months",
+      "thisYear": "This year",
       "custom": "Custom"
     }
   },
