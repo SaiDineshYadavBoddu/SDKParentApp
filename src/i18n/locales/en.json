@@ -35,8 +35,8 @@
     "selectReasonForReplacement": "Select the reason for card replacement",
     "replacementFee": "Replacement fee",
     "feePrefix": "Card replacement fee is ",
-    "feeSuffix": "26.00. The fee will be deducted from the replaced card.",
-    "feeAmount": "Card replacement fee is 26.00. The fee will be deducted from the replaced card.",
+    "feeSuffix": "{{amount}}. The fee will be deducted from the replaced card.",
+    "feeAmount": "Card replacement fee is {{amount}}. The fee will be deducted from the replaced card.",
     "successTitle": "Card replacement request submitted successfully",
     "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
     "reasons": {

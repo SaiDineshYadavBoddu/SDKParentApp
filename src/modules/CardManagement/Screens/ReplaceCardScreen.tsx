@@ -20,6 +20,9 @@ import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
 
+import { useGetCardTariffsQuery } from '../../../network/card/card.api';
+import CustomLoader from '../../../common/components/CustomLoader';
+
 const ReplaceCardScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -31,6 +34,15 @@ const ReplaceCardScreen = () => {
   const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
   const [tempReason, setTempReason] = useState<string | undefined>("");
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const { data: tariffData, isLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
+    skip: !card?.cardIdentifier,
+  });
+
+  const replacementFee = React.useMemo(() => {
+    const tariff = tariffData.tariffDetails.find((t: any) => t.code === 'CP_REPL_PINS');
+    return tariff.feeBase;
+  }, [tariffData]);
 
   const handleConfirm = () => {
     setSelectedReason(tempReason);
@@ -91,7 +103,7 @@ const ReplaceCardScreen = () => {
           <CustomText type={TextType.CardText} style={styles.infoText}>
             {t('replaceCard.feePrefix')}
             <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
-            {t('replaceCard.feeSuffix')}
+            {t('replaceCard.feeSuffix', { amount: replacementFee })}
           </CustomText>
         </CustomWarning>
       </ScrollView>
@@ -131,7 +143,7 @@ const ReplaceCardScreen = () => {
             <CustomText type={TextType.CardText} style={styles.infoText}>
               {t('replaceCard.feePrefix')}
               <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
-              {t('replaceCard.feeSuffix')}
+              {t('replaceCard.feeSuffix', { amount: replacementFee })}
             </CustomText>
           </CustomWarning>
 
@@ -143,6 +155,7 @@ const ReplaceCardScreen = () => {
           />
         </View>
       </CustomBottomSheet>
+      <CustomLoader loading={isLoading} />
     </View>
   );
 };
