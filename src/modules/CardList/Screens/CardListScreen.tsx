@@ -63,12 +63,14 @@ export default function CardListScreen() {
     cardId: activeCard?.cardIdentifier,
     pageSize: 4,
     pageNumber: 0,
-    ...calculateDateRange('lastMonth'),
+    ...calculateDateRange('thisMonth'),
   }, {
     skip: !activeCard?.cardIdentifier || APP_CONFIG.USE_MOCK_TRANSACTIONS,
   });
   const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
   const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
+
+  console.log("transactionsData", transactionsData);
 
   const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
     ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)

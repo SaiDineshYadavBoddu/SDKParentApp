@@ -58,15 +58,13 @@ export const mapTransactionsToSectionItems = (transactions: any[]): SectionItem[
  */
 export const filterTransactions = (
     transactions: any[],
-    searchQuery: string,
-    cardId: string
+    searchQuery: string
 ) => {
     return transactions.filter((txn) => {
         const matchesSearch =
             (txn.merchantName || txn.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
             (txn.transactionRefId || '').includes(searchQuery);
-        const matchesCard = txn.cardId === cardId;
-        return matchesSearch && matchesCard;
+        return matchesSearch;
     });
 };
 
@@ -96,19 +94,26 @@ export const calculateDateRange = (
     timeRange: string,
     customRange?: { start?: string; end?: string }
 ) => {
-    const to = new Date();
-    const from = new Date();
+    const today = new Date();
+    const to = new Date(today);
+    const from = new Date(today);
+
+    console.log(`calculateDateRange called with: ${timeRange}`);
+
     switch (timeRange) {
         case 'thisMonth':
             from.setDate(1);
             break;
         case 'lastMonth':
-            from.setMonth(to.getMonth() - 1);
+            // Set 'to' to the last day of the previous month
+            to.setDate(0);
+            // Set 'from' to the first day of that same previous month
             from.setDate(1);
-            to.setDate(0); // Last day of previous month
+            from.setMonth(to.getMonth());
+            from.setFullYear(to.getFullYear());
             break;
         case 'last3Months':
-            from.setMonth(to.getMonth() - 3);
+            from.setMonth(today.getMonth() - 3);
             break;
         case 'thisYear':
             from.setMonth(0, 1); // January 1st
@@ -122,10 +127,14 @@ export const calculateDateRange = (
             }
             break;
         default:
-            from.setMonth(to.getMonth() - 1);
+            // Default to last 30 days if no match
+            from.setDate(today.getDate() - 30);
     }
-    return {
+
+    const result = {
         dateFrom: from.toISOString().split('T')[0],
         dateTo: to.toISOString().split('T')[0],
     };
+    console.log(`calculated result:`, result);
+    return result;
 };

@@ -90,9 +90,9 @@ const TransactionsScreen = () => {
   }, [txnData, selectedCardId, dateRange, APP_CONFIG.USE_MOCK_TRANSACTIONS]);
 
   const filteredTransactions = useMemo(() => {
-    const filtered = filterTransactions(transactions, searchQuery, selectedCardId);
+    const filtered = filterTransactions(transactions, searchQuery);
     return sortTransactions(filtered, 'newest');
-  }, [transactions, searchQuery, selectedCardId]);
+  }, [transactions, searchQuery]);
 
   const renderTransactionItem = ({ item }: { item: any }) => (
     <View style={styles.transactionItem}>
