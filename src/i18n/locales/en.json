@@ -40,10 +40,10 @@
     "successTitle": "Card replacement request submitted successfully",
     "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
     "reasons": {
-      "lost": "Card lost",
-      "stolen": "Card is stolen",
-      "damaged": "Card damaged",
-      "fraud": "Fraud on the card"
+      "Lost": "Card lost",
+      "Stolen": "Card is stolen",
+      "Damaged": "Card damaged",
+      "Fraud": "Fraud on the card"
     }
   },
   "onboarding": {

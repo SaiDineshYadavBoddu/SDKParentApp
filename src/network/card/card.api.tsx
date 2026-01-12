@@ -43,7 +43,14 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    replaceCard: builder.mutation<any, { cardId: string; reason: string }>({
+      query: ({ cardId, reason }) => ({
+        url: API_ENDPOINTS.POST_REPLACE_CARD.replace('{cardId}', cardId),
+        method: 'POST',
+        params: { reason },
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation } = cardApi;

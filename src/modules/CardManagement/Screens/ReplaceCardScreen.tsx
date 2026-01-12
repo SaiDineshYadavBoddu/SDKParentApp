@@ -20,7 +20,7 @@ import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
 
-import { useGetCardTariffsQuery } from '../../../network/card/card.api';
+import { useGetCardTariffsQuery, useReplaceCardMutation } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 
 const ReplaceCardScreen = () => {
@@ -35,13 +35,15 @@ const ReplaceCardScreen = () => {
   const [tempReason, setTempReason] = useState<string | undefined>("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const { data: tariffData, isLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
+  const { data: tariffData, isLoading: isTariffLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
     skip: !card?.cardIdentifier,
   });
 
+  const [replaceCard, { isLoading: isReplaceLoading }] = useReplaceCardMutation();
+
   const replacementFee = React.useMemo(() => {
-    const tariff = tariffData.tariffDetails.find((t: any) => t.code === 'CP_REPL_PINS');
-    return tariff.feeBase;
+    const tariff = tariffData?.tariffDetails?.find((t: any) => t.code === 'CP_REPL_PINS');
+    return tariff ? tariff.feeBase : '26.00';
   }, [tariffData]);
 
   const handleConfirm = () => {
@@ -49,8 +51,14 @@ const ReplaceCardScreen = () => {
     setBottomSheetVisible(false);
   };
 
-  const handleSubmit = () => {
-    setIsSuccess(true);
+  const handleSubmit = async () => {
+    if (!card?.cardIdentifier || !selectedReason) return;
+    try {
+      await replaceCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
+      setIsSuccess(true);
+    } catch (error) {
+      console.error('Failed to replace card', error);
+    }
   };
 
   if (isSuccess) {
@@ -155,7 +163,7 @@ const ReplaceCardScreen = () => {
           />
         </View>
       </CustomBottomSheet>
-      <CustomLoader loading={isLoading} />
+      <CustomLoader loading={isTariffLoading || isReplaceLoading} />
     </View>
   );
 };

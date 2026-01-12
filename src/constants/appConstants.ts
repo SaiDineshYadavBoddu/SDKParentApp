@@ -20,10 +20,10 @@ export const LOGIN_ONBOARDING_DATA = [
 ];
 
 export const REPLACE_CARD_REASONS = [
-  "lost",
-  "stolen",
-  "damaged",
-  "fraud"
+  "Lost",
+  "Stolen",
+  "Damaged",
+  "Fraud"
 ];
 
 export const FREEZE_CARD_REASONS = [

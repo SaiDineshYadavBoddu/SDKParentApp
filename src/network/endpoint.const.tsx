@@ -5,4 +5,5 @@ export const API_ENDPOINTS = {
   GET_CARD_RESTRICTIONS: '/cards/mine/{cardId}/restrictions',
   POST_CLOSE_CARD: '/cards/mine/{cardId}/close',
   GET_CARD_TARIFFS: '/cards/{cardId}/tariffs',
+  POST_REPLACE_CARD: '/cards/mine/{cardId}/replace',
 } as const;
