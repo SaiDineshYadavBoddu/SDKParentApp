@@ -41,6 +41,7 @@ export default function GenericOTPScreen() {
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState(initialError);
+  const [timer, setTimer] = useState(route.params?.retryAfter || 0);
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   useEffect(() => {
@@ -52,6 +53,18 @@ export default function GenericOTPScreen() {
       return () => RNOtpVerify.removeListener();
     }
   }, []);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev: number) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer]);
 
   const otpHandler = (message: string) => {
     const otpMatch = /(\d{6})/g.exec(message);
@@ -83,10 +96,17 @@ export default function GenericOTPScreen() {
     }
   };
 
-  const handleVerify = () => {
+  const [localLoading, setLocalLoading] = useState(false);
+
+  const handleVerify = async () => {
     const otpString = otp.join('');
     if (otpString.length === 6) {
-      onVerify?.(otpString);
+      setLocalLoading(true);
+      try {
+        await onVerify?.(otpString);
+      } finally {
+        setLocalLoading(false);
+      }
     } else {
       setError(true);
     }
@@ -101,7 +121,7 @@ export default function GenericOTPScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader
         title={headerTitle}
         onBackPress={handleBack}
@@ -162,11 +182,27 @@ export default function GenericOTPScreen() {
                     ))}
                     </View>
 
-                    <TouchableOpacity onPress={onResend} style={styles.resendButton}>
-                    <CustomText type={TextType.ActionLabel} style={styles.resendText}>
-                        {t('otp.resend')}
-                    </CustomText>
-                    </TouchableOpacity>
+                    {timer > 0 ? (
+                      <View style={styles.resendButton}>
+                        <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.secondaryText }]}>
+                          {t('otp.resendTimer', { seconds: timer })}
+                        </CustomText>
+                      </View>
+                    ) : (
+                      <TouchableOpacity 
+                        onPress={async () => {
+                          const response = await onResend?.();
+                          if (response?.tryAgainIn) {
+                            setTimer(response.tryAgainIn);
+                          }
+                        }} 
+                        style={styles.resendButton}
+                      >
+                        <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.primary }]}>
+                          {t('otp.resend')}
+                        </CustomText>
+                      </TouchableOpacity>
+                    )}
                 </View>
             </ScrollView>
 
@@ -174,12 +210,12 @@ export default function GenericOTPScreen() {
                 <CustomButton
                 title={t(verifyButtonText)}
                 onPress={handleVerify}
-                loading={isLoading}
-                disabled={otp.join('').length < 6 || isLoading}
+                loading={isLoading || localLoading}
+                disabled={otp.join('').length < 6 || isLoading || localLoading}
                 uppercase={false}
                 />
             </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

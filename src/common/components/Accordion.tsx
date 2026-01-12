@@ -99,8 +99,7 @@ const styles = StyleSheet.create({
         marginHorizontal: ms(16),
     },
     title: {
-        fontSize: ms(16),
-        fontWeight: '700',
+        fontWeight: '500',
     },
     content: {
         paddingHorizontal: ms(16),

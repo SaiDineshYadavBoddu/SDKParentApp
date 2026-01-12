@@ -16,7 +16,18 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
 
-    const requesterStatusColor = getProgressStatusColor(item.status, colors);
+    const getStatusToDisplay = () => {
+        if (item.status === 'CANCELLED' || item.status === 'REJECTED') {
+            return item.status;
+        }
+        if (item.resultStatus === 'FAILED') {
+            return 'FAILED';
+        }
+        return item.status;
+    };
+
+    const statusToDisplay = getStatusToDisplay();
+    const statusColor = getProgressStatusColor(statusToDisplay, colors);
 
     return (
         <View style={styles.detailsContainer}>
@@ -30,20 +41,18 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
                 </View>
 
                 <View style={styles.rightColumn}>
-                    {getProgressStatusIcon(item.status, colors)}
+                    {getProgressStatusIcon(statusToDisplay, colors)}
                     <CustomText
                         type={TextType.ScreenDisplaySmall}
-                        style={[styles.statusText, { color: requesterStatusColor }]}
+                        style={[styles.statusText, { color: statusColor }]}
                     >
-                        {t(`requests.status.${item.status}`)}
+                        {t(`requests.status.${statusToDisplay}`)}
                     </CustomText>
                 </View>
             </View>
 
             {/* Approver or Creation Row */}
             <View style={styles.detailRow}>
-                {/* {item.approver ? (
-                    <> */}
                         <View style={styles.leftColumn}>
                             {renderIcon('check')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
@@ -53,26 +62,9 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
                         <View style={styles.rightColumn}>
                             {renderIcon('calendar')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                {new Date(item.approval?.approvedAt || item.lastModifiedAt).toLocaleDateString()}
+                                {new Date(item.createdAt).toLocaleDateString()}
                             </CustomText>
                         </View>
-                    {/* </>
-                ) : (
-                    <>
-                        <View style={styles.leftColumn}>
-                            {renderIcon('clock')}
-                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                {item.status === 'CANCELLED' ? t('requests.cancelledAt') : t('requests.createdAt')}
-                            </CustomText>
-                        </View>
-                        <View style={styles.rightColumn}>
-                            {renderIcon('calendar')}
-                            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                {new Date(item.status === 'CANCELLED' ? item.lastModifiedAt : item.createdAt).toLocaleDateString()}
-                            </CustomText>
-                        </View>
-                    </>
-                )} */}
             </View>
         </View>
     );

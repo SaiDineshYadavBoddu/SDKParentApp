@@ -32,5 +32,6 @@ export type RequestItem = {
     approverId?: string;
     approvedAt?: string;
   };
+  resultStatus?: string;
   rejectReason?: string;
 };

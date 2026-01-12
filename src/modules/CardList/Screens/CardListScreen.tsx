@@ -84,7 +84,7 @@ export default function CardListScreen() {
     <CustomHeader 
         title={t('cardList.title')}
         rightContent={
-          <TouchableOpacity style={styles.rightButton} onPress={() => {signOut();}}>
+          <TouchableOpacity style={styles.rightButton} onPress={() => {navigation.navigate('Notifications')}}>
             <NotificationSVG width={ms(24)} height={ms(24)} />
           </TouchableOpacity>
         }
@@ -143,7 +143,7 @@ export default function CardListScreen() {
         </View>
 
         <CardCarousel
-          data={MOCK_CARDS}
+          data={data?.content || []}
           onIndexChange={(index) => setActiveCardIndex(index)}
         />
 

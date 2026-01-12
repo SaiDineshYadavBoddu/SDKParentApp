@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import { Typography } from '../../theme/typography';
+import { useGetUserMeQuery } from '../../network/user/user.api';
 import CustomHeader from './CustomHeader';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
@@ -20,9 +21,22 @@ export interface SelectionOption {
   subtitle?: string;
 }
 
+const maskEmail = (email: string) => {
+  if (!email) return '';
+  const [name, domain] = email.split('@');
+  if (name.length <= 2) return `${name[0]}***@${domain}`;
+  return `${name[0]}****${name.slice(-2)}@${domain}`; // matches user example s*****00
+};
+
+const maskPhone = (phone: string) => {
+  if (!phone) return '';
+  if (phone.length <= 4) return '****';
+  return `${phone.slice(0, 4)}*****${phone.slice(-2)}`; // matches user example 0567*****00
+};
+
 const DEFAULT_OPTIONS: SelectionOption[] = [
   {
-    id: 'mobile',
+    id: 'phone',
     title: 'genericSelection.options.mobile.title',
   },
   {
@@ -37,28 +51,52 @@ export default function GenericSelectionScreen() {
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
 
+  const { data: userData } = useGetUserMeQuery();
+
   const {
     headerTitle = '',
     title,
     subtitle,
-    options = DEFAULT_OPTIONS,
+    options: providedOptions,
     onContinue,
     onBackPress,
-    continueButtonText = 'Continue',
+    continueButtonText = 'Continue', 
     isLoading = false,
   } = route.params || {};
+
+  const displayOptions: SelectionOption[] = useMemo(() => {
+    if (providedOptions) return providedOptions;
+    
+    return DEFAULT_OPTIONS.map(option => {
+      if (option.id === 'phone' && userData?.mobilePhone) {
+        return { ...option, subtitle: maskPhone(userData.mobilePhone) };
+      }
+      if (option.id === 'email' && userData?.email) {
+        return { ...option, subtitle: maskEmail(userData.email) };
+      }
+      return option;
+    });
+  }, [providedOptions, userData]);
 
   const [selectedValue, setSelectedValue] = React.useState<string>('');
 
   const displayTitle = title ?? t('genericSelection.title');
   const displaySubtitle = subtitle ?? t('genericSelection.subtitle');
 
-  const handleContinue = () => {
+  const [localLoading, setLocalLoading] = useState(false);
+
+  const handleContinue = async () => {
+    const selectedOption = displayOptions.find((o: SelectionOption) => o.id === selectedValue);
     if (onContinue) {
-      onContinue(selectedValue);
+      setLocalLoading(true);
+      try {
+        await onContinue(selectedOption);
+      } finally {
+        setLocalLoading(false);
+      }
     } else {
       navigation.navigate('GenericOTPScreen', {
-        target: options?.find((o: SelectionOption) => o.id === selectedValue)?.subtitle || '',
+        target: selectedOption?.subtitle || '',
       });
     }
   };
@@ -72,7 +110,7 @@ export default function GenericSelectionScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader
         title={headerTitle}
         onBackPress={handleBack}
@@ -84,7 +122,7 @@ export default function GenericSelectionScreen() {
       >
         <View style={styles.topSection}>
           <View style={styles.iconContainer}>
-            <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
+            <VerificationSVG stroke={colors.primary} width={ms(48)} height={ms(48)} />
           </View>
           <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
             {t(displayTitle)}
@@ -95,7 +133,7 @@ export default function GenericSelectionScreen() {
         </View>
 
         <View style={styles.optionsContainer}>
-          {options?.map((option: SelectionOption) => {
+          {displayOptions?.map((option: SelectionOption) => {
             const isSelected = selectedValue === option.id;
             return (
               <FlexibleCard
@@ -113,7 +151,6 @@ export default function GenericSelectionScreen() {
                   <CustomRadioButton
                     selected={isSelected}
                     onPress={() => setSelectedValue(option.id)}
-                    containerStyle={styles.radioContainer}
                   />
                 }
                 middle={
@@ -139,11 +176,11 @@ export default function GenericSelectionScreen() {
           title={t(continueButtonText)}
           uppercase={false}
           onPress={handleContinue}
-          loading={isLoading}
-          disabled={!selectedValue || isLoading}
+          loading={isLoading || localLoading}
+          disabled={!selectedValue || isLoading || localLoading}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -153,11 +190,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.l,
-    paddingBottom: ms(100),
+    gap: Spacing.xl,
   },
   topSection: {
     marginTop: Spacing.m,
-    marginBottom: Spacing.xl,
+    gap: Spacing.m,
   },
   iconContainer: {
     marginBottom: Spacing.l,
@@ -169,19 +206,15 @@ const styles = StyleSheet.create({
     lineHeight: ms(20),
   },
   optionsContainer: {
-    gap: Spacing.m,
+    gap: Spacing.xl,
   },
   optionCard: {
     paddingVertical: ms(16),
     paddingHorizontal: Spacing.m,
     borderRadius: ms(16),
   },
-  radioContainer: {
-    marginVertical: 0,
-  },
   textContainer: {
     flex: 1,
-    marginLeft: ms(8),
     gap: Spacing.xs,
   },
   optionTitle: {

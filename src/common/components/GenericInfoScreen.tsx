@@ -22,6 +22,8 @@ export default function GenericInfoScreen() {
     description,
     primaryButton,
     secondaryButton,
+    titleStyle,
+    descriptionStyle,
   } = route.params || {};
 
   return (
@@ -33,17 +35,17 @@ export default function GenericInfoScreen() {
         <View style={styles.iconContainer}>
           {icon}
         </View>
-<View style={styles.textContainer}>
+      <View style={styles.textContainer}>
         <CustomText
             type={TextType.ScreenHeadlineLarge}
-            style={[styles.title, { color: colors.onBackground }]}
+            style={[styles.title, { color: colors.onBackground }, titleStyle]}
         >
             {t(title)}
         </CustomText>
 
         <CustomText
             type={TextType.ScreenDisplaySmall}
-            style={[styles.description, { color: colors.secondaryText }]}
+            style={[styles.description, { color: colors.secondaryText }, descriptionStyle]}
         >
             {t(description)}
         </CustomText>

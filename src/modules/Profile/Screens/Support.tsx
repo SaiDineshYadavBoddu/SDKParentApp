@@ -27,6 +27,10 @@ import CustomButton from '../../../common/components/CustomButton';
 import { TOPICS } from '../../../constants/appConstants';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import UAESVG from '../../../assets/svgs/UAESVG';
+import { useCreateSupportRequestMutation } from '../../../network/profile/profile.api';
+import CustomLoader from '../../../common/components/CustomLoader';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 
 const Support = () => {
   const { colors } = useTheme();
@@ -34,11 +38,61 @@ const Support = () => {
   const { t } = useTranslation();
   const [selectedTopic, setSelectedTopic] = useState<string | undefined>('');
   const [tempTopic, setTempTopic] = useState<string | undefined>('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [description, setDescription] = useState('');
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+
+  const [createSupportRequest, { isLoading: isSubmitting }] = useCreateSupportRequestMutation();
+
+  const isFormValid = phoneNumber.length > 0 && !!selectedTopic && description.length > 0;
 
   const handleConfirm = () => {
     setSelectedTopic(tempTopic);
     setIsBottomSheetVisible(false);
+  };
+
+  const handleContactMe = async () => {
+    if (!isFormValid) return;
+
+    try {
+      const response = await createSupportRequest({
+        phoneNumber: `+971${phoneNumber}`,
+        topic: t(`support.topics.${selectedTopic}`),
+        description: description,
+      }).unwrap();
+      
+      // Success feedback
+      setSelectedTopic('');
+      setPhoneNumber('');
+      setDescription('');
+      
+      // Navigate to GenericInfoScreen on success
+      // @ts-ignore
+      navigation.navigate('GenericInfoScreen', {
+        icon: <SuccessSVG />,
+        title: t('support.requestSuccessTitle', { id: response?.id }),
+        titleStyle: Typography.headlineMedium,
+        description: 'support.requestSuccessSubtitle',
+        primaryButton: {
+          title: 'common.done',
+          onPress: () => navigation.goBack(),
+        },
+      });
+    } catch (error) {
+      console.error('Support request failed', error);
+      // Navigate to GenericInfoScreen on failure
+      // @ts-ignore
+      navigation.navigate('GenericInfoScreen', {
+        icon: <FailureSVG />,
+        title: 'support.requestFailureTitle',
+        titleStyle: Typography.headlineMedium,
+        description: 'support.requestFailureSubtitle',
+        primaryButton: {
+          title: 'common.tryAgain',
+          onPress: () => navigation.goBack(),
+        },
+      });
+    }
   };
 
   return (
@@ -99,6 +153,11 @@ const Support = () => {
             <CustomTextInput
               label={t('support.contactNumber')}
               keyboardType="number-pad"
+              value={phoneNumber}
+              maxLength={9}
+              onChangeText={setPhoneNumber}
+              readOnly={isSubmitting}
+              editable={!isSubmitting}
               inputStyle={styles.inputContainer}
               inputContainerStyle={[styles.inputContainerStyle, { borderColor: colors.outline }]}
               leftIcon={
@@ -116,6 +175,7 @@ const Support = () => {
               selectedValue={
                 selectedTopic ? t(`support.topics.${selectedTopic}`) : undefined
               }
+              disabled={isSubmitting}
               onPress={() => {
                 // Keyboard.dismiss();
                 setTempTopic(selectedTopic);
@@ -127,6 +187,11 @@ const Support = () => {
             <CustomTextInput
               label={t('support.selectTopicDesc')}
               multiline={true}
+              value={description}
+              onChangeText={setDescription}
+              readOnly={isSubmitting}
+              editable={!isSubmitting}
+              inputStyle={styles.inputContainer}
               inputContainerStyle={{
                 borderColor: colors.outline,
                 padding: ms(8),
@@ -134,6 +199,16 @@ const Support = () => {
                 backgroundColor: colors.surface,
               }}
             />
+            
+            <View style={{ marginTop: Spacing.xl }}>
+               <CustomButton
+                  title={t('support.contactMe')}
+                  onPress={handleContactMe}
+                  disabled={!isFormValid}
+                  loading={isSubmitting}
+                  uppercase={false}
+               />
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -194,6 +269,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     paddingLeft: Spacing.s,
+    fontWeight : 500
   },
   rightButton: {
     padding: ms(6),

@@ -67,7 +67,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
 
     const detailsFields = [
         { label: 'BankId', value: actionData?.bankId || '-' },
-        { label: 'BankId', value: actionData?.bankRequestId || '-' }, // Assuming the second BankId in mockup is a request ID
+        { label: 'CardId', value: actionData?.cardId || '-' }, // Assuming the second BankId in mockup is a request ID
         { label: 'cardMaskedPan', value: actionData?.cardMaskedPan || '-' },
         { label: 'cardholderRequest', value: String(actionData?.cardholderRequest ?? '-') },
         { label: 'companyId', value: actionData?.companyId || '-' },
@@ -76,31 +76,70 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         { label: 'requesterId', value: activeRequest?.requesterId || '-' },
     ];
 
-    const timeline: TimelineEvent[] = [
-        {
-            title: activeRequest?.createdAt ? `${t('requests.createdAt')}: ${new Date(activeRequest.createdAt).toLocaleString()}` : '',
-            isCompleted: true,
-        },
-    ];
+    const getTimeline = (): TimelineEvent[] => {
+        if (!activeRequest) return [];
 
-    if (activeRequest?.status === 'AUTO_APPROVED') {
-        timeline.push({
-            title: t('requests.status.AUTO_APPROVED'),
-            isCompleted: true,
-        });
-    } else if (activeRequest?.approval?.approvedAt) {
-        timeline.push({
-            title: `${t('requests.detailSheet.approvedBy')} ${activeRequest.approver} ${t('common.at')} ${new Date(activeRequest.approval.approvedAt).toLocaleString()}`,
-            isCompleted: true,
-        });
-    }
+        const status = activeRequest.status;
 
-    if (activeRequest?.status === 'REJECTED' || activeRequest?.status === 'FAILED' || activeRequest?.status === 'CANCELLED') {
-         timeline.push({
-            title: `${t(`requests.status.${activeRequest.status}`)}`,
-            isCompleted: true, // It's complete even if failed
+        // One-line timeline for CANCELLED or REJECTED
+        if (status === 'CANCELLED' || status === 'REJECTED') {
+            const dateStr = new Date(activeRequest.lastModifiedAt).toLocaleString();
+            const person = activeRequest.approver || activeRequest.requester || '';
+            const key = status === 'CANCELLED' ? 'requests.detailSheet.canceledBy' : 'requests.detailSheet.rejectedBy';
+            
+            return [{
+                title: t(key, { name: person, date: dateStr }),
+                status: 'error',
+            }];
+        }
+
+        const events: TimelineEvent[] = [];
+        const isAuto = status === 'AUTO_APPROVED';
+        const resultStatus = activeRequest.resultStatus;
+        const isDone = resultStatus === 'DONE';
+        const isFailed = resultStatus === 'FAILED';
+
+        // 1. Approval Step
+        const approvalDate = activeRequest.lastModifiedAt || activeRequest.createdAt;
+        const approvalDateStr = new Date(approvalDate).toLocaleString();
+        
+        if (isAuto || (!activeRequest.approval && (status === 'APPROVED' || isDone || isFailed))) {
+            events.push({
+                title: t('requests.detailSheet.autoApproved', { date: approvalDateStr }),
+                status: 'success',
+            });
+        } else {
+            const approverName = activeRequest.approver || activeRequest.approval?.approver || '';
+            events.push({
+                title: t('requests.detailSheet.approvedBy', { name: approverName, date: approvalDateStr }),
+                status: 'success',
+            });
+        }
+
+        // 2. Processing Step
+        if (isFailed) {
+            events.push({
+                title: t('requests.detailSheet.processingFailed'),
+                status: 'error',
+                description: activeRequest.actions?.[0]?.resultPayload?.errorMessage || 'Request fail reason: internal error',
+            });
+        } else {
+            events.push({
+                title: t('requests.detailSheet.processed'),
+                status: isDone ? 'success' : 'pending',
+            });
+        }
+
+        // 3. Completion Step
+        events.push({
+            title: t('requests.detailSheet.completed'),
+            status: isDone ? 'success' : isFailed ? 'error' : 'pending',
         });
-    }
+
+        return events;
+    };
+
+    const timeline = getTimeline();
 
     return (
         <>

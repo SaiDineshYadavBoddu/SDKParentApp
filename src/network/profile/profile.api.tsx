@@ -10,7 +10,14 @@ export const profileApi = backendApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    createSupportRequest: builder.mutation<any, { phoneNumber: string; topic: string; description: string }>({
+      query: (body) => ({
+        url: API_ENDPOINTS.CREATE_SUPPORT_REQUEST,
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetUserDetailsQuery } = profileApi;
+export const { useGetUserDetailsQuery, useCreateSupportRequestMutation } = profileApi;

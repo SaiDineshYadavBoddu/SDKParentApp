@@ -4,6 +4,9 @@ import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../theme/spacing';
 import PaymentCard from './PaymentCard';
 import { toggleInSet } from '../../utils/selectionUtils';
+import { useGetCardDetails, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
+import { TEST_VIEW_CARD } from '../../config/NISDKConfig';
+import { useAuth } from '../../context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_MARGIN = ms(5);
@@ -26,11 +29,32 @@ interface CardCarouselProps {
 }
 
 const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
+  const { accessToken } = useAuth();
+  const { onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  const toggleCardVisibility = (id: string) => {
-    setVisibleCardIds(prev => toggleInSet(prev, id));
+  const fetchCardSensitiveData = (cardIdentifierId: string) => {
+    if (!accessToken) {
+      console.warn('No access token available for fetching card details');
+      return; 
+    }
+
+    onGetCardDetails(
+      TEST_VIEW_CARD(accessToken, cardIdentifierId),
+      (error: NIErrorResponse | null, result: string | null) => {
+        console.log('NI SDK error:', error);
+        console.log('NI SDK result:', result);
+      },
+    );
+  };
+
+  const toggleCardVisibility = (cardIdentifier: string) => {
+    const isBecomingVisible = !visibleCardIds.has(cardIdentifier);
+    if (isBecomingVisible) {
+      fetchCardSensitiveData(cardIdentifier);
+    }
+    setVisibleCardIds(prev => toggleInSet(prev, cardIdentifier));
   };
 
   const renderItem = ({ item, index }: { item: CardData; index: number }) => (
@@ -41,8 +65,8 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
       snapInterval={SNAP_INTERVAL}
       cardWidth={CARD_WIDTH}
       cardMargin={CARD_MARGIN}
-      isDetailsVisible={visibleCardIds.has(item.id)}
-      onToggleVisibility={toggleCardVisibility}
+      isDetailsVisible={visibleCardIds.has(item.cardIdentifier)}
+      onToggleVisibility={() => toggleCardVisibility(item.cardIdentifier)}
     />
   );
 
@@ -51,7 +75,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
       <Animated.FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.cardIdentifier}
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={SNAP_INTERVAL}

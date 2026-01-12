@@ -33,4 +33,4 @@ export const FREEZE_CARD_REASONS = [
   "fraud"
 ];
 
-export const TOPICS = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5'];
+export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];

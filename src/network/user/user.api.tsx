@@ -16,13 +16,56 @@ interface Comment {
   body: string;
 }
 
+interface Post {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+}
+
+interface Comment {
+  id: number;
+  postId: number;
+  name: string;
+  email: string;
+  body: string;
+}
+
 interface UpdateCommentBody {
   body: string;
+}
+
+export interface UserMeResponse {
+  username: string;
+  bankId: string;
+  bankCode: string;
+  products: string[];
+  email: string;
+  familyName: string;
+  givenName: string;
+  subject: string;
+  companyId: string;
+  customerId: string;
+  mobilePhone: string;
+  authorization: {
+    permissions: Array<{
+      resourceName: string;
+      scopes: string[];
+    }>;
+  };
+  companyRoles: string[];
+  userGroups: string[];
 }
 
 export const userApi = backendApi.injectEndpoints({
   overrideExisting: true,
   endpoints: builder => ({
+    getUserMe: builder.query<UserMeResponse, void>({
+      query: () => ({
+        url: API_ENDPOINTS.GET_USER_ME,
+        method: 'GET',
+      }),
+    }),
     getPosts: builder.query<Post[], void>({
       query: () => ({
         url: API_ENDPOINTS.GET_POSTS,
@@ -49,6 +92,7 @@ export const userApi = backendApi.injectEndpoints({
 });
 
 export const {
+  useGetUserMeQuery,
   useGetPostsQuery,
   useViewPostCommentsQuery,
   useUpdatePostCommentMutation,

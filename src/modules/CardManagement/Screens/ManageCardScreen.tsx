@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
   ScrollView,
   Dimensions,
 } from 'react-native';
@@ -16,7 +15,6 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import SectionContainer, {
   SectionItem,
 } from '../../../common/components/SectionContainer';
-import CustomImage from '../../../common/components/CustomImage';
 import CardUsageSVG from '../../../assets/svgs/CardUsageSVG';
 import TransactionLimitsSVG from '../../../assets/svgs/TransactionLimitsSVG';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
@@ -56,10 +54,10 @@ const ManageCardScreen = () => {
       subtitle: t('manageCard.limitsDesc'),
     },
     {
-      id: 'reset_pin',
+      id: 'set_reset_pin',
       Icon: ResetPinSVG,
-      title: t('manageCard.resetPin'),
-      subtitle: t('manageCard.resetPinDesc'),
+      title: t('manageCard.setResetPin'),
+      subtitle: t('manageCard.setResetPinDesc'),
     },
     {
       id: 'close_card',
@@ -82,6 +80,8 @@ const ManageCardScreen = () => {
         navigation.navigate('CardUsage', { card });
       } else if (control.id === 'limits') {
         navigation.navigate('TransactionLimits', { card });
+      } else if (control.id === 'set_reset_pin') {
+        navigation.navigate('SetCardPin', { card });
       }
     }
   }));
