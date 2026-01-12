@@ -92,7 +92,7 @@
   "transactionLimits": {
     "title": "Transaction Limits",
     "daily": "Daily limit",
-    "weekly": "Weekly limit",
+    "monthly": "Monthly limit",
     "single": "Single Transaction",
     "remaining": "Remaining",
     "currency": "AED"

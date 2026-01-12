@@ -129,7 +129,7 @@ export default function SectionContainer({
 const styles = StyleSheet.create({
   root: {
     width: '100%',
-    paddingVertical: ms(8),
+    paddingVertical: ms(12),
     paddingHorizontal: ms(18),
     backgroundColor: '#fff',
     borderRadius: ms(20),
