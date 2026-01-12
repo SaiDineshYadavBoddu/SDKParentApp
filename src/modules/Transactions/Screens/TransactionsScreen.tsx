@@ -74,7 +74,7 @@ const TransactionsScreen = () => {
     pageNumber: 0,
     ...dateRange,
   }, {
-    skip: !selectedCardId || APP_CONFIG.USE_MOCK_TRANSACTIONS,
+    skip: isCardsLoading || !selectedCardId || APP_CONFIG.USE_MOCK_TRANSACTIONS,
   });
 
   const transactions = useMemo(() => {

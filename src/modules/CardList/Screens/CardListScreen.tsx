@@ -32,26 +32,28 @@ import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
 import { APP_CONFIG } from "../../../config/appConfig";
 
 
+const CARD_QUERY_PARAMS = {
+  cardStatus: [
+    'Pending Activation',
+    'Active',
+    'Dormant',
+    'Blocked',
+    'Closed',
+    'Pending Closure',
+  ],
+  pageSize: 10,
+  pageNumber: 0,
+  sortProperty: 'cardholderName',
+  sortDirection: 'ASC',
+};
+
 export default function CardListScreen() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const navigation = useNavigation<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
-  const { data, isLoading, error } = useGetCardsQuery({
-    cardStatus: [
-      'Pending Activation',
-      'Active',
-      'Dormant',
-      'Blocked',
-      'Closed',
-      'Pending Closure',
-    ],
-    pageSize: 10,
-    pageNumber: 0,
-    sortProperty: 'cardholderName',
-    sortDirection: 'ASC',
-  }, {
+  const { data, isLoading, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     pollingInterval: 30000,
     refetchOnMountOrArgChange: true,
   });
@@ -59,18 +61,18 @@ export default function CardListScreen() {
   const cards = data?.content || [];
   const activeCard = cards[activeCardIndex];
 
+  const dateRange = React.useMemo(() => calculateDateRange('thisMonth'), []);
+
   const { data: transactionsData, isLoading: isTxnLoading } = useGetTransactionsQuery({
     cardId: activeCard?.cardIdentifier,
     pageSize: 4,
     pageNumber: 0,
-    ...calculateDateRange('thisMonth'),
+    ...dateRange,
   }, {
-    skip: !activeCard?.cardIdentifier || APP_CONFIG.USE_MOCK_TRANSACTIONS,
+    skip: isLoading || !activeCard?.cardIdentifier
   });
   const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
   const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
-
-  console.log("transactionsData", transactionsData);
 
   const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
     ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)
