@@ -15,7 +15,7 @@
     "title": "My Cards",
     "availableBalance": "Available balance",
     "active": "Active",
-    "inactive": "In-active",
+    "Blocked": "Blocked",
     "recentTransactions": "Recent Transactions",
     "viewAll": "View All",
     "manage": "Manage",
@@ -78,10 +78,10 @@
   "closeCard": {
     "title": "Close Card",
     "subtitle": "Are you sure you want to close this card?",
-    "warning": "Note: This will permanently close your card. Transactions and actions will be unavailable. To use your card again, you will need to request a new one.",
+    "warning": "After request approval the closure process will be initiated. Card actions will be unavailable",
     "reasonPlaceholder": "Optional",
-    "successTitle": "Card closed successfully",
-    "successSubtitle": "Your card has been permanently closed."
+    "successTitle": "Card closure request submitted successfully",
+    "successSubtitle": "Your card closure request has been submitted successfully."
   },
   "cardUsage": {
     "title": "Card Usage",

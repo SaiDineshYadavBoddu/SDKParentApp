@@ -18,6 +18,9 @@ import CustomCardNumberDisplay from '../../../common/components/CustomCardNumber
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+import { useCloseCardMutation } from '../../../network/card/card.api';
+import CustomLoader from '../../../common/components/CustomLoader';
+
 const CloseCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -27,6 +30,21 @@ const CloseCardScreen = () => {
     const { card } = route.params || {};
     const [message, setMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+
+    const [closeCard, { isLoading }] = useCloseCardMutation();
+
+    const handleCloseCard = async () => {
+        if (!card?.cardIdentifier) return;
+        try {
+            const body = message ? { comment: message } : {};
+            const result = await closeCard({ cardId: card.cardIdentifier, body }).unwrap();
+            if (result?.status === 'PENDING_APPROVAL') {
+                setIsSuccess(true);
+            }
+        } catch (error) {
+            console.error('Failed to close card', error);
+        }
+    };
 
     if (isSuccess) {
         return (
@@ -80,10 +98,11 @@ const CloseCardScreen = () => {
             <View style={[styles.footer, { paddingBottom: Math.max(Spacing.l, insets.bottom) }]}>
                 <CustomButton
                     title={t('common.continue')}
-                    onPress={() => setIsSuccess(true)}
+                    onPress={handleCloseCard}
                     style={{ width: '100%' }}
                 />
             </View>
+            <CustomLoader loading={isLoading} />
         </View>
     );
 };

@@ -33,14 +33,6 @@ import { APP_CONFIG } from "../../../config/appConfig";
 
 
 const CARD_QUERY_PARAMS = {
-  cardStatus: [
-    'Pending Activation',
-    'Active',
-    'Dormant',
-    'Blocked',
-    'Closed',
-    'Pending Closure',
-  ],
   pageSize: 10,
   pageNumber: 0,
   sortProperty: 'cardholderName',
@@ -153,7 +145,7 @@ export default function CardListScreen() {
             </View>
 
             <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
-              {activeCard?.cardStatus === 'Blocked' ? t('cardList.inactive') : (activeCard?.cardStatus || t('cardList.active'))}
+              {activeCard?.cardStatus}
             </CustomText>
           </View>
         )}
