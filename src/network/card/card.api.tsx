@@ -24,7 +24,13 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getCardRestrictions: builder.query<any, string>({
+      query: cardId => ({
+        url: API_ENDPOINTS.GET_CARD_RESTRICTIONS.replace('{cardId}', cardId),
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery } = cardApi;

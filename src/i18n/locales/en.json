@@ -87,7 +87,9 @@
     "title": "Card Usage",
     "online": "Online Transactions",
     "contactless": "Contactless transactions",
-    "foreign": "Foreign transactions"
+    "foreign": "Foreign transactions",
+    "pos": "POS Transactions",
+    "atm": "ATM Transactions"
   },
   "transactionLimits": {
     "title": "Transaction Limits",
