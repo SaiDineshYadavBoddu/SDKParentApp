@@ -85,7 +85,8 @@ const SetCardPin = () => {
 
       console.log('accessToken', accessToken);
       console.log('cardIdentifierId', cardIdentifierId);
-
+      console.log('pin', confirmPin);
+      console.log('input', TEST_INPUT(accessToken, cardIdentifierId));
       onSetPin(
         confirmPin,
         TEST_INPUT(accessToken, cardIdentifierId),
@@ -240,6 +241,7 @@ const SetCardPin = () => {
         <CustomButton
           title={t('common.continue')}
           onPress={handleContinue}
+          uppercase={false}
           disabled={newPin.length !== 4 || confirmPin.length !== 4 || newPin !== confirmPin}
         />
       </View>

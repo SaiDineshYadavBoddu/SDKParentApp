@@ -28,7 +28,7 @@ import CustomLoader from '../../../common/components/CustomLoader';
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, changePassword, changeCompany } = useAuth();
   const { t } = useTranslation();
   const { data: userDetails, isLoading } = useGetUserDetailsQuery();
 
@@ -40,14 +40,14 @@ const ProfileScreen = () => {
       title: t('profile.items.changeCompany.title'),
       subtitle: t('profile.items.changeCompany.subtitle'),
       Icon: ChangeCompanySVG,
-      onPress: () => navigation.navigate('ChangeCompany'),
+      onPress: () => changeCompany(),
     },
     {
       id: 'change-password',
       title: t('profile.items.changePassword.title'),
       subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => navigation.navigate('ChangePassword'),
+      onPress: () => changePassword(),
     },
   ];
 

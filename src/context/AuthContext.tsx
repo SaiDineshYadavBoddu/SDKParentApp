@@ -4,6 +4,7 @@ import React, {
   useContext,
   ReactNode,
   useEffect,
+  useRef,
 } from 'react';
 import { authorize, logout, AuthConfiguration } from 'react-native-app-auth';
 import { Linking } from 'react-native';
@@ -17,6 +18,7 @@ interface AuthContextData {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   changePassword: () => Promise<void>;
+  changeCompany: () => Promise<void>;
   checkIsInternetConnected: () => Promise<void>;
   isConnected: boolean | null;
   accessToken: string | null;
@@ -31,6 +33,7 @@ const AuthContext = createContext<AuthContextData>({
   signIn: async () => {},
   signOut: async () => {},
   changePassword: async () => {},
+  changeCompany: async () => {},
   checkIsInternetConnected: async () => {},
   isConnected: null,
   accessToken: null,
@@ -52,6 +55,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       unsubscribe();
     };
   }, []);
+
+  const prevTokenRef = useRef<string | null>(null);
+
+  // Reset API state when accessToken changes (e.g. after password change or company selection)
+  useEffect(() => {
+    if (accessToken && isAuthenticated) {
+      // Only reset if we had a previous token and it changed
+      // This skips the reset on the initial login which was causing AbortError
+      if (prevTokenRef.current && prevTokenRef.current !== accessToken) {
+        console.log('🚀 ~ accessToken changed, resetting API state...');
+        dispatch(backendApi.util.resetApiState());
+      }
+      // Update the ref with the current token
+      prevTokenRef.current = accessToken;
+    }
+  }, [accessToken, isAuthenticated, dispatch]);
 
 
   const signIn = async () => {
@@ -95,21 +114,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const changePassword = async () => {
     try {
-      // Construct the account management URL
-      // Ensure issuer ends with / if not present, but keycloakConfig usually has it
-      const issuer = keycloakConfig.issuer.endsWith('/')
-        ? keycloakConfig.issuer
-        : `${keycloakConfig.issuer}/`;
-      const changePasswordUrl = `${issuer}account/password`;
-
-      const supported = await Linking.canOpenURL(changePasswordUrl);
-      if (supported) {
-        await Linking.openURL(changePasswordUrl);
-      } else {
-        console.error("Don't know how to open URI: " + changePasswordUrl);
-      }
+      const result = await authorize({
+        ...keycloakConfig,
+        additionalParameters: {
+          kc_action: 'UPDATE_PASSWORD',
+        },
+      } as AuthConfiguration);
+      console.log('Change password success:', result);
+      setAccessToken(result.accessToken);
+      globalAccessToken = result.accessToken;
+      setIdToken(result.idToken);
     } catch (error) {
-      console.error('Change password failed:', error);
+      if (error instanceof Error && 
+          (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
+        console.log('User cancelled password update');
+      } else {
+        console.error('Change password failed:', error);
+      }
+    }
+  };
+
+
+  const changeCompany = async () => {
+    try {
+      const result = await authorize({
+        ...keycloakConfig,
+        additionalParameters: {
+          kc_action: 'NI_ADMIN_COMPANY_SELECT',
+        },
+      } as AuthConfiguration);
+      console.log('Change company success:', result);
+      setAccessToken(result.accessToken);
+      globalAccessToken = result.accessToken;
+      setIdToken(result.idToken);
+    } catch (error) {
+      if (error instanceof Error && 
+          (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
+        console.log('User cancelled company update');
+      } else {
+        console.error('Change company failed:', error);
+      }
     }
   };
 
@@ -125,6 +169,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signIn,
         signOut,
         changePassword,
+        changeCompany,
         checkIsInternetConnected,
         isConnected,
         accessToken,

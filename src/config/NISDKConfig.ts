@@ -54,7 +54,7 @@ const fonts: NIFontLabelPair[] = [
   {font: {name: 'Helvetica', size: 18}, label: NILabels.pinDigitLabel},
 ];
 
-const ROOT_URL = 'https://api-uat.network.global/sdk/v2'
+const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/'
 // isUAT
 //   ? 'https://api-uat.network.global/sdk/v2'
 //   : 'https://api.network.global/sdk/v2';
@@ -65,7 +65,7 @@ const connectionProperties = (token: string) => {
   return {
     rootUrl: ROOT_URL,
     token: token,
-    extraHeaders: '{ "apiuat_za_network_global": "qWyQt3D44Upner1T" }',
+    // extraHeaders: '{ "apiuat_za_network_global": "qWyQt3D44Upner1T" }',
   } as NIConnectionProperties;
 };
 

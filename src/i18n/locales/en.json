@@ -353,10 +353,14 @@
       "processed": "Processed successfully",
       "retry": "Retry",
       "completed": "Completed"
-    }
+    },
+    "noRequests": "No requests available"
   },
   "datePicker": {
-    "selectRange": "Select Date Range"
+    "selectRange": "Start Date - End Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "selectRangeButton": "Select date range"
   },
   "genericSelection": {
     "title": "Select Verification Method",

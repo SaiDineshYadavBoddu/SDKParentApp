@@ -142,7 +142,7 @@ const RequestsScreen = () => {
   }, [isFilterSheetVisible]);
 
   const handleLoadMore = () => {
-    if (!isFetching && !isLoading && data && !data.last) {
+    if (!isFetching && !isLoading && !error && data && !data.last) {
       setPageNumber(prev => prev + 1);
     }
   };
@@ -282,7 +282,7 @@ const RequestsScreen = () => {
               !isLoading && !isFetching ? (
                 <View style={styles.emptyContainer}>
                   <CustomText type={TextType.CardText} style={styles.emptyText}>
-                    No requests available
+                    {t('requests.noRequests')}
                   </CustomText>
                 </View>
               ) : null
@@ -391,11 +391,17 @@ const RequestsScreen = () => {
                   style={styles.rangeInputWrapper}
                 >
                   <CustomTextInput
-                    value={`${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}`}
+                    value={startDate && endDate ? `${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}` : t('datePicker.selectRange')}
                     editable={false}
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
-                    inputContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
+                    inputContainerStyle={[
+                      styles.filterInputContainer, 
+                      { 
+                        borderColor: colors.outline,
+                        backgroundColor: colors.surface // Force surface background even if editable is false
+                      }
+                    ]}
                     inputStyle={Typography.bodySmall}
                   />
                 </TouchableOpacity>
