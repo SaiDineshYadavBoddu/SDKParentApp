@@ -10,10 +10,16 @@ export const notificationApi = backendApi.injectEndpoints({
         url: API_ENDPOINTS.GET_NOTIFICATIONS,
         method: 'GET',
         params: {
-            unreadOnly: params.unreadOnly,
-            pageSize: params.pageSize,
-            pageNumber: params.pageNumber,
+          unreadOnly: params.unreadOnly,
+          pageSize: params.pageSize,
+          pageNumber: params.pageNumber,
         },
+      }),
+    }),
+    markAsRead: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `${API_ENDPOINTS.GET_NOTIFICATIONS}/${id}/mark-as-read`,
+        method: 'POST',
       }),
     }),
     markAllAsRead: builder.mutation<void, void>({
@@ -25,4 +31,4 @@ export const notificationApi = backendApi.injectEndpoints({
   }),
 });
 
-export const { useGetNotificationsMutation, useMarkAllAsReadMutation } = notificationApi;
+export const { useGetNotificationsMutation, useMarkAllAsReadMutation, useMarkAsReadMutation } = notificationApi;

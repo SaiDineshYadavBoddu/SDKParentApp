@@ -5,7 +5,7 @@ import { Spacing } from '../../theme/spacing';
 import PaymentCard from './PaymentCard';
 import { toggleInSet } from '../../utils/selectionUtils';
 import { useGetCardDetails, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
-import { TEST_VIEW_CARD } from '../../config/NISDKConfig';
+import { TEST_INPUT } from '../../config/NISDKConfig';
 import { useAuth } from '../../context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -37,11 +37,13 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
   const fetchCardSensitiveData = (cardIdentifierId: string) => {
     if (!accessToken) {
       console.warn('No access token available for fetching card details');
-      return; 
+      return;
     }
+    console.log('Fetching card details for card identifier:', cardIdentifierId);
+    console.log('Access token:', accessToken);
 
     onGetCardDetails(
-      TEST_VIEW_CARD(accessToken, cardIdentifierId),
+      TEST_INPUT(accessToken, cardIdentifierId),
       (error: NIErrorResponse | null, result: string | null) => {
         console.log('NI SDK error:', error);
         console.log('NI SDK result:', result);

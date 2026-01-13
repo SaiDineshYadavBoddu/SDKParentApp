@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -12,8 +12,9 @@ import CustomIcon from '../../../common/components/CustomIcon';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
-import { useSendOtpTokenMutation, useVerifyOtpTokenMutation } from '../../../network/otp/otp.api';
-import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum} from '@networkinternational/ni-card-management-sdk'
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
+import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
 import { useAuth } from '../../../context/AuthContext';
 import { TEST_INPUT } from '../../../config/NISDKConfig';
 
@@ -22,24 +23,23 @@ const SetCardPin = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { card } = route.params || {};
-  const { colors } = useTheme();  
+  const { colors } = useTheme();
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
-  const {onSetPin, isLoading: isSettingPin} = useSetPin()
+  const { onSetPin, isLoading: isSettingPin } = useSetPin()
 
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showNewPin, setShowNewPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
-  
+
   const [errors, setErrors] = useState({
     mismatch: '',
     newPin: '',
     confirmPin: '',
   });
 
-  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpTokenMutation();
-  const [verifyOtp, { isLoading: isVerifyingOtp }] = useVerifyOtpTokenMutation();
+  const [localLoading, setLocalLoading] = useState(false);
 
   const validateNewPin = (text: string, currentConfirmPin: string) => {
     let newPinError = '';
@@ -51,10 +51,10 @@ const SetCardPin = () => {
       mismatchError = t('setPin.errorMismatch');
     }
 
-    setErrors(prev => ({ 
-      ...prev, 
-      newPin: newPinError, 
-      mismatch: mismatchError 
+    setErrors(prev => ({
+      ...prev,
+      newPin: newPinError,
+      mismatch: mismatchError
     }));
   };
 
@@ -68,10 +68,10 @@ const SetCardPin = () => {
       mismatchError = t('setPin.errorMismatch');
     }
 
-    setErrors(prev => ({ 
-      ...prev, 
-      confirmPin: confirmError, 
-      mismatch: mismatchError 
+    setErrors(prev => ({
+      ...prev,
+      confirmPin: confirmError,
+      mismatch: mismatchError
     }));
   };
 
@@ -80,7 +80,7 @@ const SetCardPin = () => {
       if (!accessToken) {
         console.warn('No access token available for fetching card details');
         reject(new Error('No access token'));
-        return; 
+        return;
       }
 
       console.log('accessToken', accessToken);
@@ -94,47 +94,31 @@ const SetCardPin = () => {
           console.log('NI SDK set PIN error:', error);
           console.log('NI SDK set PIN result:', result);
           if (error) {
-            Alert.alert(t('common.error'), error.message || t('otp.sendError'));
+            navigation.navigate('GenericInfoScreen', {
+              icon: <FailureSVG />,
+              title: error.message || 'otp.sendErrorTitle',
+              description: 'otp.sendErrorSubtitle',
+              primaryButton: {
+                title: 'common.ok',
+                onPress: () => navigation.goBack(),
+              },
+            });
             reject(error);
           } else {
-            Alert.alert(t('common.success'), t('setPin.successMessage'), [
-              { text: t('common.ok'), onPress: () => navigation.navigate('BottomTabs') }
-            ]);
+            navigation.navigate('GenericInfoScreen', {
+              icon: <SuccessSVG />,
+              title: 'common.success',
+              description: 'setPin.successMessage',
+              primaryButton: {
+                title: 'common.ok',
+                onPress: () => navigation.navigate('BottomTabs'),
+              },
+            });
             resolve();
           }
         },
       );
     });
-  };
-
-  const handleVerifyOtp = async (code: string, type: 'EMAIL' | 'PHONE') => {
-    try {
-      await verifyOtp({ code, type }).unwrap();
-      await handleUpdateCardPIN(card?.cardIdentifier);
-    } catch (error) {
-       // Error handled in handleUpdateCardPIN or verifyOtp
-       if (!(error as any)?.message) {
-         Alert.alert(t('common.error'), t('otp.invalidCode'));
-       }
-    }
-  };
-
-  const handleSendOtp = async (type: 'EMAIL' | 'PHONE', maskedValue: string) => {
-    try {
-      const response = await sendOtp({ type }).unwrap();
-      navigation.navigate('GenericOTPScreen', {
-        title: 'otp.title',
-        subtitle: 'otp.subtitle',
-        target: maskedValue,
-        onVerify: (code: string) => handleVerifyOtp(code, type),
-        onResend: () => handleSendOtp(type, maskedValue),
-        isLoading: isVerifyingOtp || isSettingPin,
-        retryAfter: response?.tryAgainIn, 
-      });
-      return response;
-    } catch (error) {
-       Alert.alert(t('common.error'), t('otp.sendError'));
-    }
   };
 
   const handleContinue = () => {
@@ -143,11 +127,9 @@ const SetCardPin = () => {
         headerTitle: '',
         title: 'otp.selectionTitle',
         subtitle: 'otp.selectionSubtitle',
-        onContinue: (option: any) => {
-          const type = option.id.toUpperCase() as 'EMAIL' | 'PHONE';
-          return handleSendOtp(type, option.subtitle || '');
-        },
-        isLoading: isSendingOtp,
+        useInternalOtp: true,
+        onVerifySuccess: () => handleUpdateCardPIN(card?.cardIdentifier),
+        isLoading: isSettingPin || localLoading,
       });
     }
   };

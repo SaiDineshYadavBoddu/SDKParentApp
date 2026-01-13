@@ -15,7 +15,7 @@ import CustomHeader from '../../../common/components/CustomHeader';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import NotificationItem from '../Components/NotificationItem';
 import RequestDetailBottomSheet from '../../Requests/Components/RequestDetailBottomSheet';
-import { useGetNotificationsMutation, useMarkAllAsReadMutation } from '../../../network/notification/notification.api';
+import { useGetNotificationsMutation, useMarkAllAsReadMutation, useMarkAsReadMutation } from '../../../network/notification/notification.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
 import { RequestItem } from '../../../network/requests/request.types';
 
@@ -23,7 +23,7 @@ const NotificationsScreen = () => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { t } = useTranslation();
-  
+
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -32,6 +32,7 @@ const NotificationsScreen = () => {
 
   const [getNotifications, { isLoading }] = useGetNotificationsMutation();
   const [markAllAsRead] = useMarkAllAsReadMutation();
+  const [markAsRead] = useMarkAsReadMutation();
 
   useEffect(() => {
     fetchNotifications(0);
@@ -39,7 +40,7 @@ const NotificationsScreen = () => {
 
   const fetchNotifications = async (pageNumber: number) => {
     if (isLoading) return;
-    
+
     try {
       setHasError(false);
       const response = await getNotifications({
@@ -53,12 +54,23 @@ const NotificationsScreen = () => {
       } else {
         setNotifications((prev) => [...prev, ...response.content]);
       }
-      
+
       setHasMore(!response.last);
       setPage(pageNumber);
     } catch (error) {
       console.error('Failed to fetch notifications', error);
       setHasError(true);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await markAsRead(id).unwrap();
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      );
+    } catch (error) {
+      console.error('Failed to mark as read', error);
     }
   };
 
@@ -69,7 +81,7 @@ const NotificationsScreen = () => {
         prev.map((n) => ({ ...n, isRead: true }))
       );
     } catch (error) {
-       console.error('Failed to mark all as read', error);
+      console.error('Failed to mark all as read', error);
     }
   };
 
@@ -79,10 +91,10 @@ const NotificationsScreen = () => {
     yesterday.setDate(today.getDate() - 1);
 
     const groups: { [key: string]: NotificationType[] } = {
-       Today: [],
-       Yesterday: [],
-       ThisWeek: [],
-       Past: [],
+      Today: [],
+      Yesterday: [],
+      ThisWeek: [],
+      Past: [],
     };
 
     notifications.forEach((notification) => {
@@ -118,17 +130,18 @@ const NotificationsScreen = () => {
         title={t('notifications.title')}
         onBackPress={() => navigation.goBack()}
       />
-      
+
       <SectionList
         sections={groupedNotifications}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <NotificationItem 
-            item={item} 
+          <NotificationItem
+            item={item}
+            onPress={() => handleMarkAsRead(item.id)}
             onViewRequest={() => {
-                if (item.subjectId) {
-                   setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
-                }
+              // if (item.subjectId) {
+              setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
+              // }
             }}
           />
         )}
@@ -150,29 +163,29 @@ const NotificationsScreen = () => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-            isLoading ? (
-                <ActivityIndicator style={{ margin: Spacing.m }} />
-            ) : hasError && notifications.length > 0 ? (
-                <TouchableOpacity onPress={() => fetchNotifications(page + 1)} style={styles.retryFooter}>
-                    <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary }}>
-                        {t('notifications.errors.loadMoreFailed')}
-                    </CustomText>
-                </TouchableOpacity>
-            ) : null
+          isLoading ? (
+            <ActivityIndicator style={{ margin: Spacing.m }} />
+          ) : hasError && notifications.length > 0 ? (
+            <TouchableOpacity onPress={() => fetchNotifications(page + 1)} style={styles.retryFooter}>
+              <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary }}>
+                {t('notifications.errors.loadMoreFailed')}
+              </CustomText>
+            </TouchableOpacity>
+          ) : null
         }
         ListEmptyComponent={
-            !isLoading && hasError && notifications.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <CustomText type={TextType.Label} style={{ marginBottom: Spacing.m }}>
-                        {t('notifications.errors.fetchFailed')}
-                    </CustomText>
-                    <TouchableOpacity onPress={() => fetchNotifications(0)} style={[styles.retryButton, { borderColor: colors.outline }]}>
-                        <CustomText type={TextType.Button} style={{ color: colors.primary }}>
-                            {t('notifications.errors.retry')}
-                        </CustomText>
-                    </TouchableOpacity>
-                </View>
-            ) : null
+          !isLoading && hasError && notifications.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <CustomText type={TextType.Label} style={{ marginBottom: Spacing.m }}>
+                {t('notifications.errors.fetchFailed')}
+              </CustomText>
+              <TouchableOpacity onPress={() => fetchNotifications(0)} style={[styles.retryButton, { borderColor: colors.outline }]}>
+                <CustomText type={TextType.Button} style={{ color: colors.primary }}>
+                  {t('notifications.errors.retry')}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          ) : null
         }
         stickySectionHeadersEnabled={false}
       />
