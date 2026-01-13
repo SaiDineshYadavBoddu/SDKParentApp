@@ -119,6 +119,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    implementation project(':react-native-otp-verify')
+    implementation project(':@react-native-community_netinfo')
 }
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
