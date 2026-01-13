@@ -27,10 +27,10 @@ export const REPLACE_CARD_REASONS = [
 ];
 
 export const FREEZE_CARD_REASONS = [
-  "no_spend",
-  "misplaced",
-  "stolen",
-  "fraud"
+  "Temp",
+  "Loss",
+  "Stolen",
+  "Fraud"
 ];
 
 export const TOPICS = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5'];

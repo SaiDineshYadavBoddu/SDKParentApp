@@ -20,8 +20,8 @@
     "viewAll": "View All",
     "manage": "Manage",
     "replace": "Replace",
-    "freeze": "Freeze",
-    "unfreeze": "Unfreeze",
+    "freeze": "Block",
+    "unfreeze": "Unblock",
     "noTransactions": "There are no transactions available to show in transaction history",
     "pendingActivation": "Pending activation",
     "cardPendingActivation": "Card pending activation",
@@ -100,20 +100,20 @@
     "currency": "AED"
   },
   "freezeCard": {
-    "title": "Freeze Card",
+    "title": "Block Card",
     "subtitle": "In case of a lost, stolen card",
     "selectReason": "Freeze reason",
     "reasonLabel": "Reason",
     "warningTemp": "This will temporarily block your card",
-    "warningPerm": "This will permanently block your card",
-    "successTitle": "Card frozen successfully",
-    "successSubtitleTemp": "Your card has been temporarily frozen. You can unfreeze it at any time from the app.",
-    "successSubtitlePerm": "Your card has been permanently frozen. You will need to request a new card to use it again.",
+    "warningPerm": "This will permanently close your card",
+    "successTitle": "Card blocked successfully",
+    "successSubtitleTemp": "Your card has been temporarily blocked. You can unblock it at any time from the app.",
+    "successSubtitlePerm": "Your card has been permanently blocked. You will need to request a new card to use it again.",
     "reasons": {
-      "no_spend": "No spend expected/ Staff member out of office",
-      "misplaced": "Suspected loss of card (misplaced)",
-      "stolen": "Suspected stolen card",
-      "fraud": "Fraud on the card"
+      "Temp": "No spend expected/ Staff member out of office",
+      "Loss": "Suspected loss of card (misplaced)",
+      "Stolen": "Suspected stolen card",
+      "Fraud": "Fraud on the card"
     }
   },
   "transactions": {
