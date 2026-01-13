@@ -5,9 +5,11 @@ import SectionContainer, {
 } from '../../../common/components/SectionContainer';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useTheme } from '../../../theme/ThemeProvider';
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
 
 export default function UserData() {
   const { colors } = useTheme();
+  const { data: userDetails } = useGetUserDetailsQuery();
 
   const renderAvatar = () => (
     <View style={[styles.avatar, { backgroundColor: colors.onBackground }]}>
@@ -15,7 +17,7 @@ export default function UserData() {
         type={TextType.ScreenHeadlineSmall}
         style={{ color: colors.background }}
       >
-        S
+        {userDetails?.personalDetails?.firstName?.charAt(0) || 'S'}
       </CustomText>
     </View>
   );
@@ -23,13 +25,13 @@ export default function UserData() {
   const renderUserInfo = () => (
     <View style={styles.infoContainer}>
       <CustomText type={TextType.CardTitle} style={styles.name}>
-        Sharmil Panayan
+        {`${userDetails?.personalDetails?.firstName || ''} ${userDetails?.personalDetails?.lastName || ''}`.trim() || 'User'}
       </CustomText>
       <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
-        +971-467-433-2684
+        {userDetails?.contactDetails?.mobilePhone || ''}
       </CustomText>
       <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
-        sharmil200@yopmail.com
+        {userDetails?.contactDetails?.email || ''}
       </CustomText>
     </View>
   );

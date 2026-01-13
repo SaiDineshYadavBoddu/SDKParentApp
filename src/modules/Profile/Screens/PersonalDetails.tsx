@@ -4,10 +4,14 @@ import DetailsScreen, {
   DetailsSection,
 } from '../../../common/components/DetailsScreen';
 import { useTranslation } from 'react-i18next';
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { formatToMMDDYYYY } from '../../../utils/dateUtils';
 
 export default function PersonalDetails() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { data: userDetails } = useGetUserDetailsQuery();
+  const personal = userDetails?.personalDetails;
 
   const sections: DetailsSection[] = [
     {
@@ -15,37 +19,37 @@ export default function PersonalDetails() {
         {
           id: '1',
           label: t('profile.details.personal.fields.salutation'),
-          value: '',
+          value: '-',
         },
         {
           id: '2',
           label: t('profile.details.personal.fields.firstName'),
-          value: 'Sharmil',
+          value: personal?.firstName || '-',
         },
         {
           id: '3',
           label: t('profile.details.personal.fields.middleName'),
-          value: '',
+          value: '-',
         },
         {
           id: '4',
           label: t('profile.details.personal.fields.lastName'),
-          value: 'panayan',
+          value: personal?.lastName || '-',
         },
         {
           id: '5',
           label: t('profile.details.personal.fields.citizenship'),
-          value: '',
+          value: personal?.citizenship || '-',
         },
         {
           id: '6',
           label: t('profile.details.personal.fields.dob'),
-          value: '04/12/1978',
+          value: formatToMMDDYYYY(personal?.dateOfBirth),
         },
         {
           id: '7',
           label: t('profile.details.personal.fields.pob'),
-          value: 'Saudi arabia',
+          value: personal?.placeOfBirth || '-',
         },
       ],
     },

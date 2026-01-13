@@ -21,12 +21,18 @@ import LogOutSVG from '../../../assets/svgs/LogOutSVG';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
+import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import CustomLoader from '../../../common/components/CustomLoader';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, changePassword, changeCompany } = useAuth();
   const { t } = useTranslation();
+  const { data: userDetails, isLoading } = useGetUserDetailsQuery();
+
+  console.log(userDetails);
 
   const accountSettingsItems: ProfileItemProps[] = [
     {
@@ -34,23 +40,18 @@ const ProfileScreen = () => {
       title: t('profile.items.changeCompany.title'),
       subtitle: t('profile.items.changeCompany.subtitle'),
       Icon: ChangeCompanySVG,
-      onPress: () => navigation.navigate('ChangeCompany'),
+      onPress: () => changeCompany(),
     },
     {
       id: 'change-password',
       title: t('profile.items.changePassword.title'),
       subtitle: t('profile.items.changePassword.subtitle'),
       Icon: ChangePasswordSVG,
-      onPress: () => navigation.navigate('GenericSelectionScreen', {
-        options: [
-          { id: 'mobile', title: 'genericSelection.options.mobile.title', subtitle: '0567*****00' },
-          { id: 'email', title: 'genericSelection.options.email.title', subtitle: 's*****00@yopmail.com' },
-        ],
-      }),
+      onPress: () => changePassword(),
     },
   ];
 
-  const infoItems: ProfileItemProps[] = [
+  const infoItems: ProfileItemProps[] = [ 
     {
       id: 'contact-details',
       title: t('profile.items.contactDetails.title'),
@@ -104,8 +105,10 @@ const ProfileScreen = () => {
     },
   ];
 
+  // if(!isLoading) return <CustomLoader loading={isLoading}/>
+
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.screenBackground }]}>
       <CustomHeader
         title={t('profile.headerTitle')}
         rightContent={
@@ -114,6 +117,7 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         }
       />
+      {isLoading ? <CustomLoader loading={isLoading}/> :
       <ScrollView
         style={[styles.scrollContainer, { backgroundColor: colors.screenBackground }]}
         showsVerticalScrollIndicator={false}
@@ -128,6 +132,8 @@ const ProfileScreen = () => {
 
         <ProfileSection title={t('profile.sections.contact')} items={contactItems} />
       </ScrollView>
+      }
+      {/* <CustomLoader loading={isLoading}/> */}
     </View>
   );
 };

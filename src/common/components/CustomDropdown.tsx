@@ -20,6 +20,7 @@ interface CustomDropdownProps {
     containerStyle?: StyleProp<ViewStyle>;
     error?: string;
     innerContainerStyle?: StyleProp<ViewStyle>;
+    disabled?: boolean;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -30,6 +31,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     containerStyle,
     error,
     innerContainerStyle,
+    disabled = false,
 }) => {
     const { colors } = useTheme();
 
@@ -43,13 +45,14 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                 </CustomText>
             )}
             <TouchableOpacity
-                onPress={onPress}
+                onPress={disabled ? undefined : onPress}
                 activeOpacity={0.7}
+                disabled={disabled}
                 style={[
                     styles.dropdownContainer,
                     {
                         borderColor: error ? colors.error : colors.outline,
-                        backgroundColor: colors.surface,
+                        backgroundColor: disabled ? colors.screenBackground : colors.surface,
                     },
                     innerContainerStyle
                 ]}

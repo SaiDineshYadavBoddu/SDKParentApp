@@ -38,7 +38,7 @@ export default function CustomHeader({
           </TouchableOpacity>
         )}
         <CustomText
-          type={TextType.ScreenDisplayLarge}
+          type={TextType.SectionTitle}
           style={[styles.title, titleStyle]}
         >
           {t(title)}
@@ -71,5 +71,6 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
+    fontWeight : '500'
   },
 });

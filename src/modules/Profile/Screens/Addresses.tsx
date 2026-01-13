@@ -5,9 +5,14 @@ import DetailsScreen, {
 } from '../../../common/components/DetailsScreen';
 import { useTranslation } from 'react-i18next';
 
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+
 export default function Addresses() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { data: userDetails } = useGetUserDetailsQuery();
+  // Address is missing in the sample JSON provided, so we keep them empty for now
+  // or until the API response includes an address object.
 
   const sections: DetailsSection[] = [
     {
@@ -15,32 +20,32 @@ export default function Addresses() {
         {
           id: '1',
           label: t('profile.details.addresses.fields.type'),
-          value: 'Home',
+          value: '-',
         },
         {
           id: '2',
           label: t('profile.details.addresses.fields.line'),
-          value: '',
+          value: '-',
         },
         {
           id: '3',
           label: t('profile.details.addresses.fields.zip'),
-          value: '661235',
+          value: '-',
         },
         {
           id: '4',
           label: t('profile.details.addresses.fields.city'),
-          value: 'Saudi arabia',
+          value: '-',
         },
         {
           id: '5',
           label: t('profile.details.addresses.fields.country'),
-          value: 'Saudi arabia',
+          value: '-',
         },
         {
           id: '6',
           label: t('profile.details.addresses.fields.state'),
-          value: 'Saudi arabia',
+          value: '-',
         },
       ],
     },

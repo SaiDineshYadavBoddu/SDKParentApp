@@ -9,7 +9,8 @@
     "message": "Message",
     "continue": "Continue",
     "cardNumber": "Card Number",
-    "reset": "Reset"
+    "reset": "Reset",
+    "tryAgain": "Try Again"
   },
   "cardList": {
     "title": "My Cards",
@@ -70,8 +71,8 @@
     "usageDesc": "View your usage for the card",
     "limits": "Transaction Limits",
     "limitsDesc": "View your usage limit on card",
-    "resetPin": "Reset PIN",
-    "resetPinDesc": "Reset your card PIN",
+    "setResetPin": "Set/Reset PIN",
+    "setResetPinDesc": "Set/Reset your card PIN",
     "closeCard": "Close Card",
     "closeCardDesc": "Close your card permanently"
   },
@@ -286,11 +287,36 @@
     "selectTopic": "Select Topic",
     "selectTopicDesc": "Describe your request",
     "topics": {
-      "topic1": "Topic 1",
-      "topic2": "Topic 2",
-      "topic3": "Topic 3",
-      "topic4": "Topic 4",
-      "topic5": "Topic 5"
+      "general": "General query",
+      "portal": "Self-service portal support",
+      "tariffs": "Product tariffs",
+      "card_service": "Card service request",
+      "transaction": "Card transaction query",
+      "others": "Others"
+    },
+    "contactMe": "Contact Me",
+    "requestSuccessTitle": "Support request #{{id}} submitted successfully",
+    "requestSuccessSubtitle": "",
+    "requestFailureTitle": "Request Submission Failed",
+    "requestFailureSubtitle": "Please try again later"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "viewRequest": "View request",
+    "sections": {
+      "Today": "Today",
+      "Yesterday": "Yesterday",
+      "ThisWeek": "This Week",
+      "Past": "Past"
+    },
+    "relativeTime": {
+      "justNow": "Just now"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load notifications.",
+      "loadMoreFailed": "Error loading more. Tap to retry.",
+      "retry": "Retry"
     }
   },
   "requests": {
@@ -298,6 +324,8 @@
     "searchPlaceholder": "Requester, Approved or ID",
     "count": "Requests",
     "idPrefix": "Request",
+    "createdAt": "Created at",
+    "cancelledAt": "Cancelled at",
     "filters": {
       "title": "Filters",
       "selectStatus": "Select Status",
@@ -308,8 +336,13 @@
       "apply": "Apply Filters"
     },
     "status": {
-      "approved": "Approved",
-      "rejected": "Rejected",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "AUTO_APPROVED": "Auto Approved",
+      "CANCELLED": "Cancelled",
+      "PENDING_APPROVAL": "Pending",
+      "DONE": "Completed",
+      "FAILED": "Failed",
       "inProgress": "In progress",
       "resolved": "Resolved"
     },
@@ -321,11 +354,23 @@
     },
     "detailSheet": {
       "detailsTitle": "Details",
-      "decisionTitle": "Decision Details"
-    }
+      "decisionTitle": "Decision Details",
+      "autoApproved": "Auto approved {{date}}",
+      "approvedBy": "Approved by {{name}} {{date}}",
+      "rejectedBy": "Rejected by {{name}} {{date}}",
+      "canceledBy": "Canceled by {{name}} {{date}}",
+      "processingFailed": "Processing failed",
+      "processed": "Processed successfully",
+      "retry": "Retry",
+      "completed": "Completed"
+    },
+    "noRequests": "No requests available"
   },
   "datePicker": {
-    "selectRange": "Select Date Range"
+    "selectRange": "Start Date - End Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "selectRangeButton": "Select date range"
   },
   "genericSelection": {
     "title": "Select Verification Method",
@@ -343,7 +388,51 @@
     "title": "Validate via OTP",
     "subtitle": "We’ve sent you the One time Password (OTP) on {{target}}",
     "resend": "Resend code",
+    "resendTimer": "Resend in {{seconds}}s",
     "verify": "Verify OTP",
-    "error": "Incorrect OTP"
+    "error": "Incorrect OTP",
+    "selectionTitle": "Select Verification Method",
+    "selectionSubtitle": "Please select an option to get your verification code",
+    "emailSubtitle": "We’ve sent you the One time Password (OTP) on your email",
+    "mobileSubtitle": "We’ve sent you the One time Password (OTP) on your mobile",
+    "sendError": "Failed to send OTP. Please try again.",
+    "invalidCode": "Invalid OTP code. Please try again."
+  },
+  "noInternet": {
+    "title": "No Internet Connection",
+    "subtitle": "Check your WiFi or cellular connection and try again. You can also check your device's network settings.",
+    "primaryButton": {
+      "title": "Try again"
+    },
+    "secondaryButton": {
+      "title": "Open Network Settings"
+    },
+    "toast": {
+      "title": "No Internet Connection.",
+      "subtitle": "Check your WiFi or cellular connection and try again.",
+      "primaryButton": "Try Again"
+    }
+  },
+  "loader": {
+    "title": "Loading...",
+    "subtitle": "Please wait, this should only take a moment."
+  },
+  "setPin": {
+    "title": "Set PIN",
+    "description": "Choose 4 numbers between 0-9.\nAvoiding repeating, obvious or sequenced numbers.",
+    "enterNewPin": "Enter new PIN",
+    "confirmNewPin": "Confirm new PIN",
+    "errorShort": "PIN must be 4 digits",
+    "errorMismatch": "PIN don't match",
+    "successMessage": "Your PIN has been successfully reset."
+  },
+  "resetPin": {
+    "title": "Reset PIN",
+    "description": "Choose 4 numbers between 0-9.\nAvoiding repeating, obvious or sequenced numbers.",
+    "enterNewPin": "Enter new PIN",
+    "confirmNewPin": "Confirm new PIN",
+    "errorShort": "PIN must be 4 digits",
+    "errorMismatch": "PIN don't match",
+    "successMessage": "Your PIN has been successfully reset."
   }
 }

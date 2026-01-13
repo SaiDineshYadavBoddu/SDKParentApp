@@ -71,7 +71,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
           styles.inputContainer,
           {
             borderColor,
-            backgroundColor: colors.surface,
+            backgroundColor: rest.editable === false ? colors.screenBackground : colors.surface,
             height: multiline ? undefined : ms(48),
             minHeight: ms(48),
             alignItems: multiline ? 'flex-start' : 'center',

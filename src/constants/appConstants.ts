@@ -33,6 +33,4 @@ export const FREEZE_CARD_REASONS = [
   "Fraud"
 ];
 
-export const TOPICS = ['topic1', 'topic2', 'topic3', 'topic4', 'topic5'];
-
-export const TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
+export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, FlatList, Platform, Animated } from 'react-native';
+import { View, StyleSheet, FlatList, Platform, Animated, ActivityIndicator } from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
@@ -15,96 +15,24 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import FilterSVG from '../../../assets/svgs/FilterSVG';
 import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
-import { Keyboard, Pressable, TouchableOpacity } from 'react-native';
+import { Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
-import RequestInfoGroup, {
+import RequestInfoGroup from '../Components/RequestInfoGroup';
+import {
   getStatusColors,
   getProgressStatusColor,
   getProgressStatusIcon,
   renderIcon,
-  RequestDetail
-} from '../Components/RequestInfoGroup';
+} from '../../../utils/requestUtils';
 import RequestDetailBottomSheet from '../Components/RequestDetailBottomSheet';
 import { TimelineEvent } from '../Components/RequestTimeline';
 import { useTranslation } from 'react-i18next';
+import { useGetRequestsQuery, useGetRequestTypesQuery } from '../../../network/requests/request.api';
+import CustomLoader from '../../../common/components/CustomLoader';
 
-// Types
-type RequestStatus = 'Activation' | 'In progress' | 'Card unblocking' | 'Resolved';
+import { RequestAction, RequestItem } from '../../../network/requests/request.types';
 
-type RequestItem = {
-  id: string;
-  requestNumber: string;
-  badgeText: string;
-  details: RequestDetail[];
-  technicalDetails?: Array<{ label: string; value: string }>;
-  timeline?: TimelineEvent[];
-};
 
-const STATUS_OPTIONS = ['approved', 'rejected', 'inProgress', 'resolved'];
-const REQUEST_TYPE_OPTIONS = ['activation', 'cardUnblocking', 'replacement', 'dispute'];
-
-// Mock data based on the UI
-const REQUESTS_DATA: RequestItem[] = [
-  {
-    id: '1',
-    requestNumber: '#2644',
-    badgeText: 'activation',
-    details: [
-      {
-        userName: 'Sharmil Panayan',
-        userIconType: 'clock',
-        status: 'inProgress',
-      },
-      {
-        userName: 'Marcin Parakaran',
-        userIconType: 'check',
-        dateText: '04-04-2025',
-      },
-    ],
-    technicalDetails: [
-      { label: 'BankId', value: 'D2C' },
-      { label: 'BankId', value: '2234440214248...' },
-      { label: 'cardMaskedPan', value: '223444******0907' },
-      { label: 'cardholderRequest', value: 'True' },
-      { label: 'companyId', value: '173366680969...' },
-      { label: 'customerId', value: '173366680969...' },
-      { label: 'requester', value: 'sharmil200' },
-      { label: 'requesterId', value: '17e70b54-1b60-...' },
-    ],
-    timeline: [
-      { title: 'Auto approved: 20-11-2025 at 11:43:21', isCompleted: true },
-      { title: 'Processed successfully', isCompleted: true },
-      { title: 'Completed', isCompleted: true },
-    ],
-  },
-  {
-    id: '2',
-    requestNumber: '#2644',
-    badgeText: 'cardUnblocking',
-    details: [
-      {
-        userName: 'Sharmil Panayan',
-        userIconType: 'clock',
-        status: 'resolved',
-      },
-      {
-        userName: 'Marcin Parakaran',
-        userIconType: 'check',
-        dateText: '24-11-2025',
-      },
-    ],
-    technicalDetails: [
-      { label: 'BankId', value: 'D2C' },
-      { label: 'BankId', value: '2234440214248...' },
-      { label: 'cardMaskedPan', value: '223444******0907' },
-      { label: 'cardholderRequest', value: 'True' },
-    ],
-    timeline: [
-      { title: 'Auto approved: 20-11-2025 at 10:00:00', isCompleted: true },
-      { title: 'Processing', isCompleted: false },
-    ],
-  },
-];
 
 // Redundant local helpers removed, now imported from RequestInfoGroup
 
@@ -112,13 +40,32 @@ const RequestsScreen = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
+  const STATUS_OPTIONS = [
+    { name: 'AUTO_APPROVED', displayName: t('requests.status.AUTO_APPROVED') },
+    { name: 'APPROVED', displayName: t('requests.status.APPROVED') },
+    { name: 'PENDING_APPROVAL', displayName: t('requests.status.PENDING_APPROVAL') },
+    { name: 'CANCELLED', displayName: t('requests.status.CANCELLED') },
+    { name: 'REJECTED', displayName: t('requests.status.REJECTED') },
+    { name: 'DONE', displayName: t('requests.status.DONE') },
+    { name: 'FAILED', displayName: t('requests.status.FAILED') },
+  ];
   const [filterView, setFilterView] = useState<'main' | 'status' | 'type'>('main');
 
-  const [selectedStatus, setSelectedStatus] = useState('approved');
-  const [selectedRequestType, setSelectedRequestType] = useState('cardUnblocking');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedRequestType, setSelectedRequestType] = useState('');
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [isDetailSheetVisible, setIsDetailSheetVisible] = useState(false);
+  const [pageNumber, setPageNumber] = useState(0);
+  const PAGE_SIZE = 6;
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    status: '',
+    type: '',
+    startDate: '',
+    endDate: '',
+  });
 
   // Dynamic Date Range (Last 30 Days)
   const getInitialDates = () => {
@@ -132,8 +79,8 @@ const RequestsScreen = () => {
   };
 
   const initialDates = getInitialDates();
-  const [startDate, setStartDate] = useState(initialDates.start);
-  const [endDate, setEndDate] = useState(initialDates.end);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const formatDisplayDate = (dateStr: string) => {
@@ -146,17 +93,73 @@ const RequestsScreen = () => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   const resetFilters = () => {
-    const dates = getInitialDates();
-    setSelectedStatus('approved');
-    setSelectedRequestType('cardUnblocking');
-    setStartDate(dates.start);
-    setEndDate(dates.end);
+    setSelectedStatus('');
+    setSelectedRequestType('');
+    setStartDate('');
+    setEndDate('');
+    setAppliedFilters({
+      status: '',
+      type: '',
+      startDate: '',
+      endDate: '',
+    });
     setFilterView('main');
+    setPageNumber(0);
     fadeAnim.setValue(1);
     slideAnim.setValue(0);
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 1000);
 
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  const { data, isLoading, isFetching, error } = useGetRequestsQuery({
+    status: appliedFilters.status || undefined,
+    actionType: appliedFilters.type || undefined,
+    startDate: appliedFilters.startDate || undefined,
+    endDate: appliedFilters.endDate || undefined,
+    pageNumber,
+    pageSize: PAGE_SIZE,
+    sortProperty: 'DATE',
+    sortDirection: 'DESC',
+    search: debouncedSearchQuery || undefined,
+  })
+
+  useEffect(() => {
+    if (isFilterSheetVisible) {
+      setSelectedStatus(appliedFilters.status);
+      setSelectedRequestType(appliedFilters.type);
+      setStartDate(appliedFilters.startDate);
+      setEndDate(appliedFilters.endDate);
+      setFilterView('main');
+    }
+  }, [isFilterSheetVisible]);
+
+  const handleLoadMore = () => {
+    if (!isFetching && !isLoading && !error && data && !data.last) {
+      setPageNumber(prev => prev + 1);
+    }
+  };
+
+  const renderFooter = () => {
+    if (isFetching && pageNumber > 0) {
+      return (
+        <View style={styles.footerContainer}>
+          <ActivityIndicator size="small" color={colors.primary} />
+        </View>
+      );
+    }
+    
+    return null;
+  };
+
+  const { data: requestTypes } = useGetRequestTypesQuery()
 
   const toggleFilterView = (view: 'main' | 'status' | 'type') => {
     Animated.parallel([
@@ -190,7 +193,8 @@ const RequestsScreen = () => {
   // Local renderIcon removed, now imported from RequestInfoGroup
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
-    const { backgroundColor, textColor } = getStatusColors(item.badgeText, colors);
+    const mainAction = item.actions[0];
+    const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
     return (
       <TouchableOpacity
@@ -204,18 +208,18 @@ const RequestsScreen = () => {
         {/* Header Row */}
         <View style={styles.headerRow}>
           <CustomText type={TextType.CardTitle} style={[styles.requestID, { color: colors.onSurface }]}>
-            {t('requests.idPrefix')} {item.requestNumber}
+            {t('requests.idPrefix')} {item.id}
           </CustomText>
           <View style={[styles.badge, { backgroundColor }]}>
             <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
             <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
-              {t(`requests.types.${item.badgeText}`)}
+              {mainAction?.displayName || t(`requests.status.${item.status}`)}
             </CustomText>
           </View>
         </View>
 
-        {/* Details Rows - Refactored into generic component */}
-        <RequestInfoGroup details={item.details} />
+        {/* Details Rows */}
+        <RequestInfoGroup item={item} />
       </TouchableOpacity>
     );
   };
@@ -231,43 +235,62 @@ const RequestsScreen = () => {
         }
       />
 
-      <View style={styles.container}>
-        {/* Search Row */}
-        <View style={styles.searchRow}>
-          <CustomTextInput
-            placeholder={t('requests.searchPlaceholder')}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
-            containerStyle={styles.searchBar}
-            inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          {/* Search Row */}
+          <View style={styles.searchRow}>
+            <CustomTextInput
+              placeholder={t('requests.searchPlaceholder')}
+              value={searchQuery}
+              onChangeText={(text) => {
+                setSearchQuery(text);
+                setPageNumber(0);
+              }}
+              leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
+              containerStyle={styles.searchBar}
+              inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
+            />
+            <TouchableOpacity
+              style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
+              onPress={() => {
+                Keyboard.dismiss();
+                // Small delay to allow keyboard to start dismissing
+                setTimeout(() => {
+                  setIsFilterSheetVisible(true);
+                }, 100);
+              }}
+            >
+              <FilterSVG width={ms(24)} height={ms(24)} />
+            </TouchableOpacity>
+          </View>
+
+          <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
+            {data?.totalElements || 0} {t('requests.count')}
+          </CustomText>
+
+          <FlatList
+            data={data?.content || []}
+            renderItem={renderRequestItem}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.1}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            ListFooterComponent={renderFooter}
+            ListEmptyComponent={
+              !isLoading && !isFetching ? (
+                <View style={styles.emptyContainer}>
+                  <CustomText type={TextType.CardText} style={styles.emptyText}>
+                    {t('requests.noRequests')}
+                  </CustomText>
+                </View>
+              ) : null
+            }
+            contentContainerStyle={styles.listContent}
           />
-          <TouchableOpacity
-            style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
-            onPress={() => {
-              Keyboard.dismiss();
-              // Small delay to allow keyboard to start dismissing
-              setTimeout(() => {
-                setIsFilterSheetVisible(true);
-              }, 100);
-            }}
-          >
-            <FilterSVG width={ms(24)} height={ms(24)} />
-          </TouchableOpacity>
         </View>
-
-        <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
-          {REQUESTS_DATA.length} {t('requests.count')}
-        </CustomText>
-
-        <FlatList
-          data={REQUESTS_DATA}
-          renderItem={renderRequestItem}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
+      </TouchableWithoutFeedback>
 
       <CustomBottomSheet
         visible={isFilterSheetVisible}
@@ -293,25 +316,25 @@ const RequestsScreen = () => {
             <View style={styles.selectionContent}>
               {STATUS_OPTIONS.map((option) => (
                 <TouchableOpacity
-                  key={option}
+                  key={option.name}
                   activeOpacity={0.6}
                   delayPressIn={0}
-                   style={[
+                  style={[
                     styles.selectionItem,
                     {
-                      borderColor: selectedStatus === option ? colors.primary : colors.outline,
+                      borderColor: selectedStatus === option.name ? colors.primary : colors.outline,
                       backgroundColor: colors.surface
                     }
                   ]}
                   onPress={() => {
-                    setSelectedStatus(option);
+                    setSelectedStatus(option.name);
                     toggleFilterView('main');
                   }}
                 >
                   <View pointerEvents="none">
                     <CustomRadioButton
-                      label={t(`requests.status.${option}`)}
-                      selected={selectedStatus === option}
+                      label={option.displayName}
+                      selected={selectedStatus === option.name}
                       onPress={() => { }}
                       labelStyle={styles.selectionLabel}
                       containerStyle={{ marginVertical: 0 }}
@@ -322,34 +345,40 @@ const RequestsScreen = () => {
             </View>
           ) : filterView === 'type' ? (
             <View style={styles.selectionContent}>
-              {REQUEST_TYPE_OPTIONS.map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  activeOpacity={0.6}
-                  delayPressIn={0}
-                   style={[
-                    styles.selectionItem,
-                    {
-                      borderColor: selectedRequestType === option ? colors.primary : colors.outline,
-                      backgroundColor: colors.surface
-                    }
-                  ]}
-                  onPress={() => {
-                    setSelectedRequestType(option);
-                    toggleFilterView('main');
-                  }}
-                >
-                  <View pointerEvents="none">
-                    <CustomRadioButton
-                      label={t(`requests.types.${option}`)}
-                      selected={selectedRequestType === option}
-                      onPress={() => { }}
-                      labelStyle={styles.selectionLabel}
-                      containerStyle={{ marginVertical: 0 }}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
+              {requestTypes && requestTypes.length > 0 ? (
+                requestTypes.map((option: { name: string; displayName: string }) => (
+                  <TouchableOpacity
+                    key={option.name}
+                    activeOpacity={0.6}
+                    delayPressIn={0}
+                    style={[
+                      styles.selectionItem,
+                      {
+                        borderColor: selectedRequestType === option.name ? colors.primary : colors.outline,
+                        backgroundColor: colors.surface
+                      }
+                    ]}
+                    onPress={() => {
+                      setSelectedRequestType(option.name);
+                      toggleFilterView('main');
+                    }}
+                  >
+                    <View pointerEvents="none">
+                      <CustomRadioButton
+                        label={option.displayName}
+                        selected={selectedRequestType === option.name}
+                        onPress={() => { }}
+                        labelStyle={styles.selectionLabel}
+                        containerStyle={{ marginVertical: 0 }}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <CustomText type={TextType.CardText} style={{ textAlign: 'center', marginTop: Spacing.m }}>
+                  {t('requests.filters.noTypesAvailable')}
+                </CustomText>
+              )}
             </View>
           ) : (
             <View style={styles.filterContent}>
@@ -362,11 +391,17 @@ const RequestsScreen = () => {
                   style={styles.rangeInputWrapper}
                 >
                   <CustomTextInput
-                    value={`${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}`}
+                    value={startDate && endDate ? `${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}` : t('datePicker.selectRange')}
                     editable={false}
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
-                    inputContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
+                    inputContainerStyle={[
+                      styles.filterInputContainer, 
+                      { 
+                        borderColor: colors.outline,
+                        backgroundColor: colors.surface // Force surface background even if editable is false
+                      }
+                    ]}
                     inputStyle={Typography.bodySmall}
                   />
                 </TouchableOpacity>
@@ -391,7 +426,10 @@ const RequestsScreen = () => {
                 </CustomText>
                 <CustomDropdown
                   label=""
-                  selectedValue={t(`requests.status.${selectedStatus}`)}
+                  selectedValue={
+                    STATUS_OPTIONS.find(s => s.name === selectedStatus)?.displayName || 
+                    (selectedStatus === '' ? t('requests.filters.selectStatus') : selectedStatus)
+                  }
                   onPress={() => toggleFilterView('status')}
                   innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
                   containerStyle={{ marginBottom: 0 }}
@@ -404,7 +442,10 @@ const RequestsScreen = () => {
                 </CustomText>
                 <CustomDropdown
                   label=""
-                  selectedValue={t(`requests.types.${selectedRequestType}`)}
+                  selectedValue={
+                    requestTypes?.find((t: any) => t.name === selectedRequestType)?.displayName || 
+                    (selectedRequestType === '' ? t('requests.filters.selectType') : selectedRequestType)
+                  }
                   onPress={() => toggleFilterView('type')}
                   innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
                   containerStyle={{ marginBottom: 0 }}
@@ -424,7 +465,16 @@ const RequestsScreen = () => {
                 />
                 <CustomButton
                   title={t('requests.filters.apply')}
-                  onPress={() => setIsFilterSheetVisible(false)}
+                  onPress={() => {
+                    setPageNumber(0);
+                    setAppliedFilters({
+                      status: selectedStatus,
+                      type: selectedRequestType,
+                      startDate,
+                      endDate,
+                    });
+                    setIsFilterSheetVisible(false);
+                  }}
                   style={styles.applyButton}
                   uppercase={false}
                 />
@@ -435,10 +485,15 @@ const RequestsScreen = () => {
       </CustomBottomSheet>
 
       <RequestDetailBottomSheet
+        key={selectedRequest?.id}
         visible={isDetailSheetVisible}
-        onClose={() => setIsDetailSheetVisible(false)}
+        onClose={() => {
+          setIsDetailSheetVisible(false);
+          setSelectedRequest(null);
+        }}
         request={selectedRequest}
       />
+      <CustomLoader loading={isLoading || (isFetching && pageNumber === 0)} />
     </View>
   );
 };
@@ -473,7 +528,7 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.m,
   },
   listContent: {
-    paddingBottom: Spacing.xl,
+    paddingBottom: ms(100),
     gap: Spacing.m,
   },
   requestCard: {
@@ -510,6 +565,23 @@ const styles = StyleSheet.create({
   filterContent: {
     gap: Spacing.xl,
     paddingBottom: Spacing.m,
+  },
+  footerContainer: {
+    paddingVertical: Spacing.m,
+    alignItems: 'center',
+  },
+  footerText: {
+    opacity: 0.6,
+  },
+  emptyContainer: {
+    flex: 1,
+    paddingTop: ms(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    opacity: 0.6,
+    textAlign: 'center',
   },
   filterSection: {
     gap: Spacing.s,

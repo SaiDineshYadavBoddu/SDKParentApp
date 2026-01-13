@@ -4,10 +4,14 @@ import DetailsScreen, {
   DetailsSection,
 } from '../../../common/components/DetailsScreen';
 import { useTranslation } from 'react-i18next';
+import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { formatToMMDDYYYY } from '../../../utils/dateUtils';
 
 export default function PersonalDocuments() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { data: userDetails } = useGetUserDetailsQuery();
+  const document = userDetails?.identityProofDocument?.[0];
 
   const sections: DetailsSection[] = [
     {
@@ -15,17 +19,17 @@ export default function PersonalDocuments() {
         {
           id: '1',
           label: t('profile.details.documents.fields.document'),
-          value: 'Passport',
+          value: document?.type || '-',
         },
         {
           id: '2',
           label: t('profile.details.documents.fields.passportNumber'),
-          value: '934343249482432',
+          value: document?.number || '-',
         },
         {
           id: '3',
           label: t('profile.details.documents.fields.expiryDate'),
-          value: '04/12/2025',
+          value: formatToMMDDYYYY(document?.expiryDate),
         },
       ],
     },

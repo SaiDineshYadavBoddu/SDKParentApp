@@ -29,6 +29,8 @@ import { formatAmount } from "../../../utils/amountUtils";
 import { isCardPendingActivation, isCardTempBlocked } from "../../../utils/cardUtils";
 import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
+import CustomImage from '../../../common/components/CustomImage';
+import CustomHeader from '../../../common/components/CustomHeader';
 import { APP_CONFIG } from "../../../config/appConfig";
 
 
@@ -74,25 +76,14 @@ export default function CardListScreen() {
 
   return (
     <>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <BackButtonSVG />
-        </TouchableOpacity>
-        <CustomText type={TextType.ScreenHeadlineSmall} style={{ fontWeight: '600' }}>
-          {t('cardList.title')}
-        </CustomText>
-        <TouchableOpacity
-          onPress={() => {
-            // Handle menu
-          }}
-        >
-          <MenuHamburgerSVG />
-        </TouchableOpacity>
-      </View>
+      <CustomHeader
+        title={t('cardList.title')}
+        rightContent={
+          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
+            <NotificationSVG width={ms(24)} height={ms(24)} />
+          </TouchableOpacity>
+        }
+      />
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -230,15 +221,10 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: Spacing.xxl,
   },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: Spacing.xxl,
-    paddingHorizontal: Spacing.l,
+  rightButton: {
+    padding: ms(6),
+    marginRight: -ms(6),
   },
-
   balanceContainer: {
     marginBottom: Spacing.l,
     alignItems: 'center',
