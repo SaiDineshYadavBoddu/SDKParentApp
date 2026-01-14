@@ -1,0 +1,107 @@
+import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
+import { NavigationContainerRef } from '@react-navigation/native';
+import { useAuth } from './AuthContext';
+import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
+import ClockSVG from '../assets/svgs/ClockSVG';
+import { Typography } from '../theme/typography';
+import { ms } from 'react-native-size-matters';
+
+const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
+const SHOW_MODAL_AT_REMAINING = 120; // Show modal when 2 minutes are remaining
+const SHOW_SCREEN_AT_REMAINING = 20;  // Navigate to screen when 20 seconds are remaining
+
+let navigationRef: NavigationContainerRef<any> | null = null;
+
+export const setNavigationRef = (ref: NavigationContainerRef<any> | null) => {
+    navigationRef = ref;
+};
+
+interface SessionTimeoutContextData {
+    isModalVisible: boolean;
+    handleStayLoggedIn: () => void;
+    handleLogout: () => void;
+}
+
+const SessionTimeoutContext = createContext<SessionTimeoutContextData>({
+    isModalVisible: false,
+    handleStayLoggedIn: () => { },
+    handleLogout: () => { },
+});
+
+export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const modalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const screenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const { isAuthenticated, signOut, signIn } = useAuth();
+
+    const clearTimers = useCallback(() => {
+        if (modalTimerRef.current) clearTimeout(modalTimerRef.current);
+        if (screenTimerRef.current) clearTimeout(screenTimerRef.current);
+        modalTimerRef.current = null;
+        screenTimerRef.current = null;
+    }, []);
+
+    const navigateSessionExpired = useCallback(() => {
+        if (navigationRef?.isReady()) {
+            (navigationRef as any).navigate('GenericInfoScreen', {
+                icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
+                title: 'session.expiredTitle',
+                titleStyle: Typography.headlineMedium,
+                description: 'session.expiredDescription',
+                primaryButton: {
+                    title: 'common.goToLogin',
+                    onPress: async () => await signIn(),
+                },
+            });
+        }
+    }, [signIn]);
+
+    const startTimers = useCallback(() => {
+        clearTimers();
+
+        const modalTimeout = (SESSION_TIMEOUT_DURATION - SHOW_MODAL_AT_REMAINING) * 1000;
+        const screenTimeout = (SESSION_TIMEOUT_DURATION - SHOW_SCREEN_AT_REMAINING) * 1000;
+
+        modalTimerRef.current = setTimeout(() => setIsModalVisible(true), modalTimeout);
+
+        screenTimerRef.current = setTimeout(async () => {
+            setIsModalVisible(false);
+            clearTimers();
+            await signOut();
+            navigateSessionExpired();
+        }, screenTimeout);
+    }, [clearTimers, signOut, navigateSessionExpired]);
+
+    const handleStayLoggedIn = useCallback(() => {
+        setIsModalVisible(false);
+    }, []);
+
+    const handleLogout = useCallback(async () => {
+        setIsModalVisible(false);
+        clearTimers();
+        await signOut();
+    }, [clearTimers, signOut]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            startTimers();
+        } else {
+            clearTimers();
+            setIsModalVisible(false);
+        }
+        return clearTimers;
+    }, [isAuthenticated, startTimers, clearTimers]);
+
+    return (
+        <SessionTimeoutContext.Provider value={{
+            isModalVisible,
+            handleStayLoggedIn,
+            handleLogout
+        }}>
+            {children}
+            <SessionTimeoutModal />
+        </SessionTimeoutContext.Provider>
+    );
+};
+
+export const useSessionTimeout = () => useContext(SessionTimeoutContext);

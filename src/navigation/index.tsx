@@ -4,7 +4,7 @@ import { Linking, View } from 'react-native';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import NoInternetSVG from '../assets/svgs/NoInternetSVG';
+import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 import CustomImage from '../common/components/CustomImage';
 import { ms } from 'react-native-size-matters';
 
@@ -75,7 +75,9 @@ const NavigationContent = () => {
 const RootNavigator = () => {
   return (
     <AuthProvider>
-      <NavigationContent />
+      <SessionTimeoutProvider>
+        <NavigationContent />
+      </SessionTimeoutProvider>
     </AuthProvider>
   );
 };
