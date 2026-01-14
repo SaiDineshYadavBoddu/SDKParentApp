@@ -6,9 +6,9 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { AppConfig } from '../config/appConfig';
 import { getAccessToken } from '../context/AuthContext';
 import { Logger } from '../utils/logger';
+import { navigateToServerErrorScreen } from '../utils/navigationUtils';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
@@ -59,6 +59,7 @@ const baseQueryWithReauth: BaseQueryFn<
   } else if (result.error && result.error.status === 500) {
     // try to get a new token
     Logger.error('Something went wrong.', result.error);
+    navigateToServerErrorScreen();
   }
   return result;
 };

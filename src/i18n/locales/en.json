@@ -413,6 +413,11 @@
       "primaryButton": "Try Again"
     }
   },
+  "serverError": {
+    "title": "Server Error",
+    "description": "We are currently experiencing server issues. Please try again.",
+    "tryAgain": "Try Again"
+  },
   "loader": {
     "title": "Loading...",
     "subtitle": "Please wait, this should only take a moment."

@@ -1,20 +1,14 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
-import { NavigationContainerRef } from '@react-navigation/native';
 import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
 import ClockSVG from '../assets/svgs/ClockSVG';
 import { Typography } from '../theme/typography';
 import { ms } from 'react-native-size-matters';
+import { getNavigationRef } from '../utils/navigationRefUtils';
 
 const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
 const SHOW_MODAL_AT_REMAINING = 120; // Show modal when 2 minutes are remaining
 const SHOW_SCREEN_AT_REMAINING = 20;  // Navigate to screen when 20 seconds are remaining
-
-let navigationRef: NavigationContainerRef<any> | null = null;
-
-export const setNavigationRef = (ref: NavigationContainerRef<any> | null) => {
-    navigationRef = ref;
-};
 
 interface SessionTimeoutContextData {
     isModalVisible: boolean;
@@ -42,6 +36,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     }, []);
 
     const navigateSessionExpired = useCallback(() => {
+        const navigationRef = getNavigationRef();
         if (navigationRef?.isReady()) {
             (navigationRef as any).navigate('GenericInfoScreen', {
                 icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
