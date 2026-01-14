@@ -19,7 +19,7 @@ import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
 import BackButtonSVG from "../../../assets/svgs/BackButtonSVG";
 import MenuHamburgerSVG from "../../../assets/svgs/MenuHamburgerSVG";
-import { useGetCardsQuery, useGetTransactionsQuery } from "../../../network/card/card.api";
+import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation } from "../../../network/card/card.api";
 import { useAuth } from "../../../context/AuthContext";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
@@ -47,10 +47,12 @@ export default function CardListScreen() {
   const navigation = useNavigation<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
-  const { data, isLoading, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
+  const { data, isLoading, error, refetch } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     pollingInterval: 30000,
     refetchOnMountOrArgChange: true,
   });
+
+  const [unblockCard, { isLoading: isUnblocking }] = useUnblockCardMutation();
 
   const cards = data?.content || [];
   const activeCard = cards[activeCardIndex];
@@ -191,9 +193,19 @@ export default function CardListScreen() {
               <ActionButton
                 title={isTempBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
                 icon={<FreezeCardSVG color={isTempBlocked ? '#0066b3' : undefined} />}
-                onPress={() => {
+                loading={isUnblocking}
+                onPress={async () => {
                   if (activeCard) {
-                    navigation.navigate('FreezeCard', { card: activeCard })
+                    if (isTempBlocked) {
+                      try {
+                        await unblockCard({ cardId: activeCard.cardIdentifier }).unwrap();
+                        refetch();
+                      } catch (err) {
+                        console.error('Failed to unblock card:', err);
+                      }
+                    } else {
+                      navigation.navigate('FreezeCard', { card: activeCard })
+                    }
                   }
                 }}
               />

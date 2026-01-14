@@ -19,4 +19,5 @@ export const API_ENDPOINTS = {
   GET_CARD_TARIFFS: '/api/v1/cards/{cardId}/tariffs',
   POST_REPLACE_CARD: '/api/v1/cards/mine/{cardId}/replace',
   POST_BLOCK_CARD: '/api/v1/cards/mine/{cardId}/block',
+  POST_UNBLOCK_CARD: '/api/v1/cards/mine/{cardId}/unblock',
 } as const;
