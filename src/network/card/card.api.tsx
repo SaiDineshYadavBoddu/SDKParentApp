@@ -61,7 +61,15 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    activateCard: builder.mutation<any, { cardId: string; actionToken?: string }>({
+      query: ({ cardId, actionToken }) => ({
+        url: API_ENDPOINTS.POST_ACTIVATE_CARD.replace('{cardId}', cardId),
+        method: 'POST',
+        headers: actionToken ? { 'ActionAuthorization': `Bearer ${actionToken}` } : undefined,
+        body: {},
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation } = cardApi;

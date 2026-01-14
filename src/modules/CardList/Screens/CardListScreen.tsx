@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Text,
+  Alert,
 } from "react-native";
 import { ms } from "react-native-size-matters";
 import SectionContainer, { SectionItem } from "../../../common/components/SectionContainer";
@@ -19,8 +20,9 @@ import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
 import BackButtonSVG from "../../../assets/svgs/BackButtonSVG";
 import MenuHamburgerSVG from "../../../assets/svgs/MenuHamburgerSVG";
-import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation } from "../../../network/card/card.api";
+import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation, useActivateCardMutation } from "../../../network/card/card.api";
 import { useAuth } from "../../../context/AuthContext";
+import { useSecondaryAuth } from "../../../hooks/useSecondaryAuth";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
 import { useNavigation } from "@react-navigation/native";
@@ -53,6 +55,9 @@ export default function CardListScreen() {
   });
 
   const [unblockCard, { isLoading: isUnblocking }] = useUnblockCardMutation();
+  const [activateCard, { isLoading: isActivating }] = useActivateCardMutation(); // Added activateCard mutation
+
+  const { startAuthFlow } = useSecondaryAuth(); // Added useSecondaryAuth hook
 
   const cards = data?.content || [];
   const activeCard = cards[activeCardIndex];
@@ -75,6 +80,25 @@ export default function CardListScreen() {
     : (transactionsData?.content || []);
 
   const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions);
+
+  // Handlers for card activation using secondary auth
+  const handleActivationSuccess = async (actionToken: string) => {
+    try {
+      await activateCard({ cardId: activeCard.cardIdentifier, actionToken }).unwrap();
+      refetch();
+      navigation.navigate('BottomTabs');
+    } catch (err: any) {
+      console.error('Failed to activate card:', err);
+      Alert.alert(t('common.error'), err?.data?.errorMessage || t('common.error'));
+    }
+  };
+
+  const startSensitiveAction = () => {
+    startAuthFlow({
+      onSuccess: handleActivationSuccess,
+      externalLoading: isActivating,
+    });
+  };
 
   return (
     <>
@@ -157,8 +181,13 @@ export default function CardListScreen() {
               {t('cardList.activationInstruction')}
             </CustomText>
             <TouchableOpacity
-              style={styles.activateButton}
-              onPress={() => navigation.navigate('ActivateCard', { card: activeCard })}
+              style={[styles.activateButton, isActivating && { opacity: 0.7 }]} // Added isActivating to style
+              onPress={() => {
+                if (activeCard) {
+                  startSensitiveAction(); // Changed to use startSensitiveAction
+                }
+              }}
+              disabled={isActivating} // Added disabled prop
             >
               <CustomText type={TextType.Button} style={styles.activateButtonText}>
                 {t('cardList.activateCard')}
