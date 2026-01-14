@@ -34,3 +34,5 @@ export const FREEZE_CARD_REASONS = [
 ];
 
 export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];
+
+export const TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];

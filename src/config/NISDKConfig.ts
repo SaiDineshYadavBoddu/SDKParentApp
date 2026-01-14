@@ -11,50 +11,50 @@ const textPositioning: NICardDetailsTextPositioning = {
 const fonts: NIFontLabelPair[] = [
   /// Card Details
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.cardNumberLabel,
   },
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.cardNumberValueLabel,
   },
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.expiryDateLabel,
   },
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.expiryDateValueLabel,
   },
-  {font: {name: 'Helvetica', size: 14}, label: NILabels.cvvLabel},
-  {font: {name: 'Helvetica', size: 14}, label: NILabels.cvvValueLabel},
+  { font: { name: 'Helvetica', size: 14 }, label: NILabels.cvvLabel },
+  { font: { name: 'Helvetica', size: 14 }, label: NILabels.cvvValueLabel },
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.cardholderNameLabel,
   },
   /// Set PIN
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.setPinDescriptionLabel,
   },
   /// Change PIN
   {
-    font: {name: 'Helvetica', size: 14},
+    font: { name: 'Helvetica', size: 14 },
     label: NILabels.changePinDescriptionLabel,
   },
   /// View PIN
   {
-    font: {name: 'Helvetica', size: 18},
+    font: { name: 'Helvetica', size: 18 },
     label: NILabels.viewPinDescriptionLabel,
   },
   {
-    font: {name: 'Helvetica', size: 18},
+    font: { name: 'Helvetica', size: 18 },
     label: NILabels.viewPinCountDownDescription,
   },
-  {font: {name: 'Helvetica', size: 18}, label: NILabels.pinDigitLabel},
+  { font: { name: 'Helvetica', size: 18 }, label: NILabels.pinDigitLabel },
 ];
 
-const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/'
+const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api'
 // isUAT
 //   ? 'https://api-uat.network.global/sdk/v2'
 //   : 'https://api.network.global/sdk/v2';
@@ -65,7 +65,7 @@ const connectionProperties = (token: string) => {
   return {
     rootUrl: ROOT_URL,
     token: token,
-    // extraHeaders: '{ "apiuat_za_network_global": "qWyQt3D44Upner1T" }',
+    extraHeaders: '{ "apiuat_za_network_global": "qWyQt3D44Upner1T" }',
   } as NIConnectionProperties;
 };
 
