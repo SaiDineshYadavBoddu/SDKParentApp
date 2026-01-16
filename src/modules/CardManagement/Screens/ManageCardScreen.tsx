@@ -23,6 +23,7 @@ import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import CustomBackButton from '../../../common/components/CustomBackButton';
 import PaymentCard from '../../../common/components/PaymentCard';
 import { Animated } from 'react-native';
+import { canSetPin, canCloseCard, canViewLimits, canViewRestrictions, isCardBlocked } from '../../../utils/cardUtils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -46,45 +47,54 @@ const ManageCardScreen = () => {
       Icon: CardUsageSVG,
       title: t('manageCard.usage'),
       subtitle: t('manageCard.usageDesc'),
+      visible: canViewRestrictions(card?.cardStatus),
     },
     {
       id: 'limits',
       Icon: TransactionLimitsSVG,
       title: t('manageCard.limits'),
       subtitle: t('manageCard.limitsDesc'),
+      visible: canViewLimits(card?.cardStatus),
     },
     {
       id: 'set_reset_pin',
       Icon: ResetPinSVG,
       title: t('manageCard.setResetPin'),
       subtitle: t('manageCard.setResetPinDesc'),
+      visible: canSetPin(card?.cardStatus),
+      disabled: isCardBlocked(card?.cardStatus),
     },
     {
       id: 'close_card',
       Icon: BlockCardSVG,
       title: t('manageCard.closeCard'),
       subtitle: t('manageCard.closeCardDesc'),
+      visible: canCloseCard(card?.cardStatus),
     }
   ];
 
-  const controlItems: SectionItem[] = controls.map(control => ({
-    id: control.id,
-    start: <control.Icon width={ms(20)} height={ms(20)} />,
-    top: <CustomText type={TextType.CardTitle}>{control.title}</CustomText>,
-    middle: <CustomText type={TextType.CardSubtitle}>{control.subtitle}</CustomText>,
-    end: <ChevronSVG width={ms(20)} height={ms(20)} />,
-    onPress: () => {
-      if (control.id === 'close_card') {
-        navigation.navigate('CloseCard', { card });
-      } else if (control.id === 'usage') {
-        navigation.navigate('CardUsage', { card });
-      } else if (control.id === 'limits') {
-        navigation.navigate('TransactionLimits', { card });
-      } else if (control.id === 'set_reset_pin') {
-        navigation.navigate('SetCardPin', { card });
+
+  const controlItems: SectionItem[] = controls
+    .map(control => ({
+      id: control.id,
+      start: <control.Icon width={ms(20)} height={ms(20)} />,
+      top: <CustomText type={TextType.CardTitle}>{control.title}</CustomText>,
+      middle: <CustomText type={TextType.CardSubtitle}>{control.subtitle}</CustomText>,
+      end: <ChevronSVG width={ms(20)} height={ms(20)} />,
+      disabled: control.disabled || !control.visible,
+      onPress: () => {
+        if (control.disabled || !control.visible) return;
+        if (control.id === 'close_card') {
+          navigation.navigate('CloseCard', { card });
+        } else if (control.id === 'usage') {
+          navigation.navigate('CardUsage', { card });
+        } else if (control.id === 'limits') {
+          navigation.navigate('TransactionLimits', { card });
+        } else if (control.id === 'set_reset_pin') {
+          navigation.navigate('SetCardPin', { card });
+        }
       }
-    }
-  }));
+    }));
 
   return (
     <View style={[styles.container, {
@@ -113,6 +123,7 @@ const ManageCardScreen = () => {
             cardMargin={CARD_MARGIN}
             isDetailsVisible={isDetailsVisible}
             onToggleVisibility={() => setIsDetailsVisible(!isDetailsVisible)}
+            showEyeIcon={false}
           />
         </View>
 

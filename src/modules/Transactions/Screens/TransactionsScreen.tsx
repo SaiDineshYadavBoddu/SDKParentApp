@@ -46,7 +46,7 @@ const TransactionsScreen = () => {
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
 
   const { data: cardsData, isLoading: isCardsLoading } = useGetCardsQuery({
-    cardStatus: ['Active', 'Blocked', 'PENDING_ACTIVATION'],
+    cardStatus: ['Active', 'Blocked'],
   });
 
   const cards = cardsData?.content || [];

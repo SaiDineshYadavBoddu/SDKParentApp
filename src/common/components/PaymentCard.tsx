@@ -5,6 +5,7 @@ import CustomText, { TextType } from './CustomText';
 import CustomIcon from './CustomIcon';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
+import { shouldBlurCard } from '../../utils/cardUtils';
 
 interface CardData {
   cardIdentifier: string;
@@ -27,6 +28,7 @@ interface PaymentCardProps {
   cardMargin: number;
   isDetailsVisible: boolean;
   onToggleVisibility: (id: string) => void;
+  showEyeIcon?: boolean;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -38,6 +40,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   cardMargin,
   isDetailsVisible,
   onToggleVisibility,
+  showEyeIcon = true,
 }) => {
   const inputRange = [
     (index - 1) * snapInterval,
@@ -94,17 +97,19 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           resizeMode="contain"
         />
 
-        <TouchableOpacity
-          onPress={() => onToggleVisibility(item.cardIdentifier)}
-          style={styles.toggle}
-        >
-          <CustomIcon
-            type="feather"
-            name={isDetailsVisible ? 'eye' : 'eye-off'}
-            size={ms(24)}
-            color="white"
-          />
-        </TouchableOpacity>
+        {showEyeIcon && (
+          <TouchableOpacity
+            onPress={() => onToggleVisibility(item.cardIdentifier)}
+            style={[styles.toggle, { zIndex: 20 }]}
+          >
+            <CustomIcon
+              type="feather"
+              name={isDetailsVisible ? 'eye' : 'eye-off'}
+              size={ms(24)}
+              color="white"
+            />
+          </TouchableOpacity>
+        )}
 
         <View style={styles.cardDetails}>
           <CustomText
@@ -164,7 +169,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           resizeMode="contain"
         />
 
-        {(item.cardStatus === 'Blocked' && item.statusCause === 'TempBlocked') && (
+        {shouldBlurCard(item.cardStatus, item.statusCause) && (
           <View style={styles.blockOverlay} />
         )}
       </Animated.View>

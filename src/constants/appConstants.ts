@@ -36,3 +36,15 @@ export const FREEZE_CARD_REASONS = [
 export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];
 
 export const TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
+
+export const CARD_STATUS = {
+  PENDING_ACTIVATION: 'Pending Activation',
+  ACTIVE: 'Active',
+  BLOCKED: 'Blocked',
+  REPLACED: 'Replaced',
+  PENDING_CLOSURE: 'Pending Closure',
+} as const;
+
+export const STATUS_CAUSE = {
+  TEMP_BLOCKED: 'TempBlocked',
+} as const;
