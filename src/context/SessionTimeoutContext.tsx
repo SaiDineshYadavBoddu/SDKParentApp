@@ -3,9 +3,18 @@ import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
 import { navigateToSessionExpiredScreen } from '../utils/navigationUtils';
 
+// Constants
 const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
 const SHOW_MODAL_AT_REMAINING = 120; // Show modal when 2 minutes are remaining
 const SHOW_SCREEN_AT_REMAINING = 20;  // Navigate to screen when 20 seconds are remaining
+
+// Global function for external use (api.config 401 handling)
+let globalExpireSession: (() => Promise<void>) | null = null;
+
+export const expireSession = async () => {
+    if (globalExpireSession) await globalExpireSession();
+};
+
 
 interface SessionTimeoutContextData {
     isModalVisible: boolean;
@@ -32,25 +41,31 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         screenTimerRef.current = null;
     }, []);
 
-    const navigateSessionExpired = useCallback(() => {
+        // Session expiration handler
+    const expireSessionImpl = useCallback(async () => {
+        setIsModalVisible(false);
+        clearTimers();
+        await signOut();
         navigateToSessionExpiredScreen(async () => await signIn());
-    }, [signIn]);
+    }, [clearTimers, signOut, signIn]);
 
+    // Expose expireSessionImpl globally
+    useEffect(() => {
+        globalExpireSession = expireSessionImpl;
+        return () => {
+            globalExpireSession = null;
+        };
+    }, [expireSessionImpl]);
+
+    // Start session timers
     const startTimers = useCallback(() => {
         clearTimers();
-
         const modalTimeout = (SESSION_TIMEOUT_DURATION - SHOW_MODAL_AT_REMAINING) * 1000;
         const screenTimeout = (SESSION_TIMEOUT_DURATION - SHOW_SCREEN_AT_REMAINING) * 1000;
 
         modalTimerRef.current = setTimeout(() => setIsModalVisible(true), modalTimeout);
-
-        screenTimerRef.current = setTimeout(async () => {
-            setIsModalVisible(false);
-            clearTimers();
-            await signOut();
-            navigateSessionExpired();
-        }, screenTimeout);
-    }, [clearTimers, signOut, navigateSessionExpired]);
+        screenTimerRef.current = setTimeout(() => expireSessionImpl(), screenTimeout);
+    }, [clearTimers, expireSessionImpl]);
 
     const handleStayLoggedIn = useCallback(() => {
         setIsModalVisible(false);

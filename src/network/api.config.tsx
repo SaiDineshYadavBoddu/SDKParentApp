@@ -7,6 +7,7 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
 import { getAccessToken } from '../context/AuthContext';
+import { expireSession } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
 import { navigateToServerErrorScreen } from '../utils/navigationUtils';
 
@@ -52,7 +53,7 @@ const baseQueryWithReauth: BaseQueryFn<
     return result;
   }
   if (result.error && result.error.status === 401) {
-    // try to get a new token
+    await expireSession();
   } else if (result.error && result.error.status === 400) {
     // Show global toast only if not ignored
     Logger.warn(result.error?.data || 'Something went wrong.');
