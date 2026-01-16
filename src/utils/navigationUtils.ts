@@ -3,6 +3,7 @@ import { Linking } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
+import ClockSVG from '../assets/svgs/ClockSVG';
 import { Typography } from '../theme/typography';
 import { navigate, getNavigationRef } from './navigationRefUtils';
 import i18next from 'i18next';
@@ -47,6 +48,26 @@ export const navigateToServerErrorScreen = () => {
             navigationRef.goBack();
           }
         },
+      },
+    });
+  }
+};
+
+/**
+ * Navigates to session expired screen
+ * @param onLogin Callback to trigger login
+ */
+export const navigateToSessionExpiredScreen = (onLogin: () => Promise<void>) => {
+  const navigationRef = getNavigationRef();
+  if (navigationRef?.isReady()) {
+    navigate('GenericInfoScreen', {
+      icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
+      title: i18next.t('session.expiredTitle'),
+      titleStyle: Typography.headlineMedium,
+      description: i18next.t('session.expiredDescription'),
+      primaryButton: {
+        title: i18next.t('login.loginButton'),
+        onPress: onLogin,
       },
     });
   }

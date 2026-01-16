@@ -1,10 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
-import ClockSVG from '../assets/svgs/ClockSVG';
-import { Typography } from '../theme/typography';
-import { ms } from 'react-native-size-matters';
-import { getNavigationRef } from '../utils/navigationRefUtils';
+import { navigateToSessionExpiredScreen } from '../utils/navigationUtils';
 
 const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
 const SHOW_MODAL_AT_REMAINING = 120; // Show modal when 2 minutes are remaining
@@ -36,19 +33,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     }, []);
 
     const navigateSessionExpired = useCallback(() => {
-        const navigationRef = getNavigationRef();
-        if (navigationRef?.isReady()) {
-            (navigationRef as any).navigate('GenericInfoScreen', {
-                icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
-                title: 'session.expiredTitle',
-                titleStyle: Typography.headlineMedium,
-                description: 'session.expiredDescription',
-                primaryButton: {
-                    title: 'common.goToLogin',
-                    onPress: async () => await signIn(),
-                },
-            });
-        }
+        navigateToSessionExpiredScreen(async () => await signIn());
     }, [signIn]);
 
     const startTimers = useCallback(() => {

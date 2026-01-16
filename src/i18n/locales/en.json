@@ -418,6 +418,10 @@
     "description": "We are currently experiencing server issues. Please try again.",
     "tryAgain": "Try Again"
   },
+  "session": {
+    "expiredTitle": "Session Expired",
+    "expiredDescription": "Your session has expired for security reasons. Please sign in again to continue."
+  },
   "loader": {
     "title": "Loading...",
     "subtitle": "Please wait, this should only take a moment."
