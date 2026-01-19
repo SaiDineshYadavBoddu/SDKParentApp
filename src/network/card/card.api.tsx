@@ -7,7 +7,7 @@ export const cardApi = backendApi.injectEndpoints({
     getCards: builder.query<any, any>({
       query: params => ({
         url: API_ENDPOINTS.GET_CARDS,
-          method: 'GET',
+        method: 'GET',
         params,
       }),
     }),
@@ -55,7 +55,21 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'POST',
       }),
     }),
+    unblockCard: builder.mutation<any, { cardId: string }>({
+      query: ({ cardId }) => ({
+        url: API_ENDPOINTS.POST_UNBLOCK_CARD.replace('{cardId}', cardId),
+        method: 'POST',
+      }),
+    }),
+    activateCard: builder.mutation<any, { cardId: string; actionToken?: string }>({
+      query: ({ cardId, actionToken }) => ({
+        url: API_ENDPOINTS.POST_ACTIVATE_CARD.replace('{cardId}', cardId),
+        method: 'POST',
+        headers: actionToken ? { 'ActionAuthorization': `Bearer ${actionToken}` } : undefined,
+        body: {},
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation } = cardApi;

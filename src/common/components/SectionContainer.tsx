@@ -25,6 +25,7 @@ export type SectionItem = {
   body?: React.ReactNode;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 };
 
 interface Props {
@@ -68,6 +69,7 @@ export default function SectionContainer({
         body={item.body}
         onPress={item.onPress}
         style={item.style}
+        disabled={item.disabled}
       />
     );
   };

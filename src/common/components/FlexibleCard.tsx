@@ -22,6 +22,7 @@ interface Props {
   elevated?: boolean;
   style?: StyleProp<ViewStyle>;
   backgroundColor?: string;
+  disabled?: boolean;
 }
 
 export default function FlexibleCard({
@@ -34,19 +35,21 @@ export default function FlexibleCard({
   elevated = false,
   style,
   backgroundColor,
+  disabled = false,
 }: Props) {
   const { colors } = useTheme();
   const Wrapper = onPress ? TouchableOpacity : View;
 
   return (
     <Wrapper
-      onPress={onPress}
+      onPress={disabled ? undefined : onPress}
       activeOpacity={0.85}
       style={[
         styles.card,
         {
           backgroundColor: backgroundColor ?? colors.surface,
           elevation: elevated ? 6 : 0,
+          opacity: disabled ? 0.5 : 1,
         },
         style,
       ]}

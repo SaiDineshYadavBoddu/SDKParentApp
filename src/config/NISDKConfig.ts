@@ -1,5 +1,21 @@
 import { languageType, NICardAttributes, NICardDetailsTextPositioning, NIConnectionProperties, NIDisplayAttributes, NIFontLabelPair, NiInputInterface, NILabels, NILanguageEnum, NIThemeEnum, themeType } from "@networkinternational/ni-card-management-sdk";
 import { ImageURISource } from "react-native";
+import { Logger } from "../utils/logger";
+
+const generateHexString = (length: number) => {
+  let result = '';
+  const characters = '0123456789abcdef';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
+
+const getTraceparent = () => {
+  const traceId = generateHexString(32);
+  const spanId = generateHexString(16);
+  return `00-${traceId}-${spanId}-01`;
+};
 
 const textPositioning: NICardDetailsTextPositioning = {
   leftAlignment: 0.05,
@@ -54,7 +70,7 @@ const fonts: NIFontLabelPair[] = [
   { font: { name: 'Helvetica', size: 18 }, label: NILabels.pinDigitLabel },
 ];
 
-const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api'
+const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
 // isUAT
 //   ? 'https://api-uat.network.global/sdk/v2'
 //   : 'https://api.network.global/sdk/v2';
@@ -62,10 +78,17 @@ const BANK_CODE = '333';
 const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string) => {
+  const traceparent = getTraceparent();
+  Logger.log('🚀 ~ NI SDK ROOT_URL:', ROOT_URL);
+  Logger.log('🚀 ~ NI SDK traceparent:', traceparent);
+
   return {
     rootUrl: ROOT_URL,
     token: token,
-    extraHeaders: '{ "apiuat_za_network_global": "qWyQt3D44Upner1T" }',
+    extraHeaders: JSON.stringify({
+      "apiuat_za_network_global": "qWyQt3D44Upner1T",
+      "traceparent": traceparent
+    }),
   } as NIConnectionProperties;
 };
 
