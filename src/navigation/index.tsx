@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { View, StyleSheet } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
-import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
-import { navigateToNoInternetScreen } from '../utils/navigationUtils';
+import NoInternetSVG from '../assets/svgs/NoInternetSVG';
+import CustomImage from '../common/components/CustomImage';
+import { ms } from 'react-native-size-matters';
+
 import NoInternetToast from '../common/components/NoInternetToast';
+import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 
 const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
@@ -19,24 +21,40 @@ const NavigationContent = () => {
   }, []);
 
   useEffect(() => {
-    initializeNavigationRef(navigationRef);
-  }, [navigationRef]);
-
-  useEffect(() => {
     if (isConnected === true) {
       setHasLaunchCheckPassed(true);
     }
   }, [isConnected]);
 
   useEffect(() => {
-    if (!navigationRef.isReady()) return;
-
-    if (isConnected === false && !hasLaunchCheckPassed) {
-      navigateToNoInternetScreen();
-    } else if (isConnected === true && getCurrentRouteName() === 'GenericInfoScreen') {
-      goBack();
+    if (isConnected === false && !hasLaunchCheckPassed && navigationRef.isReady()) {
+      (navigationRef as any).navigate('GenericInfoScreen', {
+        icon:
+          <CustomImage
+            source={require('../assets/images/noInternet.gif')}
+            style={{ width: ms(160), height: ms(160) }}
+            resizeMode="contain"
+          />,
+        title: 'noInternet.title',
+        description: 'noInternet.subtitle',
+        primaryButton: {
+          title: 'noInternet.primaryButton.title',
+          onPress: () => checkIsInternetConnected(),
+        },
+        secondaryButton: {
+          title: 'noInternet.secondaryButton.title',
+          onPress: () => Linking.openSettings(),
+        },
+      });
+    } else if (isConnected === true && navigationRef.isReady()) {
+      const routeName = navigationRef.getCurrentRoute()?.name;
+      if (routeName === 'GenericInfoScreen') {
+        if (navigationRef.canGoBack()) {
+          navigationRef.goBack();
+        }
+      }
     }
-  }, [isConnected, hasLaunchCheckPassed, navigationRef, checkIsInternetConnected]);
+  }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 
   return (
     <View style={styles.container}>
