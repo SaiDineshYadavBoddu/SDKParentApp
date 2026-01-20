@@ -25,8 +25,6 @@ export default function ContactDetails() {
           id: '2',
           label: t('profile.details.contact.fields.userId'),
           value: userDetails?.cardName || '-',
-          actionLabel: t('profile.details.contact.fields.change'),
-          onActionPress: () => console.log('Change User ID'),
         },
         {
           id: '3',
