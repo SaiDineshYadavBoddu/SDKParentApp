@@ -465,6 +465,12 @@ const RequestsScreen = () => {
                 />
                 <CustomButton
                   title={t('requests.filters.apply')}
+                  disabled={
+                    selectedStatus === appliedFilters.status &&
+                    selectedRequestType === appliedFilters.type &&
+                    startDate === appliedFilters.startDate &&
+                    endDate === appliedFilters.endDate
+                  }
                   onPress={() => {
                     setPageNumber(0);
                     setAppliedFilters({
