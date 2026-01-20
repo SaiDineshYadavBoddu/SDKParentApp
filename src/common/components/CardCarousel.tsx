@@ -41,8 +41,6 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
       console.warn('No access token available for fetching card details');
       return;
     }
-    console.log('Fetching card details for card identifier:', cardIdentifierId);
-    console.log('Access token:', accessToken);
 
     onGetCardDetails(
       TEST_INPUT(accessToken, cardIdentifierId),
