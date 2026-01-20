@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -12,6 +12,8 @@ import CustomIcon from '../../../common/components/CustomIcon';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import { useSecondaryAuth } from '../../../hooks/useSecondaryAuth';
 import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
 import { useAuth } from '../../../context/AuthContext';
@@ -27,7 +29,6 @@ const SetCardPin = () => {
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { onSetPin, isLoading: isSettingPin } = useSetPin()
   const { startAuthFlow } = useSecondaryAuth();
-
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showNewPin, setShowNewPin] = useState(false);
@@ -92,12 +93,26 @@ const SetCardPin = () => {
           console.log('NI SDK set PIN error:', error);
           console.log('NI SDK set PIN result:', result);
           if (error) {
-            Alert.alert(t('common.error'), error.message || t('otp.sendError'));
+            navigation.navigate('GenericInfoScreen', {
+              icon: <FailureSVG />,
+              title: error.message || 'otp.sendErrorTitle',
+              description: 'otp.sendErrorSubtitle',
+              primaryButton: {
+                title: 'common.ok',
+                onPress: () => navigation.goBack(),
+              },
+            });
             reject(error);
           } else {
-            Alert.alert(t('common.success'), t('setPin.successMessage'), [
-              { text: t('common.ok'), onPress: () => navigation.navigate('BottomTabs') }
-            ]);
+            navigation.navigate('GenericInfoScreen', {
+              icon: <SuccessSVG />,
+              title: 'common.success',
+              description: 'setPin.successMessage',
+              primaryButton: {
+                title: 'common.ok',
+                onPress: () => navigation.navigate('BottomTabs'),
+              },
+            });
             resolve();
           }
         },

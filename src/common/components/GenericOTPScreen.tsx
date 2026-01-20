@@ -19,6 +19,7 @@ import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSendOtpTokenMutation, useVerifyOtpTokenMutation } from '../../network/otp/otp.api';
 
 export default function GenericOTPScreen() {
   const { colors } = useTheme();
@@ -38,7 +39,13 @@ export default function GenericOTPScreen() {
     verifyButtonText = 'otp.verify',
     isLoading = false,
     initialError = false,
+    useInternalOtp = false,
+    onVerifySuccess,
+    type,
   } = route.params || {};
+
+  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpTokenMutation();
+  const [sendOtp, { isLoading: isResending }] = useSendOtpTokenMutation();
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState(initialError);
@@ -104,7 +111,15 @@ export default function GenericOTPScreen() {
     if (otpString.length === 6) {
       setLocalLoading(true);
       try {
-        await onVerify?.(otpString);
+        if (useInternalOtp) {
+          await verifyOtp({ code: otpString, type }).unwrap();
+          await onVerifySuccess?.();
+        } else {
+          await onVerify?.(otpString);
+        }
+      } catch (err) {
+        console.error('Verification failed:', err);
+        setError(true);
       } finally {
         setLocalLoading(false);
       }
@@ -128,94 +143,106 @@ export default function GenericOTPScreen() {
         onBackPress={handleBack}
         titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
       />
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                <View style={styles.topSection}>
-                <View style={styles.iconContainer}>
-                    <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
-                </View>
-                <View style={{gap : Spacing.xs}}>
-                    <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
-                        {t(title)}
-                    </CustomText>
-                    <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
-                        {t(subtitle, { target })}
-                    </CustomText>
-                </View>
-                </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.topSection}>
+          <View style={styles.iconContainer}>
+            <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
+          </View>
+          <View style={{ gap: Spacing.xs }}>
+            <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
+              {t(title)}
+            </CustomText>
+            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
+              {t(subtitle, { target })}
+            </CustomText>
+          </View>
+        </View>
 
-                {error && (
-                <CustomText type={TextType.Error} style={styles.errorText}>
-                    {t('otp.error')}
-                </CustomText>
-                )}
+        {error && (
+          <CustomText type={TextType.Error} style={styles.errorText}>
+            {t('otp.error')}
+          </CustomText>
+        )}
 
-                <View style={styles.otpSection}>
-                    <View style={styles.otpContainer}>
-                    
-                    {otp.map((digit, index) => (
-                        <TextInput
-                        key={index}
-                        ref={(ref) => {
-                            inputRefs.current[index] = ref;
-                        }}
-                        style={[
-                            styles.otpInput,
-                            {
-                            borderColor: error ? colors.error : colors.outline,
-                            color: colors.onSurface,
-                            backgroundColor: colors.surface,
-                            },
-                        ]}
-                        maxLength={1}
-                        keyboardType="number-pad"
-                        value={digit}
-                        onChangeText={(value) => handleOtpChange(value, index)}
-                        onKeyPress={(e) => handleKeyPress(e, index)}
-                        textAlign="center"
-                        secureTextEntry={true}
-                        selectionColor="transparent"
-                        cursorColor={colors.primary}
-                        selectTextOnFocus={false}
-                    />
-                    ))}
-                    </View>
+        <View style={styles.otpSection}>
+          <View style={styles.otpContainer}>
 
-                    {timer > 0 ? (
-                      <View style={styles.resendButton}>
-                        <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.secondaryText }]}>
-                          {t('otp.resendTimer', { seconds: timer })}
-                        </CustomText>
-                      </View>
-                    ) : (
-                      <TouchableOpacity 
-                        onPress={async () => {
-                          const response = await onResend?.();
-                          if (response?.tryAgainIn) {
-                            setTimer(response.tryAgainIn);
-                          }
-                        }} 
-                        style={styles.resendButton}
-                      >
-                        <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.primary }]}>
-                          {t('otp.resend')}
-                        </CustomText>
-                      </TouchableOpacity>
-                    )}
-                </View>
-            </ScrollView>
+            {otp.map((digit, index) => (
+              <TextInput
+                key={index}
+                ref={(ref) => {
+                  inputRefs.current[index] = ref;
+                }}
+                style={[
+                  styles.otpInput,
+                  {
+                    borderColor: error ? colors.error : colors.outline,
+                    color: colors.onSurface,
+                    backgroundColor: colors.surface,
+                  },
+                ]}
+                maxLength={1}
+                keyboardType="number-pad"
+                value={digit}
+                onChangeText={(value) => handleOtpChange(value, index)}
+                onKeyPress={(e) => handleKeyPress(e, index)}
+                textAlign="center"
+                secureTextEntry={true}
+                selectionColor="transparent"
+                cursorColor={colors.primary}
+                selectTextOnFocus={false}
+              />
+            ))}
+          </View>
 
-            <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
-                <CustomButton
-                title={t(verifyButtonText)}
-                onPress={handleVerify}
-                loading={isLoading || localLoading}
-                disabled={otp.join('').length < 6 || isLoading || localLoading}
-                uppercase={false}
-                />
+          {timer > 0 ? (
+            <View style={styles.resendButton}>
+              <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.secondaryText }]}>
+                {t('otp.resendTimer', { seconds: timer })}
+              </CustomText>
             </View>
+          ) : (
+            <TouchableOpacity
+              onPress={async () => {
+                if (useInternalOtp) {
+                  try {
+                    const response = await sendOtp({ type }).unwrap();
+                    if (response?.tryAgainIn) {
+                      setTimer(response.tryAgainIn);
+                    }
+                  } catch (err) {
+                    console.error('Resend failed:', err);
+                  }
+                } else {
+                  const response = await onResend?.();
+                  if (response?.tryAgainIn) {
+                    setTimer(response.tryAgainIn);
+                  }
+                }
+              }}
+              style={styles.resendButton}
+              disabled={isResending}
+            >
+              <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: isResending ? colors.outline : colors.primary }]}>
+                {t('otp.resend')}
+              </CustomText>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
+
+      <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
+        <CustomButton
+          title={t(verifyButtonText)}
+          onPress={handleVerify}
+          loading={isLoading || localLoading || isVerifying}
+          disabled={otp.join('').length < 6 || isLoading || localLoading || isVerifying}
+          uppercase={false}
+        />
+      </View>
     </View>
   );
 }
@@ -227,12 +254,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.l,
     paddingBottom: ms(100),
-    gap : Spacing.xl
+    gap: Spacing.xl
   },
   topSection: {
     marginTop: Spacing.m,
     marginBottom: Spacing.xl,
-    gap : Spacing.l
+    gap: Spacing.l
   },
   iconContainer: {
     marginBottom: Spacing.l,
@@ -245,7 +272,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     textAlign: 'center',
-    fontWeight : '500'
+    fontWeight: '500'
   },
   otpContainer: {
     flexDirection: 'row',
@@ -274,7 +301,7 @@ const styles = StyleSheet.create({
     padding: Spacing.l,
     backgroundColor: 'transparent',
   },
-  otpSection:{
-    gap : Spacing.m
+  otpSection: {
+    gap: Spacing.m
   }
 });

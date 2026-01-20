@@ -13,7 +13,7 @@ import CustomButton from './CustomButton';
 import CustomRadioButton from './CustomRadioButton';
 import FlexibleCard from './FlexibleCard';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSendOtpTokenMutation } from '../../network/otp/otp.api';
 
 export interface SelectionOption {
   id: string;
@@ -60,13 +60,17 @@ export default function GenericSelectionScreen() {
     options: providedOptions,
     onContinue,
     onBackPress,
-    continueButtonText = 'Continue', 
+    continueButtonText = 'Continue',
     isLoading = false,
+    useInternalOtp = false,
+    onVerifySuccess,
   } = route.params || {};
+
+  const [sendOtp, { isLoading: isSendingOtp }] = useSendOtpTokenMutation();
 
   const displayOptions: SelectionOption[] = useMemo(() => {
     if (providedOptions) return providedOptions;
-    
+
     return DEFAULT_OPTIONS.map(option => {
       if (option.id === 'phone' && userData?.mobilePhone) {
         return { ...option, subtitle: maskPhone(userData.mobilePhone) };
@@ -87,6 +91,31 @@ export default function GenericSelectionScreen() {
 
   const handleContinue = async () => {
     const selectedOption = displayOptions.find((o: SelectionOption) => o.id === selectedValue);
+
+    if (useInternalOtp) {
+      setLocalLoading(true);
+      try {
+        const type = selectedOption?.id.toUpperCase() as 'EMAIL' | 'PHONE';
+        const response = await sendOtp({ type }).unwrap();
+
+        navigation.navigate('GenericOTPScreen', {
+          title: 'otp.title',
+          subtitle: 'otp.subtitle',
+          target: selectedOption?.subtitle || '',
+          type: type,
+          useInternalOtp: true,
+          onVerifySuccess: onVerifySuccess,
+          retryAfter: response?.tryAgainIn,
+        });
+      } catch (error) {
+        // Error handling can be added here, maybe call a global error handler or show a message
+        console.error('Failed to send OTP:', error);
+      } finally {
+        setLocalLoading(false);
+      }
+      return;
+    }
+
     if (onContinue) {
       setLocalLoading(true);
       try {
@@ -176,8 +205,8 @@ export default function GenericSelectionScreen() {
           title={t(continueButtonText)}
           uppercase={false}
           onPress={handleContinue}
-          loading={isLoading || localLoading}
-          disabled={!selectedValue || isLoading || localLoading}
+          loading={isLoading || localLoading || isSendingOtp}
+          disabled={!selectedValue || isLoading || localLoading || isSendingOtp}
         />
       </View>
     </View>
