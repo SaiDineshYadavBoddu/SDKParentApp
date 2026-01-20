@@ -3,8 +3,8 @@ import { NavigationContainer, useNavigationContainerRef } from '@react-navigatio
 import { Linking, StyleSheet, View } from 'react-native';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import NoInternetSVG from '../assets/svgs/NoInternetSVG';
 import CustomImage from '../common/components/CustomImage';
 import { ms } from 'react-native-size-matters';
 
@@ -15,6 +15,7 @@ const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     checkIsInternetConnected();
@@ -62,7 +63,7 @@ const NavigationContent = () => {
         {isAuthenticated ? <MainStack /> : <AuthStack />}
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (
-        <View style={styles.toastOverlay}>
+        <View style={[styles.toastOverlay, { paddingBottom: insets.bottom }]}>
           <NoInternetToast visible={true} onRetry={checkIsInternetConnected} />
         </View>
       )}
@@ -87,11 +88,12 @@ const styles = StyleSheet.create({
   toastOverlay: {
     position: 'absolute',
     top: 0,
-    bottom: 10,
+    bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: 'white',
     zIndex: 9999,
+    justifyContent: 'flex-end',
   },
 });
 

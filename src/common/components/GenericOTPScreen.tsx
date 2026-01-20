@@ -234,7 +234,7 @@ export default function GenericOTPScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
+      <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom + 10, Spacing.l) }]}>
         <CustomButton
           title={t(verifyButtonText)}
           onPress={handleVerify}

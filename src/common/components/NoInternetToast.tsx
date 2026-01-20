@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ms } from 'react-native-size-matters';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import CustomText, { TextType } from './CustomText';
 import WifiOffSVG from '../../assets/svgs/WifiOffSVG';
@@ -16,12 +15,11 @@ interface Props {
 const NoInternetToast = ({ visible, onRetry }: Props) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
 
   if (!visible) return null;
 
   return (
-    <View style={[styles.container, { padding: Math.max(insets.bottom, Spacing.m), backgroundColor: colors.inverseSurface }]}>
+    <View style={[styles.container, {backgroundColor: colors.inverseSurface }]}>
       <View style={styles.content}>
         <View style={styles.leftContent}>
           <WifiOffSVG color={colors.inverseOnSurface} />
@@ -46,10 +44,6 @@ const NoInternetToast = ({ visible, onRetry }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     padding: Spacing.m,
     zIndex: 1000,
     margin: ms(16),

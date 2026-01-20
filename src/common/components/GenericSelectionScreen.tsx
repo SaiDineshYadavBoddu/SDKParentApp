@@ -14,6 +14,7 @@ import CustomRadioButton from './CustomRadioButton';
 import FlexibleCard from './FlexibleCard';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
 import { useSendOtpTokenMutation } from '../../network/otp/otp.api';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface SelectionOption {
   id: string;
@@ -50,6 +51,7 @@ export default function GenericSelectionScreen() {
   const { t } = useTranslation();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
 
   const { data: userData } = useGetUserMeQuery();
 
@@ -200,7 +202,7 @@ export default function GenericSelectionScreen() {
         </View>
       </ScrollView>
 
-      <View style={styles.bottomContainer}>
+      <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom + 10, Spacing.l) }]}>
         <CustomButton
           title={t(continueButtonText)}
           uppercase={false}
@@ -258,7 +260,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: Spacing.l,
-    paddingBottom: ms(24),
     backgroundColor: 'transparent',
   },
 });

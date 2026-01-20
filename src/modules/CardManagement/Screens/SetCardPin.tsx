@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -25,6 +26,7 @@ const SetCardPin = () => {
   const route = useRoute<any>();
   const { card } = route.params || {};
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { onSetPin, isLoading: isSettingPin } = useSetPin()
@@ -98,7 +100,7 @@ const SetCardPin = () => {
               title: error.message || 'otp.sendErrorTitle',
               description: 'otp.sendErrorSubtitle',
               primaryButton: {
-                title: 'common.ok',
+                title: 'common.tryAgain',
                 onPress: () => navigation.goBack(),
               },
             });
@@ -216,7 +218,7 @@ const SetCardPin = () => {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { backgroundColor: colors.background }]}>
+      <View style={[styles.footer, { backgroundColor: colors.background, paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
         <CustomButton
           title={t('common.continue')}
           onPress={handleContinue}
@@ -257,7 +259,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: Spacing.l,
-    paddingBottom: Spacing.xl,
   },
 });
 

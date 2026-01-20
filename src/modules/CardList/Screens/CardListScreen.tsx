@@ -28,6 +28,7 @@ import CustomLoader from "../../../common/components/CustomLoader";
 import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
+import { useRoute } from "@react-navigation/native";
 import {
   isCardPendingActivation,
   isCardTempBlocked,
@@ -57,12 +58,23 @@ export default function CardListScreen() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
   const { data, isLoading, error, refetch } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     pollingInterval: 30000,
     refetchOnMountOrArgChange: true,
   });
+
+  React.useEffect(() => {
+    const cardId = route.params?.cardId;
+    if (cardId && data?.content) {
+      const index = data.content.findIndex((c: any) => c.cardIdentifier === cardId);
+      if (index !== -1) {
+        setActiveCardIndex(index);
+      }
+    }
+  }, [route.params?.cardId, data?.content]);
 
   const [unblockCard, { isLoading: isUnblocking }] = useUnblockCardMutation();
   const [activateCard, { isLoading: isActivating }] = useActivateCardMutation(); // Added activateCard mutation
@@ -194,6 +206,7 @@ export default function CardListScreen() {
         <CardCarousel
           data={cards}
           onIndexChange={(index) => setActiveCardIndex(index)}
+          selectedIndex={activeCardIndex}
         />
 
         {/* Action buttons - always show but disable based on status */}

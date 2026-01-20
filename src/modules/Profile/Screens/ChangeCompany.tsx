@@ -7,6 +7,7 @@ import {
   TouchableNativeFeedback,
   Keyboard,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../../theme/spacing';
@@ -38,6 +39,7 @@ export default function ChangeCompany() {
   const navigation = useNavigation();
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(
     null,
@@ -75,7 +77,7 @@ export default function ChangeCompany() {
 
   return (
     <TouchableNativeFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background, paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
         {/* Header */}
         <View>
           <View style={styles.header}>
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.xxl,
+    paddingTop: Spacing.xxl,
     gap: Spacing.xxl,
   },
   header: {

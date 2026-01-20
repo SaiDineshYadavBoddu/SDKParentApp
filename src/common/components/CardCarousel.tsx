@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, Animated, Dimensions } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../theme/spacing';
@@ -28,13 +28,24 @@ interface CardData {
 interface CardCarouselProps {
   data: CardData[];
   onIndexChange?: (index: number) => void;
+  selectedIndex?: number;
 }
 
-const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
+const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex }) => {
   const { accessToken } = useAuth();
   const { onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (selectedIndex !== undefined && selectedIndex >= 0 && selectedIndex < data.length) {
+      flatListRef.current?.scrollToIndex({
+        index: selectedIndex,
+        animated: true,
+      });
+    }
+  }, [selectedIndex, data.length]);
 
   const fetchCardSensitiveData = (cardIdentifierId: string) => {
     if (!accessToken) {
@@ -75,6 +86,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
   return (
     <View style={styles.cardListContainer}>
       <Animated.FlatList
+        ref={flatListRef}
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.cardIdentifier}
@@ -100,6 +112,11 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange }) => {
         )}
         scrollEventThrottle={16}
         removeClippedSubviews={false}
+        getItemLayout={(_, index) => ({
+          length: SNAP_INTERVAL,
+          offset: SNAP_INTERVAL * index,
+          index,
+        })}
         style={{ overflow: 'visible' }}
       />
       <View style={styles.paginatorContainer}>

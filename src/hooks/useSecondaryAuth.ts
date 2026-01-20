@@ -25,7 +25,7 @@ export const useSecondaryAuth = () => {
             await options.onSuccess(token);
         } catch (error: any) {
             console.error('OTP Verification failed:', error);
-            Alert.alert(t('common.error'), error?.data?.errorMessage || t('otp.invalidCode'));
+            // Alert.alert(t('common.error'), error?.data?.errorMessage || t('otp.invalidCode'));
             throw error;
         }
     };

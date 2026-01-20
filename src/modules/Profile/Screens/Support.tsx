@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { Typography } from '../../../theme/typography';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -36,6 +37,7 @@ const Support = () => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [selectedTopic, setSelectedTopic] = useState<string | undefined>('');
   const [tempTopic, setTempTopic] = useState<string | undefined>('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -118,7 +120,7 @@ const Support = () => {
       >
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[styles.content, { flexGrow: 1 }]}
+          contentContainerStyle={[styles.content, { flexGrow: 1, paddingBottom: Math.max(insets.bottom, Spacing.xl) }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: ms(36),
-    paddingVertical: Spacing.xl,
+    paddingTop: Spacing.xl,
     gap: Spacing.xl,
   },
   headerContainer: {
