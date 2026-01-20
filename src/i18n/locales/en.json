@@ -10,7 +10,8 @@
     "continue": "Continue",
     "cardNumber": "Card Number",
     "reset": "Reset",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "error": "Error"
   },
   "cardList": {
     "title": "My Cards",
@@ -395,7 +396,8 @@
     "selectionSubtitle": "Please select an option to get your verification code",
     "emailSubtitle": "We’ve sent you the One time Password (OTP) on your email",
     "mobileSubtitle": "We’ve sent you the One time Password (OTP) on your mobile",
-    "sendError": "Failed to send OTP. Please try again.",
+    "sendErrorTitle": "Failed to send OTP.",
+    "sendErrorSubtitle": "Please try again.",
     "invalidCode": "Invalid OTP code. Please try again."
   },
   "noInternet": {
