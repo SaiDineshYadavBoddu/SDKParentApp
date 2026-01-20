@@ -8,18 +8,17 @@ import {
   TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
-import CustomIcon from '../../../common/components/CustomIcon';
 import CustomImage from '../../../common/components/CustomImage';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import StatementDownloadSVG from '../../../assets/svgs/StatementDownloadSVG';
-import { MOCK_TRANSACTIONS } from '../../../constants/mockData';
 import { TIME_RANGES } from '../../../constants/appConstants';
 import {
   formatTransactionDate,
@@ -27,17 +26,19 @@ import {
   sortTransactions,
   calculateDateRange,
 } from '../../../utils/transactionUtils';
-import { APP_CONFIG } from '../../../config/appConfig';
 import CardSelectionBottomSheet from '../Components/CardSelectionBottomSheet';
-import { useGetCardsQuery, useGetTransactionsQuery } from '../../../network/card/card.api';
+import { useGetTransactionsQuery } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
+import CustomChip from '../../../common/components/CustomChip';
+import { useSelector } from 'react-redux';
 
 
 const TransactionsScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTimeRange, setSelectedTimeRange] = useState('thisMonth');
@@ -45,11 +46,9 @@ const TransactionsScreen = () => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
 
-  const { data: cardsData, isLoading: isCardsLoading } = useGetCardsQuery({
-    cardStatus: ['Active', 'Blocked'],
-  });
+  const cardsData = useSelector((state: any) => state.card?.cards);
+  const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
 
-  const cards = cardsData?.content || [];
   const [selectedCardId, setSelectedCardId] = useState<string>('');
 
   React.useEffect(() => {
@@ -74,20 +73,12 @@ const TransactionsScreen = () => {
     pageNumber: 0,
     ...dateRange,
   }, {
-    skip: isCardsLoading || !selectedCardId || APP_CONFIG.USE_MOCK_TRANSACTIONS,
+    skip: !selectedCardId,
   });
 
   const transactions = useMemo(() => {
-    if (APP_CONFIG.USE_MOCK_TRANSACTIONS) {
-      return MOCK_TRANSACTIONS.filter(t => {
-        const matchesCard = t.cardId === selectedCardId;
-        const txnDate = t.transactionDate.split('T')[0];
-        const matchesDate = txnDate >= dateRange.dateFrom && txnDate <= dateRange.dateTo;
-        return matchesCard && matchesDate;
-      });
-    }
     return txnData?.content || [];
-  }, [txnData, selectedCardId, dateRange, APP_CONFIG.USE_MOCK_TRANSACTIONS]);
+  }, [txnData]);
 
   const filteredTransactions = useMemo(() => {
     const filtered = filterTransactions(transactions, searchQuery);
@@ -158,7 +149,7 @@ const TransactionsScreen = () => {
           <TouchableOpacity
             style={styles.downloadButton}
             onPress={() => {
-              // Handle statement download
+              navigation.navigate('Statement');
             }}
           >
             <StatementDownloadSVG width={ms(48)} height={ms(48)} />
@@ -173,8 +164,10 @@ const TransactionsScreen = () => {
           contentContainerStyle={styles.timeRangeContent}
         >
           {TIME_RANGES.map((range) => (
-            <TouchableOpacity
+            <CustomChip
               key={range}
+              label={t(`transactions.timeRanges.${range}`)}
+              selected={selectedTimeRange === range}
               onPress={() => {
                 if (range === 'custom') {
                   setDatePickerVisible(true);
@@ -182,23 +175,7 @@ const TransactionsScreen = () => {
                   setSelectedTimeRange(range);
                 }
               }}
-              style={[
-                styles.timeChip,
-                {
-                  backgroundColor: selectedTimeRange === range ? colors.primary : '#F5F5F5',
-                },
-              ]}
-            >
-              <CustomText
-                type={TextType.CardText}
-                style={{
-                  color: selectedTimeRange === range ? '#FFF' : '#666',
-                  fontWeight: selectedTimeRange === range ? '600' : '400',
-                }}
-              >
-                {t(`transactions.timeRanges.${range}`)}
-              </CustomText>
-            </TouchableOpacity>
+            />
           ))}
         </ScrollView>
 
@@ -206,7 +183,7 @@ const TransactionsScreen = () => {
         <FlatList
           data={filteredTransactions}
           renderItem={renderTransactionItem}
-          keyExtractor={(item, index) => item.transactionRefId || item.txnId || item.id || index.toString()}
+          keyExtractor={(item) => item.transactionRefId}
           scrollEnabled={false}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
@@ -235,7 +212,7 @@ const TransactionsScreen = () => {
         initialStartDate={customDateRange.start}
         initialEndDate={customDateRange.end}
       />
-      <CustomLoader loading={isCardsLoading || isTxnLoading} />
+      <CustomLoader loading={isTxnLoading} />
     </View>
   );
 };
@@ -314,11 +291,6 @@ const styles = StyleSheet.create({
   },
   timeRangeContent: {
     gap: Spacing.s,
-  },
-  timeChip: {
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.s,
-    borderRadius: ms(8),
   },
   transactionItem: {
     flexDirection: 'row',

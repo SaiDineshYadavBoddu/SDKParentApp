@@ -138,3 +138,36 @@ export const calculateDateRange = (
     console.log(`calculated result:`, result);
     return result;
 };
+
+/**
+ * Formats a date string to DD.MM.YYYY format.
+ * @param dateString The date string to format (e.g., "2026-01-13").
+ * @returns Formatted date string in DD.MM.YYYY format.
+ */
+export const formatDateRange = (dateString: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+};
+
+/**
+ * Formats a creation timestamp to "DD MMM YYYY, HH:MMAM/PM" format.
+ * @param dateString The ISO date string to format.
+ * @returns Formatted timestamp string without the "Created" prefix.
+ */
+export const formatCreationTimestamp = (dateString: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-GB', { month: 'short' });
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+    });
+    return `${day} ${month} ${year}, ${time}`;
+};

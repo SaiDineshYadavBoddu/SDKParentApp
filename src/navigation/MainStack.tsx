@@ -20,6 +20,7 @@ import GenericOTPScreen from '../common/components/GenericOTPScreen.tsx';
 import GenericInfoScreen from '../common/components/GenericInfoScreen.tsx';
 import SetCardPin from '../modules/CardManagement/Screens/SetCardPin.tsx';
 import NotificationsScreen from '../modules/Notifications/Screens/NotificationsScreen.tsx';
+import StatementScreen from '../modules/Statements/Screens/StatementScreen.tsx';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ const MainStack = () => {
       <Stack.Screen name="GenericInfoScreen" component={GenericInfoScreen} />
       <Stack.Screen name="SetCardPin" component={SetCardPin} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="Statement" component={StatementScreen} />
     </Stack.Navigator>
   );
 };

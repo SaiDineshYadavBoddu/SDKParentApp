@@ -443,5 +443,28 @@
     "errorShort": "PIN must be 4 digits",
     "errorMismatch": "PIN don't match",
     "successMessage": "Your PIN has been successfully reset."
+  },
+  "statements": {
+    "title": "New statement",
+    "newStatement": "New statement",
+    "statementHistory": "Statement history",
+    "selectCard": "Select card",
+    "exportTo": "Export to:",
+    "download": "Download",
+    "cardStatement": "Card statement",
+    "created": "Created",
+    "historyPlaceholder": "No statement history available",
+    "timeRanges": {
+      "lastWeek": "Last week",
+      "lastMonth": "Last month",
+      "last3Months": "Last 3 months",
+      "custom": "Custom"
+    },
+    "formats": {
+      "csv": "CSV",
+      "excel": "Excel",
+      "pdf": "PDF",
+      "word": "Word"
+    }
   }
 }

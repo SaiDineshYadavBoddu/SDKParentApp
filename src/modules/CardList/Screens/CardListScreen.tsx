@@ -41,7 +41,6 @@ import {
 } from "../../../utils/cardUtils";
 import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
-import CustomImage from '../../../common/components/CustomImage';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { APP_CONFIG } from "../../../config/appConfig";
 
@@ -55,12 +54,10 @@ const CARD_QUERY_PARAMS = {
 
 export default function CardListScreen() {
   const { t } = useTranslation();
-  const { signOut } = useAuth();
   const navigation = useNavigation<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
-  const { data, isLoading, error, refetch } = useGetCardsQuery(CARD_QUERY_PARAMS, {
-    pollingInterval: 30000,
+  const { data, isLoading, refetch } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
   });
 

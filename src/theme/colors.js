@@ -8,7 +8,7 @@ export const lightColors = {
   background: '#FFFFFF',
   onBackground: '#000000',
 
-  backgroundVariant: '#C8E4F7',
+  backgroundVariant: '#E6F0F7',
   onBackgroundVariant: '#000000',
 
   surface: '#FFFFFF',
