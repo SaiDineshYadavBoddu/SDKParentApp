@@ -5,14 +5,17 @@ import CustomText, { TextType } from './CustomText';
 import CustomIcon from './CustomIcon';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
+import { shouldBlurCard } from '../../utils/cardUtils';
 
 interface CardData {
-  id: string;
   cardIdentifier: string;
   maskedPan: string;
   expiryDate: string;
-  cvv: string;
   cardholderName: string;
+  balance: number;
+  currencyCode: string;
+  cardStatus: string;
+  statusCause?: string;
   brand?: string;
 }
 
@@ -25,6 +28,7 @@ interface PaymentCardProps {
   cardMargin: number;
   isDetailsVisible: boolean;
   onToggleVisibility: (id: string) => void;
+  showEyeIcon?: boolean;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -36,6 +40,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   cardMargin,
   isDetailsVisible,
   onToggleVisibility,
+  showEyeIcon = true,
 }) => {
   const inputRange = [
     (index - 1) * snapInterval,
@@ -92,17 +97,19 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           resizeMode="contain"
         />
 
-        <TouchableOpacity
-          onPress={() => onToggleVisibility(item.id)}
-          style={styles.toggle}
-        >
-          <CustomIcon
-            type="feather"
-            name={isDetailsVisible ? 'eye' : 'eye-off'}
-            size={ms(24)}
-            color="white"
-          />
-        </TouchableOpacity>
+        {showEyeIcon && (
+          <TouchableOpacity
+            onPress={() => onToggleVisibility(item.cardIdentifier)}
+            style={[styles.toggle, { zIndex: 20 }]}
+          >
+            <CustomIcon
+              type="feather"
+              name={isDetailsVisible ? 'eye' : 'eye-off'}
+              size={ms(24)}
+              color="white"
+            />
+          </TouchableOpacity>
+        )}
 
         <View style={styles.cardDetails}>
           <CustomText
@@ -112,15 +119,15 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             {isDetailsVisible
               ? item.cardIdentifier
               : (() => {
-                  let masked = item.maskedPan || '';
-                  if (masked.length >= 6) {
-                    // Mask 5th and 6th characters (index 4 and 5)
-                    masked =
-                      masked.substring(0, 4) + '**' + masked.substring(6);
-                  }
-                  // Basic formatting: grouping by 4 if possible, otherwise just return
-                  return masked.replace(/(.{4})/g, '$1 ').trim();
-                })()}
+                let masked = item.maskedPan || '';
+                if (masked.length >= 6) {
+                  // Mask 5th and 6th characters (index 4 and 5)
+                  masked =
+                    masked.substring(0, 4) + '**' + masked.substring(6);
+                }
+                // Basic formatting: grouping by 4 if possible, otherwise just return
+                return masked.replace(/(.{4})/g, '$1 ').trim();
+              })()}
           </CustomText>
 
           <View
@@ -147,7 +154,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               type={TextType.ImageSmall}
               style={{ marginLeft: ms(15) }}
             >
-              {isDetailsVisible ? item.cvv || '***' : '***'}
+              {'***'}
             </CustomText>
           </View>
 
@@ -161,6 +168,10 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           style={styles.mastercardLogo}
           resizeMode="contain"
         />
+
+        {shouldBlurCard(item.cardStatus, item.statusCause) && (
+          <View style={styles.blockOverlay} />
+        )}
       </Animated.View>
     </View>
   );
@@ -199,6 +210,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: Spacing.xl,
     bottom: Spacing.xl,
+  },
+  blockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    zIndex: 10,
   },
 });
 

@@ -17,11 +17,18 @@
     "title": "My Cards",
     "availableBalance": "Available balance",
     "active": "Active",
+    "Blocked": "Blocked",
     "recentTransactions": "Recent Transactions",
     "viewAll": "View All",
     "manage": "Manage",
     "replace": "Replace",
-    "freeze": "Freeze"
+    "freeze": "Block",
+    "unfreeze": "Unblock",
+    "noTransactions": "There are no transactions available to show in transaction history",
+    "pendingActivation": "Pending activation",
+    "cardPendingActivation": "Card pending activation",
+    "activationInstruction": "Please make sure the card is physically recieved to activate it",
+    "activateCard": "Activate Card"
   },
   "replaceCard": {
     "title": "Replace Card",
@@ -30,15 +37,15 @@
     "selectReasonForReplacement": "Select the reason for card replacement",
     "replacementFee": "Replacement fee",
     "feePrefix": "Card replacement fee is ",
-    "feeSuffix": "26.00. The fee will be deducted from the replaced card.",
-    "feeAmount": "Card replacement fee is 26.00. The fee will be deducted from the replaced card.",
+    "feeSuffix": "{{amount}}. The fee will be deducted from the replaced card.",
+    "feeAmount": "Card replacement fee is {{amount}}. The fee will be deducted from the replaced card.",
     "successTitle": "Card replacement request submitted successfully",
     "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
     "reasons": {
-      "lost": "Card lost",
-      "stolen": "Card is stolen",
-      "damaged": "Card damaged",
-      "fraud": "Fraud on the card"
+      "Lost": "Card lost",
+      "Stolen": "Card is stolen",
+      "Damaged": "Card damaged",
+      "Fraud": "Fraud on the card"
     }
   },
   "onboarding": {
@@ -73,40 +80,42 @@
   "closeCard": {
     "title": "Close Card",
     "subtitle": "Are you sure you want to close this card?",
-    "warning": "Note: This will permanently close your card. Transactions and actions will be unavailable. To use your card again, you will need to request a new one.",
+    "warning": "After request approval the closure process will be initiated. Card actions will be unavailable",
     "reasonPlaceholder": "Optional",
-    "successTitle": "Card closed successfully",
-    "successSubtitle": "Your card has been permanently closed."
+    "successTitle": "Card closure request submitted successfully",
+    "successSubtitle": "Your card closure request has been submitted successfully."
   },
   "cardUsage": {
     "title": "Card Usage",
     "online": "Online Transactions",
     "contactless": "Contactless transactions",
-    "foreign": "Foreign transactions"
+    "foreign": "Foreign transactions",
+    "pos": "POS Transactions",
+    "atm": "ATM Transactions"
   },
   "transactionLimits": {
     "title": "Transaction Limits",
     "daily": "Daily limit",
-    "weekly": "Weekly limit",
+    "monthly": "Monthly limit",
     "single": "Single Transaction",
     "remaining": "Remaining",
     "currency": "AED"
   },
   "freezeCard": {
-    "title": "Freeze Card",
+    "title": "Block Card",
     "subtitle": "In case of a lost, stolen card",
     "selectReason": "Freeze reason",
     "reasonLabel": "Reason",
     "warningTemp": "This will temporarily block your card",
-    "warningPerm": "This will permanently block your card",
-    "successTitle": "Card frozen successfully",
-    "successSubtitleTemp": "Your card has been temporarily frozen. You can unfreeze it at any time from the app.",
-    "successSubtitlePerm": "Your card has been permanently frozen. You will need to request a new card to use it again.",
+    "warningPerm": "This will permanently close your card",
+    "successTitle": "Card blocked successfully",
+    "successSubtitleTemp": "Your card has been temporarily blocked. You can unblock it at any time from the app.",
+    "successSubtitlePerm": "Your card has been permanently blocked. You will need to request a new card to use it again.",
     "reasons": {
-      "no_spend": "No spend expected/ Staff member out of office",
-      "misplaced": "Suspected loss of card (misplaced)",
-      "stolen": "Suspected stolen card",
-      "fraud": "Fraud on the card"
+      "Temp": "No spend expected/ Staff member out of office",
+      "Loss": "Suspected loss of card (misplaced)",
+      "Stolen": "Suspected stolen card",
+      "Fraud": "Fraud on the card"
     }
   },
   "transactions": {
@@ -122,9 +131,10 @@
     "applyFilters": "Apply Filters",
     "reset": "Reset",
     "timeRanges": {
-      "lastWeek": "Last week",
+      "thisMonth": "This month",
       "lastMonth": "Last month",
       "last3Months": "Last 3 months",
+      "thisYear": "This year",
       "custom": "Custom"
     }
   },
@@ -404,6 +414,15 @@
       "subtitle": "Check your WiFi or cellular connection and try again.",
       "primaryButton": "Try Again"
     }
+  },
+  "serverError": {
+    "title": "Server Error",
+    "description": "We are currently experiencing server issues. Please try again.",
+    "tryAgain": "Try Again"
+  },
+  "session": {
+    "expiredTitle": "Session Expired",
+    "expiredDescription": "Your session has expired for security reasons. Please sign in again to continue."
   },
   "loader": {
     "title": "Loading...",

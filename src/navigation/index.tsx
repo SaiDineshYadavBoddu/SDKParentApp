@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { Linking, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { AuthProvider, useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ import CustomImage from '../common/components/CustomImage';
 import { ms } from 'react-native-size-matters';
 
 import NoInternetToast from '../common/components/NoInternetToast';
+import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 
 const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
@@ -56,16 +57,13 @@ const NavigationContent = () => {
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <NavigationContainer ref={navigationRef}>
         {isAuthenticated ? <MainStack /> : <AuthStack />}
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (
-        <View style={{ position: 'absolute', top: 0, bottom: 10, left: 0, right: 0, backgroundColor: 'white', zIndex: 9999 }}>
-          <NoInternetToast
-            visible={true}
-            onRetry={() => checkIsInternetConnected()}
-          />
+        <View style={styles.toastOverlay}>
+          <NoInternetToast visible={true} onRetry={checkIsInternetConnected} />
         </View>
       )}
     </View>
@@ -75,9 +73,26 @@ const NavigationContent = () => {
 const RootNavigator = () => {
   return (
     <AuthProvider>
-      <NavigationContent />
+      <SessionTimeoutProvider>
+        <NavigationContent />
+      </SessionTimeoutProvider>
     </AuthProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  toastOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 10,
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    zIndex: 9999,
+  },
+});
 
 export default RootNavigator;

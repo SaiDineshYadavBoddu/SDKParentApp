@@ -15,12 +15,14 @@ const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN * 2;
 const SIDE_SPACER = (SCREEN_WIDTH - SNAP_INTERVAL) / 2;
 
 interface CardData {
-  id: string;
   cardIdentifier: string;
   maskedPan: string;
   expiryDate: string;
   cardholderName: string;
-  cvv: string;
+  balance: number;
+  currencyCode: string;
+  cardStatus: string;
+  statusCause?: string;
 }
 
 interface CardCarouselProps {

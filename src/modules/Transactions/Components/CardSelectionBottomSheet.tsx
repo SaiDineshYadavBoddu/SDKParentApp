@@ -44,13 +44,13 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
             <View style={styles.container}>
                 {cards.map((card) => (
                     <TouchableOpacity
-                        key={card.id}
-                        onPress={() => setTempSelectedId(card.id)}
+                        key={card.cardIdentifier}
+                        onPress={() => setTempSelectedId(card.cardIdentifier)}
                         style={[
                             styles.cardItem,
                             {
-                                borderColor: tempSelectedId === card.id ? colors.primary : colors.outline,
-                                borderWidth: tempSelectedId === card.id ? ms(1.5) : ms(1),
+                                borderColor: tempSelectedId === card.cardIdentifier ? colors.primary : colors.outline,
+                                borderWidth: tempSelectedId === card.cardIdentifier ? ms(1.5) : ms(1),
                             },
                         ]}
                     >
@@ -63,8 +63,8 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                             <CustomText type={TextType.CardTitle}>{card.maskedPan}</CustomText>
                         </View>
                         <CustomRadioButton
-                            selected={tempSelectedId === card.id}
-                            onPress={() => setTempSelectedId(card.id)}
+                            selected={tempSelectedId === card.cardIdentifier}
+                            onPress={() => setTempSelectedId(card.cardIdentifier)}
                         />
                     </TouchableOpacity>
                 ))}

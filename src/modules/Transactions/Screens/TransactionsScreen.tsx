@@ -17,14 +17,22 @@ import CustomIcon from '../../../common/components/CustomIcon';
 import CustomImage from '../../../common/components/CustomImage';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
-import FilterSVG from '../../../assets/svgs/FilterSVG';
-import ExportSVG from '../../../assets/svgs/ExportSVG';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
-import { MOCK_TRANSACTIONS, MOCK_CARDS } from '../../../constants/mockData';
+import StatementDownloadSVG from '../../../assets/svgs/StatementDownloadSVG';
+import { MOCK_TRANSACTIONS } from '../../../constants/mockData';
+import { TIME_RANGES } from '../../../constants/appConstants';
+import {
+  formatTransactionDate,
+  filterTransactions,
+  sortTransactions,
+  calculateDateRange,
+} from '../../../utils/transactionUtils';
+import { APP_CONFIG } from '../../../config/appConfig';
 import CardSelectionBottomSheet from '../Components/CardSelectionBottomSheet';
-import TransactionsFilterBottomSheet from '../Components/TransactionsFilterBottomSheet';
+import { useGetCardsQuery, useGetTransactionsQuery } from '../../../network/card/card.api';
+import CustomLoader from '../../../common/components/CustomLoader';
+import CustomDatePicker from '../../../common/components/CustomDatePicker';
 
-const TIME_RANGES = ['lastWeek', 'lastMonth', 'last3Months', 'custom'];
 
 const TransactionsScreen = () => {
   const { t } = useTranslation();
@@ -32,39 +40,67 @@ const TransactionsScreen = () => {
   const insets = useSafeAreaInsets();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCardId, setSelectedCardId] = useState(MOCK_CARDS[0].id);
-  const [selectedTimeRange, setSelectedTimeRange] = useState('lastWeek');
+  const [selectedTimeRange, setSelectedTimeRange] = useState('thisMonth');
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
-  const [isFilterSheetVisible, setFilterSheetVisible] = useState(false);
-  const [filters, setFilters] = useState({
-    dateRange: '',
-    status: 'Approved',
-    sortBy: 'newest',
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
+
+  const { data: cardsData, isLoading: isCardsLoading } = useGetCardsQuery({
+    cardStatus: ['Active', 'Blocked'],
   });
 
+  const cards = cardsData?.content || [];
+  const [selectedCardId, setSelectedCardId] = useState<string>('');
+
+  React.useEffect(() => {
+    if (cards.length > 0 && !selectedCardId) {
+      setSelectedCardId(cards[0].cardIdentifier);
+    }
+  }, [cards, selectedCardId]);
+
   const selectedCard = useMemo(
-    () => MOCK_CARDS.find((c) => c.id === selectedCardId),
-    [selectedCardId]
+    () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
+    [cards, selectedCardId]
   );
 
+  const dateRange = useMemo(
+    () => calculateDateRange(selectedTimeRange, customDateRange),
+    [selectedTimeRange, customDateRange]
+  );
+
+  const { data: txnData, isLoading: isTxnLoading } = useGetTransactionsQuery({
+    cardId: selectedCardId,
+    pageSize: 20,
+    pageNumber: 0,
+    ...dateRange,
+  }, {
+    skip: isCardsLoading || !selectedCardId || APP_CONFIG.USE_MOCK_TRANSACTIONS,
+  });
+
+  const transactions = useMemo(() => {
+    if (APP_CONFIG.USE_MOCK_TRANSACTIONS) {
+      return MOCK_TRANSACTIONS.filter(t => {
+        const matchesCard = t.cardId === selectedCardId;
+        const txnDate = t.transactionDate.split('T')[0];
+        const matchesDate = txnDate >= dateRange.dateFrom && txnDate <= dateRange.dateTo;
+        return matchesCard && matchesDate;
+      });
+    }
+    return txnData?.content || [];
+  }, [txnData, selectedCardId, dateRange, APP_CONFIG.USE_MOCK_TRANSACTIONS]);
+
   const filteredTransactions = useMemo(() => {
-    return MOCK_TRANSACTIONS.filter((txn) => {
-      const matchesSearch = txn.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.txnId.includes(searchQuery);
-      const matchesCard = txn.cardId === selectedCardId;
-      // In a real app, we would filter by date and status here
-      return matchesSearch && matchesCard;
-    }).sort((a, b) => {
-      // Very basic manual sort simulation
-      return filters.sortBy === 'newest' ? (a.id < b.id ? 1 : -1) : (a.id > b.id ? 1 : -1);
-    });
-  }, [searchQuery, selectedCardId, filters]);
+    const filtered = filterTransactions(transactions, searchQuery);
+    return sortTransactions(filtered, 'newest');
+  }, [transactions, searchQuery]);
 
   const renderTransactionItem = ({ item }: { item: any }) => (
     <View style={styles.transactionItem}>
       <View style={styles.txnLeft}>
-        <CustomText type={TextType.CardTitle} style={styles.txnTitle}>{item.title}</CustomText>
-        <CustomText type={TextType.CardSubtitle} style={styles.txnId}>{item.txnId}</CustomText>
+        <CustomText type={TextType.CardTitle} style={styles.txnTitle}>
+          {item.merchantName || item.description}
+        </CustomText>
+        <CustomText type={TextType.CardSubtitle} style={styles.txnId}>{item.transactionRefId}</CustomText>
       </View>
       <View style={styles.txnRight}>
         <CustomText
@@ -73,7 +109,9 @@ const TransactionsScreen = () => {
         >
           {item.isCredit ? `+ ${item.amount}` : item.amount}
         </CustomText>
-        <CustomText type={TextType.CardSubtitle} style={styles.txnDate}>{item.date}</CustomText>
+        <CustomText type={TextType.CardSubtitle} style={styles.txnDate}>
+          {formatTransactionDate(item.transactionDate)}
+        </CustomText>
       </View>
     </View>
   );
@@ -118,13 +156,12 @@ const TransactionsScreen = () => {
             />
           </View>
           <TouchableOpacity
-            style={[styles.actionButton, { borderColor: colors.outline, backgroundColor: '#EDF5FA' }]}
-            onPress={() => setFilterSheetVisible(true)}
+            style={styles.downloadButton}
+            onPress={() => {
+              // Handle statement download
+            }}
           >
-            <FilterSVG width={ms(20)} height={ms(20)} color={colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, { borderColor: colors.outline, backgroundColor: '#EDF5FA' }]}>
-            <ExportSVG width={ms(20)} height={ms(20)} color={colors.primary} />
+            <StatementDownloadSVG width={ms(48)} height={ms(48)} />
           </TouchableOpacity>
         </View>
 
@@ -138,7 +175,13 @@ const TransactionsScreen = () => {
           {TIME_RANGES.map((range) => (
             <TouchableOpacity
               key={range}
-              onPress={() => setSelectedTimeRange(range)}
+              onPress={() => {
+                if (range === 'custom') {
+                  setDatePickerVisible(true);
+                } else {
+                  setSelectedTimeRange(range);
+                }
+              }}
               style={[
                 styles.timeChip,
                 {
@@ -163,7 +206,7 @@ const TransactionsScreen = () => {
         <FlatList
           data={filteredTransactions}
           renderItem={renderTransactionItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => item.transactionRefId || item.txnId || item.id || index.toString()}
           scrollEnabled={false}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
@@ -177,16 +220,22 @@ const TransactionsScreen = () => {
       <CardSelectionBottomSheet
         visible={isCardSheetVisible}
         onClose={() => setCardSheetVisible(false)}
-        cards={MOCK_CARDS}
+        cards={cards}
         selectedCardId={selectedCardId}
         onSelect={setSelectedCardId}
       />
-      <TransactionsFilterBottomSheet
-        visible={isFilterSheetVisible}
-        onClose={() => setFilterSheetVisible(false)}
-        initialFilters={filters}
-        onApply={setFilters}
+      <CustomDatePicker
+        visible={isDatePickerVisible}
+        onClose={() => setDatePickerVisible(false)}
+        onApply={(start, end) => {
+          setCustomDateRange({ start, end });
+          setSelectedTimeRange('custom');
+          setDatePickerVisible(false);
+        }}
+        initialStartDate={customDateRange.start}
+        initialEndDate={customDateRange.end}
       />
+      <CustomLoader loading={isCardsLoading || isTxnLoading} />
     </View>
   );
 };
@@ -251,6 +300,12 @@ const styles = StyleSheet.create({
     height: ms(48),
     borderWidth: 1,
     borderRadius: ms(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  downloadButton: {
+    width: ms(48),
+    height: ms(48),
     justifyContent: 'center',
     alignItems: 'center',
   },

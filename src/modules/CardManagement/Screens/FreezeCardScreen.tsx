@@ -18,6 +18,8 @@ import { FREEZE_CARD_REASONS } from '../../../constants/appConstants';
 import CustomWarning from '../../../common/components/CustomWarning';
 import CustomImage from '../../../common/components/CustomImage';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
+import { useBlockCardMutation } from '../../../network/card/card.api';
+import CustomLoader from '../../../common/components/CustomLoader';
 
 const FreezeCardScreen = () => {
     const { t } = useTranslation();
@@ -31,16 +33,24 @@ const FreezeCardScreen = () => {
     const [tempReason, setTempReason] = useState<string | undefined>(undefined);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const isPermanent = selectedReason && selectedReason !== 'no_spend';
-    const tempIsPermanent = tempReason && tempReason !== 'no_spend';
+    const [blockCard, { isLoading }] = useBlockCardMutation();
+
+    const isPermanent = selectedReason && selectedReason !== 'Temp';
+    const tempIsPermanent = tempReason && tempReason !== 'Temp';
 
     const handleConfirm = () => {
         setSelectedReason(tempReason);
         setBottomSheetVisible(false);
     };
 
-    const handleSubmit = () => {
-        setIsSuccess(true);
+    const handleSubmit = async () => {
+        if (!card?.cardIdentifier || !selectedReason) return;
+        try {
+            await blockCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
+            setIsSuccess(true);
+        } catch (error) {
+            console.error('Failed to block card', error);
+        }
     };
 
     if (isSuccess) {
@@ -60,6 +70,8 @@ const FreezeCardScreen = () => {
             <View style={styles.header}>
                 <CustomBackButton />
             </View>
+
+            <CustomLoader loading={isLoading} />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.iconContainer}>
@@ -105,7 +117,7 @@ const FreezeCardScreen = () => {
             <CustomBottomSheet
                 visible={isBottomSheetVisible}
                 onClose={() => setBottomSheetVisible(false)}
-                title={t('replaceCard.selectReason')}
+                title={t('freezeCard.title')}
             >
                 <View style={styles.bottomSheetContent}>
                     {FREEZE_CARD_REASONS.map((reason) => (

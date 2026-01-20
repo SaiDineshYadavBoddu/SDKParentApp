@@ -11,5 +11,14 @@ export const API_ENDPOINTS = {
   VIEW_POST: '/posts/',
   COMMENT_POST: '/comments/',
   CREATE_SUPPORT_REQUEST: '/api-support/api/v1/support/requests',
-  GET_NOTIFICATIONS: '/api-notifications/api/v1/notifications'
+  GET_NOTIFICATIONS: '/api-notifications/api/v1/notifications',
+  GET_TRANSACTIONS: '/api/v1/cards/mine/transactions',
+  GET_CARD_LIMITS: '/api/v1/cards/mine/{cardId}/limits',
+  GET_CARD_RESTRICTIONS: '/api/v1/cards/mine/{cardId}/restrictions',
+  POST_CLOSE_CARD: '/api/v1/cards/mine/{cardId}/close',
+  GET_CARD_TARIFFS: '/api/v1/cards/{cardId}/tariffs',
+  POST_REPLACE_CARD: '/api/v1/cards/mine/{cardId}/replace',
+  POST_BLOCK_CARD: '/api/v1/cards/mine/{cardId}/block',
+  POST_UNBLOCK_CARD: '/api/v1/cards/mine/{cardId}/unblock',
+  POST_ACTIVATE_CARD: '/api/v1/cards/mine/{cardId}/activate',
 } as const;

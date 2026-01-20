@@ -1,78 +1,107 @@
 export const MOCK_TRANSACTIONS = [
   {
-    id: '1',
-    title: 'Pizza Hut',
-    txnId: '123812384123',
-    date: '27 Aug 2025, 08:12 AM',
-    amount: '215.89',
-    status: 'Approved',
-    cardId: 'card_123',
+    transactionRefId: '100000000123',
+    merchantName: 'Pizza Hut',
+    amount: 120.00,
+    currency: 'AED',
+    maskedPan: '223444******4734',
+    transactionDate: new Date().toISOString(), // Today
+    transactionType: 'POSTED',
+    cardId: '22344402192265617774',
   },
   {
-    id: '2',
-    title: 'Zara',
-    txnId: '123812384123',
-    date: '26 Aug 2025, 09:22 PM',
-    amount: '215.89',
-    status: 'Approved',
-    cardId: 'card_123',
+    transactionRefId: '100000000124',
+    merchantName: 'Carrefour Market',
+    amount: 250.50,
+    currency: 'AED',
+    maskedPan: '223444******4734',
+    transactionDate: (() => {
+      const d = new Date();
+      d.setMonth(d.getMonth() - 1);
+      d.setDate(15); // Middle of last month
+      return d.toISOString();
+    })(),
+    transactionType: 'POSTED',
+    cardId: '22344402192265617774',
   },
   {
-    id: '3',
-    title: 'Funds Added',
-    txnId: '123812384123',
-    date: '25 Aug 2025, 03:55 PM',
-    amount: '215.89',
-    status: 'Funds added',
-    cardId: 'card_123',
-    isCredit: true,
+    transactionRefId: '100000000125',
+    merchantName: 'ZARA Dubai Mall',
+    amount: 850.00,
+    currency: 'AED',
+    maskedPan: '223444******4734',
+    transactionDate: (() => {
+      const d = new Date();
+      d.setMonth(d.getMonth() - 2);
+      d.setDate(10);
+      return d.toISOString();
+    })(),
+    transactionType: 'POSTED',
+    cardId: '22344402192265617774',
   },
   {
-    id: '4',
-    title: 'Domino’s Pizza',
-    txnId: '123812384123',
-    date: '24 Aug 2025, 11:01 AM',
-    amount: '215.89',
-    status: 'Approved',
-    cardId: 'card_123',
+    transactionRefId: '100000000126',
+    merchantName: 'Etisalat Payment',
+    amount: 300.00,
+    currency: 'AED',
+    maskedPan: '223444******4734',
+    transactionDate: (() => {
+      const d = new Date();
+      d.setMonth(1); // February
+      d.setDate(5);
+      return d.toISOString();
+    })(),
+    transactionType: 'POSTED',
+    cardId: '22344402192265617774',
   },
   {
-    id: '5',
-    title: 'Star Bucks',
-    txnId: '123812384123',
-    date: '23 Aug 2025, 07:44 PM',
-    amount: '215.89',
-    status: 'Approved',
-    cardId: 'card_123',
-  },
-  {
-    id: '6',
-    title: 'Amazon',
-    txnId: '123812384124',
-    date: '22 Aug 2025, 10:15 AM',
-    amount: '550.00',
-    status: 'Pending',
-    cardId: 'card_456',
+    transactionRefId: '100000000127',
+    merchantName: 'Amazon.ae',
+    amount: 55.00,
+    currency: 'AED',
+    maskedPan: '223444******0517',
+    transactionDate: new Date().toISOString(),
+    transactionType: 'PENDING',
+    cardId: '22344402137211902994',
   },
 ];
 
 export const MOCK_CARDS = [
   {
-    id: "1",
-    cardIdentifier: "card_123",
-    maskedPan: "1234 **** **** 1234",
-    expiryDate: "12/26",
-    cardholderName: "John Doe",
-    cvv: "123",
-    status: "Active"
+    product: "commercial",
+    cardholderName: "ARIS ABDUL AZEEZ",
+    cardStatus: "Active",
+    status: "Ready",
+    expiryDate: "2032-04-30",
+    currencyCode: "AED",
+    balance: 50250.77,
+    maskedPan: "223444******4734",
+    cardIdentifier: "22344402192265617774",
+    brand: "MC",
   },
   {
-    id: "2",
-    cardIdentifier: "card_456",
-    maskedPan: "5678 **** **** 5678",
-    expiryDate: "11/27",
-    cardholderName: "John Doe",
-    cvv: "456",
-    status: "Active"
-  }
+    product: "commercial",
+    cardholderName: "ARIS ABDUL AZEEZ",
+    cardStatus: "PENDING_ACTIVATION",
+    status: "Ready",
+    expiryDate: "2031-03-31",
+    currencyCode: "AED",
+    balance: 0.0,
+    maskedPan: "223444******2712",
+    cardIdentifier: "22344402159687713358",
+    brand: "MC",
+  },
+  {
+    product: "commercial",
+    cardholderName: "ARIS ABDUL AZEEZ",
+    cardStatus: "Blocked",
+    statusCause: "TempBlocked",
+    status: "Error",
+    expiryDate: "2031-03-31",
+    currencyCode: "AED",
+    balance: 0.0,
+    maskedPan: "223444******0517",
+    cardIdentifier: "22344402137211902994",
+    brand: "MC",
+  },
 ];

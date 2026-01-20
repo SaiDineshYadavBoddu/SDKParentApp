@@ -100,7 +100,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
             </CustomText>
           </View>
 
-          {item.subjectId && (
+          {item.subject === "Request" && (
             <TouchableOpacity onPress={onViewRequest}>
               <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
                 {t('notifications.viewRequest')}

@@ -20,6 +20,9 @@ import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
 
+import { useGetCardTariffsQuery, useReplaceCardMutation } from '../../../network/card/card.api';
+import CustomLoader from '../../../common/components/CustomLoader';
+
 const ReplaceCardScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -32,13 +35,30 @@ const ReplaceCardScreen = () => {
   const [tempReason, setTempReason] = useState<string | undefined>("");
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const { data: tariffData, isLoading: isTariffLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
+    skip: !card?.cardIdentifier,
+  });
+
+  const [replaceCard, { isLoading: isReplaceLoading }] = useReplaceCardMutation();
+
+  const replacementFee = React.useMemo(() => {
+    const tariff = tariffData?.tariffDetails?.find((t: any) => t.code === 'CP_REPL_PINS');
+    return tariff ? tariff.feeBase : '26.00';
+  }, [tariffData]);
+
   const handleConfirm = () => {
     setSelectedReason(tempReason);
     setBottomSheetVisible(false);
   };
 
-  const handleSubmit = () => {
-    setIsSuccess(true);
+  const handleSubmit = async () => {
+    if (!card?.cardIdentifier || !selectedReason) return;
+    try {
+      await replaceCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
+      setIsSuccess(true);
+    } catch (error) {
+      console.error('Failed to replace card', error);
+    }
   };
 
   if (isSuccess) {
@@ -91,7 +111,7 @@ const ReplaceCardScreen = () => {
           <CustomText type={TextType.CardText} style={styles.infoText}>
             {t('replaceCard.feePrefix')}
             <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
-            {t('replaceCard.feeSuffix')}
+            {t('replaceCard.feeSuffix', { amount: replacementFee })}
           </CustomText>
         </CustomWarning>
       </ScrollView>
@@ -131,7 +151,7 @@ const ReplaceCardScreen = () => {
             <CustomText type={TextType.CardText} style={styles.infoText}>
               {t('replaceCard.feePrefix')}
               <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
-              {t('replaceCard.feeSuffix')}
+              {t('replaceCard.feeSuffix', { amount: replacementFee })}
             </CustomText>
           </CustomWarning>
 
@@ -143,6 +163,7 @@ const ReplaceCardScreen = () => {
           />
         </View>
       </CustomBottomSheet>
+      <CustomLoader loading={isTariffLoading || isReplaceLoading} />
     </View>
   );
 };

@@ -30,7 +30,8 @@ export default function ActionButton({
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity
-        onPress={!isDisabled ? onPress : undefined}
+        onPress={onPress}
+        disabled={isDisabled}
         activeOpacity={0.9}
         style={[
           styles.square,

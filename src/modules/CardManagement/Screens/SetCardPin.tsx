@@ -14,6 +14,7 @@ import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
 import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 import FailureSVG from '../../../assets/svgs/FailureSVG';
+import { useSecondaryAuth } from '../../../hooks/useSecondaryAuth';
 import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
 import { useAuth } from '../../../context/AuthContext';
 import { TEST_INPUT } from '../../../config/NISDKConfig';
@@ -27,7 +28,7 @@ const SetCardPin = () => {
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { onSetPin, isLoading: isSettingPin } = useSetPin()
-
+  const { startAuthFlow } = useSecondaryAuth();
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [showNewPin, setShowNewPin] = useState(false);
@@ -38,8 +39,6 @@ const SetCardPin = () => {
     newPin: '',
     confirmPin: '',
   });
-
-  const [localLoading, setLocalLoading] = useState(false);
 
   const validateNewPin = (text: string, currentConfirmPin: string) => {
     let newPinError = '';
@@ -123,13 +122,11 @@ const SetCardPin = () => {
 
   const handleContinue = () => {
     if (newPin.length === 4 && confirmPin.length === 4 && newPin === confirmPin) {
-      navigation.navigate('GenericSelectionScreen', {
-        headerTitle: '',
-        title: 'otp.selectionTitle',
-        subtitle: 'otp.selectionSubtitle',
-        useInternalOtp: true,
-        onVerifySuccess: () => handleUpdateCardPIN(card?.cardIdentifier),
-        isLoading: isSettingPin || localLoading,
+      startAuthFlow({
+        onSuccess: async () => {
+          await handleUpdateCardPIN(card?.cardIdentifier);
+        },
+        externalLoading: isSettingPin,
       });
     }
   };

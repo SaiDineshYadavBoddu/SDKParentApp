@@ -20,17 +20,31 @@ export const LOGIN_ONBOARDING_DATA = [
 ];
 
 export const REPLACE_CARD_REASONS = [
-  "lost",
-  "stolen",
-  "damaged",
-  "fraud"
+  "Lost",
+  "Stolen",
+  "Damaged",
+  "Fraud"
 ];
 
 export const FREEZE_CARD_REASONS = [
-  "no_spend",
-  "misplaced",
-  "stolen",
-  "fraud"
+  "Temp",
+  "Loss",
+  "Stolen",
+  "Fraud"
 ];
 
 export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];
+
+export const TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
+
+export const CARD_STATUS = {
+  PENDING_ACTIVATION: 'Pending Activation',
+  ACTIVE: 'Active',
+  BLOCKED: 'Blocked',
+  REPLACED: 'Replaced',
+  PENDING_CLOSURE: 'Pending Closure',
+} as const;
+
+export const STATUS_CAUSE = {
+  TEMP_BLOCKED: 'TempBlocked',
+} as const;
