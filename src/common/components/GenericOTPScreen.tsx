@@ -18,13 +18,14 @@ import CustomHeader from './CustomHeader';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function GenericOTPScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
 
   const {
     headerTitle = '',
@@ -206,7 +207,7 @@ export default function GenericOTPScreen() {
                 </View>
             </ScrollView>
 
-            <View style={styles.bottomContainer}>
+            <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
                 <CustomButton
                 title={t(verifyButtonText)}
                 onPress={handleVerify}
@@ -271,7 +272,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: Spacing.l,
-    paddingBottom: ms(24),
     backgroundColor: 'transparent',
   },
   otpSection:{
