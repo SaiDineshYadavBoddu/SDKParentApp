@@ -6,9 +6,10 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { AppConfig } from '../config/appConfig';
 import { getAccessToken } from '../context/AuthContext';
+import { expireSession } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
+import { navigateToServerErrorScreen } from '../utils/navigationUtils';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
@@ -52,13 +53,14 @@ const baseQueryWithReauth: BaseQueryFn<
     return result;
   }
   if (result.error && result.error.status === 401) {
-    // try to get a new token
+    await expireSession();
   } else if (result.error && result.error.status === 400) {
     // Show global toast only if not ignored
     Logger.warn(result.error?.data || 'Something went wrong.');
   } else if (result.error && result.error.status === 500) {
     // try to get a new token
     Logger.error('Something went wrong.', result.error);
+    navigateToServerErrorScreen();
   }
   return result;
 };
