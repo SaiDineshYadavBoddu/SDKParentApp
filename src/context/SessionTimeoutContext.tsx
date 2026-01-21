@@ -3,9 +3,7 @@ import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
 
 // Constants
-const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
-const SHOW_MODAL_AT_REMAINING = 120; // Show modal when 2 minutes are remaining
-const SHOW_SCREEN_AT_REMAINING = 20;  // Navigate to screen when 20 seconds are remaining
+const SHOW_MODAL_BEFORE_EXPIRY = 60; // Show modal 1 minute before expiry
 
 // Global function for external use (api.config 401 handling)
 let globalExpireSession: (() => Promise<void>) | null = null;
@@ -31,7 +29,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     const [isModalVisible, setIsModalVisible] = useState(false);
     const modalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const screenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const { isAuthenticated, signOut } = useAuth();
+    const { isAuthenticated, signOut, expirationDate, refreshAccessToken, setSessionExpired } = useAuth();
 
     const clearTimers = useCallback(() => {
         if (modalTimerRef.current) clearTimeout(modalTimerRef.current);
@@ -40,12 +38,15 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         screenTimerRef.current = null;
     }, []);
 
-        // Session expiration handler
-    const expireSessionImpl = useCallback(async () => {
+    // Session expiration handler
+    const expireSessionImpl = useCallback(async (isAuto = false) => {
         setIsModalVisible(false);
         clearTimers();
+        if (isAuto) {
+            setSessionExpired(true);
+        }
         await signOut();
-    }, [clearTimers, signOut]);
+    }, [clearTimers, signOut, setSessionExpired]);
 
     // Expose expireSessionImpl globally
     useEffect(() => {
@@ -58,16 +59,34 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     // Start session timers
     const startTimers = useCallback(() => {
         clearTimers();
-        const modalTimeout = (SESSION_TIMEOUT_DURATION - SHOW_MODAL_AT_REMAINING) * 1000;
-        const screenTimeout = (SESSION_TIMEOUT_DURATION - SHOW_SCREEN_AT_REMAINING) * 1000;
+        if (!expirationDate) return;
 
-        modalTimerRef.current = setTimeout(() => setIsModalVisible(true), modalTimeout);
-        screenTimerRef.current = setTimeout(() => expireSessionImpl(), screenTimeout);
-    }, [clearTimers, expireSessionImpl]);
+        const expiryTime = new Date(expirationDate).getTime();
+        const currentTime = Date.now();
+        const timeUntilExpiry = expiryTime - currentTime;
+
+        if (timeUntilExpiry <= 0) {
+            expireSessionImpl(true);
+            return;
+        }
+
+        const modalTimeout = timeUntilExpiry - (SHOW_MODAL_BEFORE_EXPIRY * 1000);
+        const screenTimeout = timeUntilExpiry;
+
+        if (modalTimeout > 0) {
+            modalTimerRef.current = setTimeout(() => setIsModalVisible(true), modalTimeout);
+        } else {
+            // Already within 1 minute of expiry
+            setIsModalVisible(true);
+        }
+
+        screenTimerRef.current = setTimeout(() => expireSessionImpl(true), screenTimeout);
+    }, [clearTimers, expireSessionImpl, expirationDate]);
 
     const handleStayLoggedIn = useCallback(() => {
         setIsModalVisible(false);
-    }, []);
+        refreshAccessToken();
+    }, [refreshAccessToken]);
 
     const handleLogout = useCallback(async () => {
         setIsModalVisible(false);

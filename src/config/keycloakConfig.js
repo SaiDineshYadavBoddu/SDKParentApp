@@ -3,6 +3,6 @@ export const keycloakConfig = {
     'https://keycloak.corporate.un.infradev.w4.az.network.ae/auth/realms/Network/',
   clientId: 'corporate-portal-mobile',
   redirectUrl: 'com.keycloakpoc://oauthredirect',
-  scopes: ['openid', 'profile', 'email'],
+  scopes: ['openid', 'profile', 'email', 'offline_access'],
   dangerouslyAllowInsecureHttpRequests: true,
 };

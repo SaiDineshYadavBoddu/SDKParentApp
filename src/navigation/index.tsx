@@ -12,9 +12,12 @@ import NoInternetToast from '../common/components/NoInternetToast';
 import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 import { navigateToNoInternetScreen } from '../utils/navigationUtils';
 import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
+import CustomWarning from '../common/components/CustomWarning';
+import CustomText, { TextType } from '../common/components/CustomText';
+import { Spacing } from '../theme/spacing';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
+  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
 
@@ -35,6 +38,15 @@ const NavigationContent = () => {
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 
+  useEffect(() => {
+    if (sessionExpired) {
+      const timer = setTimeout(() => {
+        setSessionExpired(false);
+      }, 5000); // Hide toast after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [sessionExpired, setSessionExpired]);
+
   return (
     <View style={styles.container}>
       <NavigationContainer ref={navigationRef}>
@@ -43,6 +55,13 @@ const NavigationContent = () => {
       {hasLaunchCheckPassed && isConnected === false && (
         <View style={styles.toastOverlay}>
           <NoInternetToast visible={true} onRetry={checkIsInternetConnected} />
+        </View>
+      )}
+      {sessionExpired && (
+        <View style={styles.sessionExpiredToast}>
+          <CustomWarning
+            message="Session expired, signing out"
+          />
         </View>
       )}
     </View>
@@ -71,6 +90,13 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'white',
     zIndex: 9999,
+  },
+  sessionExpiredToast: {
+    position: 'absolute',
+    bottom: ms(40),
+    left: Spacing.m,
+    right: Spacing.m,
+    zIndex: 10000,
   },
 });
 
