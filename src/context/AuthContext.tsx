@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import { authorize, logout, AuthConfiguration } from 'react-native-app-auth';
+import { authorize, logout, refresh, AuthConfiguration } from 'react-native-app-auth';
 import { Linking } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
@@ -23,6 +23,11 @@ interface AuthContextData {
   isConnected: boolean | null;
   accessToken: string | null;
   idToken: string | null;
+  refreshToken: string | null;
+  expirationDate: string | null;
+  refreshAccessToken: () => Promise<void>;
+  sessionExpired: boolean;
+  setSessionExpired: (value: boolean) => void;
 }
 
 let globalAccessToken: string | null = null;
@@ -30,21 +35,29 @@ export const getAccessToken = () => globalAccessToken;
 
 const AuthContext = createContext<AuthContextData>({
   isAuthenticated: false,
-  signIn: async () => {},
-  signOut: async () => {},
-  changePassword: async () => {},
-  changeCompany: async () => {},
-  checkIsInternetConnected: async () => {},
+  signIn: async () => { },
+  signOut: async () => { },
+  changePassword: async () => { },
+  changeCompany: async () => { },
+  checkIsInternetConnected: async () => { },
   isConnected: null,
   accessToken: null,
   idToken: null,
+  refreshToken: null,
+  expirationDate: null,
+  refreshAccessToken: async () => { },
+  sessionExpired: false,
+  setSessionExpired: () => { },
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [expirationDate, setExpirationDate] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -85,7 +98,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
+      setRefreshToken(result.refreshToken);
+      setExpirationDate(result.accessTokenExpirationDate);
       setIsAuthenticated(true);
+      setSessionExpired(false);
     } catch (error) {
       console.error('Login failed:', error);
       // Handle error appropriately
@@ -107,6 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(null);
       globalAccessToken = null;
       setIdToken(null);
+      setRefreshToken(null);
+      setExpirationDate(null);
       setIsAuthenticated(false);
       dispatch(backendApi.util.resetApiState());
     }
@@ -124,9 +142,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
+      setRefreshToken(result.refreshToken);
+      setExpirationDate(result.accessTokenExpirationDate);
     } catch (error) {
-      if (error instanceof Error && 
-          (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
+      if (error instanceof Error &&
+        (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
         console.log('User cancelled password update');
       } else {
         console.error('Change password failed:', error);
@@ -147,13 +167,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
+      setRefreshToken(result.refreshToken);
+      setExpirationDate(result.accessTokenExpirationDate);
     } catch (error) {
-      if (error instanceof Error && 
-          (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
+      if (error instanceof Error &&
+        (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
         console.log('User cancelled company update');
       } else {
         console.error('Change company failed:', error);
       }
+    }
+  };
+
+  const refreshAccessToken = async () => {
+    try {
+      if (refreshToken) {
+        const result = await refresh(keycloakConfig as AuthConfiguration, {
+          refreshToken: refreshToken,
+        });
+        console.log('Token refresh success:', result);
+        setAccessToken(result.accessToken);
+        globalAccessToken = result.accessToken;
+        setIdToken(result.idToken);
+        setRefreshToken(result.refreshToken);
+        setExpirationDate(result.accessTokenExpirationDate);
+      }
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // If refresh fails, sign out
+      signOut();
     }
   };
 
@@ -174,6 +216,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isConnected,
         accessToken,
         idToken,
+        refreshToken,
+        expirationDate,
+        refreshAccessToken,
+        sessionExpired,
+        setSessionExpired,
       }}
     >
       {children}

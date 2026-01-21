@@ -14,9 +14,11 @@ import { navigateToNoInternetScreen } from '../utils/navigationUtils';
 import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
 import ScreenWrapper from '../common/components/ScreenWrapper';
 import { useTheme } from '../theme/ThemeProvider';
+import CustomWarning from '../common/components/CustomWarning';
+import { Spacing } from '../theme/spacing';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
+  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
@@ -39,6 +41,15 @@ const NavigationContent = () => {
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 
+  useEffect(() => {
+    if (sessionExpired) {
+      const timer = setTimeout(() => {
+        setSessionExpired(false);
+      }, 5000); // Hide toast after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [sessionExpired, setSessionExpired]);
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <NavigationContainer ref={navigationRef}>
@@ -49,6 +60,13 @@ const NavigationContent = () => {
       {hasLaunchCheckPassed && isConnected === false && (
         <View style={[styles.toastOverlay, { paddingBottom: insets.bottom }]}>
           <NoInternetToast visible={true} onRetry={checkIsInternetConnected} />
+        </View>
+      )}
+      {sessionExpired && (
+        <View style={styles.sessionExpiredToast}>
+          <CustomWarning
+            message="Session expired, signing out"
+          />
         </View>
       )}
     </View>
@@ -79,6 +97,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     zIndex: 9999,
     justifyContent: 'flex-end',
+  },
+  sessionExpiredToast: {
+    position: 'absolute',
+    bottom: ms(40),
+    left: Spacing.m,
+    right: Spacing.m,
+    zIndex: 10000,
   },
 });
 

@@ -7,7 +7,7 @@ import CustomButton from './CustomButton';
 import { Spacing } from '../../theme/spacing';
 
 const SessionTimeoutModal = () => {
-    const { isModalVisible, handleStayLoggedIn, handleLogout } = useSessionTimeout();
+    const { isModalVisible, remainingTime, handleStayLoggedIn, handleLogout } = useSessionTimeout();
 
     return (
         <Modal visible={isModalVisible} transparent animationType="fade">
@@ -16,23 +16,25 @@ const SessionTimeoutModal = () => {
                     <CustomText type={TextType.ScreenDisplayLarge} style={styles.icon}>⏱️</CustomText>
                     <CustomText type={TextType.ScreenHeadlineMedium}>Session Timeout</CustomText>
                     <CustomText type={TextType.CardText} style={styles.desc}>
-                        Your session is about to expire. Stay logged in?
+                        Your session is about to expire in {remainingTime} seconds. Stay logged in?
                     </CustomText>
+                    <View style={styles.btnContainer}>
+                        <CustomButton
+                            title="Stay Logged In"
+                            onPress={handleStayLoggedIn}
+                            variant="primary"
+                            uppercase={false}
+                            style={styles.btn}
+                        />
 
-                    <CustomButton
-                        title="Stay Logged In"
-                        onPress={handleStayLoggedIn}
-                        variant="primary"
-                        uppercase={false}
-                        style={styles.btn}
-                    />
-
-                    <CustomButton
-                        title="Logout"
-                        onPress={handleLogout}
-                        variant="outlined"
-                        uppercase={false}
-                    />
+                        <CustomButton
+                            title="Logout"
+                            onPress={handleLogout}
+                            variant="outlined"
+                            uppercase={false}
+                            style={styles.btn}
+                        />
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -55,7 +57,11 @@ const styles = StyleSheet.create({
     },
     icon: { marginBottom: Spacing.s },
     desc: { textAlign: 'center', marginBottom: Spacing.l, marginTop: Spacing.xs },
-    btn: { marginBottom: Spacing.m },
+    btn: { marginBottom: Spacing.m, width: '50%' },
+    btnContainer: {
+        flexDirection: 'row',
+        gap: Spacing.m,
+    },
 });
 
 export default SessionTimeoutModal;

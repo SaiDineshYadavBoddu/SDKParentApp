@@ -146,58 +146,48 @@ export default function CardListScreen() {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        {isPendingActivation ? (
-          <View style={styles.statusIndicator}>
-            <View style={styles.statusDot} />
-            <CustomText type={TextType.ScreenHeadlineSmall} style={styles.statusText}>
-              {t('cardList.pendingActivation')}
-            </CustomText>
-            <InfoSVG width={ms(16)} height={ms(16)} color="#707070" />
+        <View style={styles.balanceContainer}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
+          >
+            <CurrencySVG
+              width={ms(24)}
+              height={ms(24)}
+              style={{ transform: [{ translateY: ms(4) }] }}
+            />
+            {(() => {
+              const { integer, decimal } = formatAmount(activeCard?.balance?.toString() || '0.00');
+              return (
+                <Text>
+                  <CustomText type={TextType.ScreenHeadlineLarge}>
+                    {integer}
+                  </CustomText>
+                  <CustomText type={TextType.ScreenHeadlineSmall}>
+                    {decimal}
+                  </CustomText>
+                </Text>
+              );
+            })()}
           </View>
-        ) : (
-          <View style={styles.balanceContainer}>
-            <View
-              style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
-            >
-              <CurrencySVG
-                width={ms(24)}
-                height={ms(24)}
-                style={{ transform: [{ translateY: ms(4) }] }}
-              />
-              {(() => {
-                const { integer, decimal } = formatAmount(activeCard?.balance?.toString() || '0.00');
-                return (
-                  <Text>
-                    <CustomText type={TextType.ScreenHeadlineLarge}>
-                      {integer}
-                    </CustomText>
-                    <CustomText type={TextType.ScreenHeadlineSmall}>
-                      {decimal}
-                    </CustomText>
-                  </Text>
-                );
-              })()}
-            </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: Spacing.xs,
-                paddingTop: Spacing.m,
-              }}
-            >
-              <CustomText type={TextType.ScreenDisplaySmall}>
-                {t('cardList.availableBalance')}
-              </CustomText>
-              <InfoSVG />
-            </View>
-
-            <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
-              {activeCard?.cardStatus}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: Spacing.xs,
+              paddingTop: Spacing.m,
+            }}
+          >
+            <CustomText type={TextType.ScreenDisplaySmall}>
+              {t('cardList.availableBalance')}
             </CustomText>
+            <InfoSVG />
           </View>
-        )}
+
+          <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
+            {activeCard?.cardStatus}
+          </CustomText>
+        </View>
 
         <CardCarousel
           data={cards}

@@ -17,7 +17,7 @@ const getTraceparent = () => {
 };
 
 const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
-const BANK_CODE = '333';
+const BANK_CODE = 'D2C';
 const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string) => {
