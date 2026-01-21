@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import React from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useGetCardRestrictionsQuery } from '../../../network/card/card.api';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View, ScrollView, Switch } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { ms } from 'react-native-size-matters';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
-import CustomBackButton from '../../../common/components/CustomBackButton';
 import SectionContainer, { SectionItem } from '../../../common/components/SectionContainer';
 import CheckmarkSVG from '../../../assets/svgs/CheckmarkSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 const CardUsageScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const insets = useSafeAreaInsets();
     const route = useRoute<any>();
+    const navigation = useNavigation();
     const { card } = route.params || {};
 
     const { data: restrictionsData, isLoading } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
@@ -61,15 +60,11 @@ const CardUsageScreen = () => {
     return (
         <View style={[styles.container, {
             backgroundColor: colors.background,
-            paddingTop: insets.top,
         }]}>
-            <View style={styles.header}>
-                <CustomBackButton />
-                <CustomText type={TextType.ScreenHeadlineSmall} style={styles.headerTitle}>
-                    {t('cardUsage.title')}
-                </CustomText>
-            </View>
-
+            <CustomHeader
+                title={t('cardUsage.title')}
+                onBackPress={() => navigation.goBack()}
+            />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <SectionContainer items={usageItems} loading={isLoading} />
             </ScrollView>
@@ -84,17 +79,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: Spacing.s,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingTop: ms(20),
-        paddingHorizontal: Spacing.m,
-        marginBottom: ms(20),
-    },
-    headerTitle: {
-        marginLeft: ms(8),
-        fontSize: ms(18),
     },
     scrollContent: {
         paddingHorizontal: Spacing.m,

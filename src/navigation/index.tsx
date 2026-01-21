@@ -12,10 +12,13 @@ import NoInternetToast from '../common/components/NoInternetToast';
 import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 import { navigateToNoInternetScreen } from '../utils/navigationUtils';
 import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
+import ScreenWrapper from '../common/components/ScreenWrapper';
+import { useTheme } from '../theme/ThemeProvider';
 
 const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
   const navigationRef = useNavigationContainerRef();
+  const { colors } = useTheme();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
   const insets = useSafeAreaInsets();
 
@@ -37,9 +40,11 @@ const NavigationContent = () => {
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <NavigationContainer ref={navigationRef}>
-        {isAuthenticated ? <MainStack /> : <AuthStack />}
+        <ScreenWrapper edges={['bottom']}>
+          {isAuthenticated ? <MainStack /> : <AuthStack />}
+        </ScreenWrapper>
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (
         <View style={[styles.toastOverlay, { paddingBottom: insets.bottom }]}>
@@ -63,6 +68,7 @@ const RootNavigator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
   },
   toastOverlay: {
     position: 'absolute',

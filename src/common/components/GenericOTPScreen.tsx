@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +21,6 @@ import CustomHeader from './CustomHeader';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSendOtpTokenMutation, useVerifyOtpTokenMutation } from '../../network/otp/otp.api';
 
 export default function GenericOTPScreen() {
@@ -26,7 +28,6 @@ export default function GenericOTPScreen() {
   const { t } = useTranslation();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const insets = useSafeAreaInsets();
 
   const {
     headerTitle = '',
@@ -105,6 +106,7 @@ export default function GenericOTPScreen() {
   };
 
   const [localLoading, setLocalLoading] = useState(false);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleVerify = async () => {
     const otpString = otp.join('');
@@ -137,171 +139,181 @@ export default function GenericOTPScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader
-        title={headerTitle}
-        onBackPress={handleBack}
-        titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
-      />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.topSection}>
-          <View style={styles.iconContainer}>
-            <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
-          </View>
-          <View style={{ gap: Spacing.xs }}>
-            <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
-              {t(title)}
-            </CustomText>
-            <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
-              {t(subtitle, { target })}
-            </CustomText>
-          </View>
-        </View>
-
-        {error && (
-          <CustomText type={TextType.Error} style={styles.errorText}>
-            {t('otp.error')}
-          </CustomText>
-        )}
-
-        <View style={styles.otpSection}>
-          <View style={styles.otpContainer}>
-
-            {otp.map((digit, index) => (
-              <TextInput
-                key={index}
-                ref={(ref) => {
-                  inputRefs.current[index] = ref;
-                }}
-                style={[
-                  styles.otpInput,
-                  {
-                    borderColor: error ? colors.error : colors.outline,
-                    color: colors.onSurface,
-                    backgroundColor: colors.surface,
-                  },
-                ]}
-                maxLength={1}
-                keyboardType="number-pad"
-                value={digit}
-                onChangeText={(value) => handleOtpChange(value, index)}
-                onKeyPress={(e) => handleKeyPress(e, index)}
-                textAlign="center"
-                secureTextEntry={true}
-                selectionColor="transparent"
-                cursorColor={colors.primary}
-                selectTextOnFocus={false}
-              />
-            ))}
-          </View>
-
-          {timer > 0 ? (
-            <View style={styles.resendButton}>
-              <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.secondaryText }]}>
-                {t('otp.resendTimer', { seconds: timer })}
-              </CustomText>
-            </View>
-          ) : (
-            <TouchableOpacity
-              onPress={async () => {
-                if (useInternalOtp) {
-                  try {
-                    const response = await sendOtp({ type }).unwrap();
-                    if (response?.tryAgainIn) {
-                      setTimer(response.tryAgainIn);
-                    }
-                  } catch (err) {
-                    console.error('Resend failed:', err);
-                  }
-                } else {
-                  const response = await onResend?.();
-                  if (response?.tryAgainIn) {
-                    setTimer(response.tryAgainIn);
-                  }
-                }
-              }}
-              style={styles.resendButton}
-              disabled={isResending}
-            >
-              <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: isResending ? colors.outline : colors.primary }]}>
-                {t('otp.resend')}
-              </CustomText>
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
-
-      <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom + 10, Spacing.l) }]}>
-        <CustomButton
-          title={t(verifyButtonText)}
-          onPress={handleVerify}
-          loading={isLoading || localLoading || isVerifying}
-          disabled={otp.join('').length < 6 || isLoading || localLoading || isVerifying}
-          uppercase={false}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={headerTitle}
+          onBackPress={handleBack}
+          titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
         />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? ms(100) : 0}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.topSection}>
+              <View style={styles.iconContainer}>
+                <VerificationSVG stroke={colors.primary} width={ms(60)} height={ms(60)} />
+              </View>
+              <View style={{ gap: Spacing.xs }}>
+                <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
+                  {t(title)}
+                </CustomText>
+                <CustomText type={TextType.ScreenDisplaySmall} style={[styles.subtitle, { color: colors.secondaryText }]}>
+                  {t(subtitle, { target })}
+                </CustomText>
+              </View>
+            </View>
+
+            {error && (
+              <CustomText type={TextType.Error} style={styles.errorText}>
+                {t('otp.error')}
+              </CustomText>
+            )}
+
+            <View style={styles.otpSection}>
+              <View style={styles.otpContainer}>
+
+                {otp.map((digit, index) => (
+                  <TextInput
+                    key={index}
+                    ref={(ref) => {
+                      inputRefs.current[index] = ref;
+                    }}
+                    style={[
+                      styles.otpInput,
+                      {
+                        borderColor: error ? colors.error : colors.outline,
+                        color: colors.onSurface,
+                        backgroundColor: colors.surface,
+                      },
+                    ]}
+                    maxLength={1}
+                    keyboardType="number-pad"
+                    value={digit}
+                    onChangeText={(value) => handleOtpChange(value, index)}
+                    onKeyPress={(e) => handleKeyPress(e, index)}
+                    textAlign="center"
+                    secureTextEntry={true}
+                    selectionColor="transparent"
+                    cursorColor={colors.primary}
+                    selectTextOnFocus={false}
+                  />
+                ))}
+              </View>
+
+              {timer > 0 ? (
+                <View style={styles.resendButton}>
+                  <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: colors.secondaryText }]}>
+                    {t('otp.resendTimer', { seconds: timer })}
+                  </CustomText>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={async () => {
+                    if (useInternalOtp) {
+                      try {
+                        const response = await sendOtp({ type }).unwrap();
+                        if (response?.tryAgainIn) {
+                          setTimer(response.tryAgainIn);
+                        }
+                      } catch (err) {
+                        console.error('Resend failed:', err);
+                      }
+                    } else {
+                      const response = await onResend?.();
+                      if (response?.tryAgainIn) {
+                        setTimer(response.tryAgainIn);
+                      }
+                    }
+                  }}
+                  style={styles.resendButton}
+                  disabled={isResending}
+                >
+                  <CustomText type={TextType.ActionLabel} style={[styles.resendText, { color: isResending ? colors.outline : colors.primary }]}>
+                    {t('otp.resend')}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+
+        <View style={styles.bottomContainer}>
+          <CustomButton
+            title={t(verifyButtonText)}
+            onPress={handleVerify}
+            loading={isLoading || localLoading || isVerifying}
+            disabled={otp.join('').length < 6 || isLoading || localLoading || isVerifying}
+            uppercase={false}
+          />
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: Spacing.l,
-    paddingBottom: ms(100),
-    gap: Spacing.xl
-  },
-  topSection: {
-    marginTop: Spacing.m,
-    marginBottom: Spacing.xl,
-    gap: Spacing.l
-  },
-  iconContainer: {
-    marginBottom: Spacing.l,
-  },
-  title: {
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    lineHeight: ms(20),
-  },
-  errorText: {
-    textAlign: 'center',
-    fontWeight: '500'
-  },
-  otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  otpInput: {
-    width: ms(45),
-    height: ms(55),
-    borderWidth: 1,
-    borderRadius: ms(8),
-    fontSize: ms(20),
-    fontWeight: '600',
-  },
-  resendButton: {
-    alignSelf: 'center',
-    marginTop: Spacing.m,
-  },
-  resendText: {
-    fontWeight: '500',
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: Spacing.l,
-    backgroundColor: 'transparent',
-  },
-  otpSection: {
-    gap: Spacing.m
-  }
-});
+const createStyles = (colors: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: Spacing.l,
+      paddingBottom: ms(120), // Support fixed footer
+      gap: Spacing.xl
+    },
+    topSection: {
+      marginTop: Spacing.m,
+      marginBottom: Spacing.xl,
+      gap: Spacing.l
+    },
+    iconContainer: {
+      marginBottom: Spacing.l,
+    },
+    title: {
+      marginBottom: Spacing.xs,
+    },
+    subtitle: {
+      lineHeight: ms(20),
+    },
+    errorText: {
+      textAlign: 'center',
+      fontWeight: '500'
+    },
+    otpContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    otpInput: {
+      width: ms(45),
+      height: ms(55),
+      borderWidth: 1,
+      borderRadius: ms(8),
+      fontSize: ms(20),
+      fontWeight: '600',
+    },
+    resendButton: {
+      alignSelf: 'center',
+      marginTop: Spacing.m,
+    },
+    resendText: {
+      fontWeight: '500',
+    },
+    bottomContainer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: Spacing.l,
+      backgroundColor: 'transparent',
+    },
+    otpSection: {
+      gap: Spacing.m
+    }
+  });

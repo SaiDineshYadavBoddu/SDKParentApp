@@ -18,10 +18,7 @@ import ReplaceCardSVG from "../../../assets/svgs/ReplaceCardSVG";
 import FreezeCardSVG from "../../../assets/svgs/FreezeCardSVG";
 import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
-import BackButtonSVG from "../../../assets/svgs/BackButtonSVG";
-import MenuHamburgerSVG from "../../../assets/svgs/MenuHamburgerSVG";
 import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation, useActivateCardMutation } from "../../../network/card/card.api";
-import { useAuth } from "../../../context/AuthContext";
 import { useSecondaryAuth } from "../../../hooks/useSecondaryAuth";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
@@ -44,6 +41,7 @@ import { mapTransactionsToSectionItems, calculateDateRange } from "../../../util
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
 import CustomHeader from '../../../common/components/CustomHeader';
 import { APP_CONFIG } from "../../../config/appConfig";
+import { useTheme } from '../../../theme/ThemeProvider';
 
 
 const CARD_QUERY_PARAMS = {
@@ -56,6 +54,7 @@ const CARD_QUERY_PARAMS = {
 export default function CardListScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
+  const { colors } = useTheme();
   const route = useRoute<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
 
@@ -134,7 +133,7 @@ export default function CardListScreen() {
   };
 
   return (
-    <>
+    <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
       <CustomHeader
         title={t('cardList.title')}
         rightContent={
@@ -291,11 +290,14 @@ export default function CardListScreen() {
         )}
       </ScrollView>
       <CustomLoader loading={isLoading} />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer:{
+    flex : 1,
+  },
   container: {
     paddingBottom: Spacing.xxl,
   },

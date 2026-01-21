@@ -79,7 +79,9 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       cardWidth={CARD_WIDTH}
       cardMargin={CARD_MARGIN}
       isDetailsVisible={visibleCardIds.has(item.cardIdentifier)}
-      onToggleVisibility={() => toggleCardVisibility(item.cardIdentifier)}
+      onToggleVisibility={() => {}
+        // toggleCardVisibility(item.cardIdentifier)
+      }
     />
   );
 

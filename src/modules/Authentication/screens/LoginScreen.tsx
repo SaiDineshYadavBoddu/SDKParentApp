@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   View,
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Animated,
 } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -17,8 +18,6 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
 import { getSlideIndex } from '../../../utils/scrollUtils';
 import { LOGIN_ONBOARDING_DATA } from '../../../constants/appConstants';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
@@ -27,23 +26,64 @@ const LoginScreen = () => {
   const { colors } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (LOGIN_ONBOARDING_DATA.length > 0) {
+        const nextIndex = (currentIndex + 1) % LOGIN_ONBOARDING_DATA.length;
+        flatListRef.current?.scrollToIndex({
+          index: nextIndex,
+          animated: true,
+        });
+      }
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [currentIndex]);
 
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const slideIndex = getSlideIndex(event.nativeEvent.contentOffset.x, width);
-    if (slideIndex !== currentIndex) {
-      setCurrentIndex(slideIndex);
+  const onScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false, // width/backgroundColor don't support native driver
+      listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const slideIndex = getSlideIndex(event.nativeEvent.contentOffset.x, width);
+        if (slideIndex !== currentIndex) {
+          setCurrentIndex(slideIndex);
+        }
+      },
     }
-  };
+  );
 
   const renderItem = ({
     item,
+    index,
   }: {
     item: (typeof LOGIN_ONBOARDING_DATA)[0];
+    index: number;
   }) => {
+    const inputRange = [
+      (index - 1) * width,
+      index * width,
+      (index + 1) * width,
+    ];
+
+    const opacity = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.4, 1, 0.4],
+      extrapolate: 'clamp',
+    });
+
+    const scale = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.8, 1, 0.8],
+      extrapolate: 'clamp',
+    });
+
     return (
-      <View style={styles.slide}>
+      <Animated.View style={[styles.slide, { opacity, transform: [{ scale }] }]}>
         <Image source={item.image} style={styles.image} resizeMode="contain" />
         <View style={styles.textContainer}>
           <CustomText type={TextType.ScreenHeadlineMedium}>
@@ -53,7 +93,7 @@ const LoginScreen = () => {
             {t(item.description)}
           </CustomText>
         </View>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -63,7 +103,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.sliderContainer}>
         <FlatList
           ref={flatListRef}
@@ -77,15 +117,35 @@ const LoginScreen = () => {
           scrollEventThrottle={16}
         />
         <View style={styles.pagination}>
-          {LOGIN_ONBOARDING_DATA.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                currentIndex === index ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
+          {LOGIN_ONBOARDING_DATA.map((_, index) => {
+            const inputRange = [
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width,
+            ];
+
+            const dotWidth = scrollX.interpolate({
+              inputRange,
+              outputRange: [8, 20, 8],
+              extrapolate: 'clamp',
+            });
+
+            const opacity = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.3, 1, 0.3],
+              extrapolate: 'clamp',
+            });
+
+            return (
+              <Animated.View
+                key={index}
+                style={[
+                  styles.dot,
+                  { width: dotWidth, opacity, backgroundColor: colors.primary },
+                ]}
+              />
+            );
+          })}
         </View>
       </View>
 
@@ -94,7 +154,7 @@ const LoginScreen = () => {
           <Text style={styles.loginButtonText}>{t('login.loginButton')}</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

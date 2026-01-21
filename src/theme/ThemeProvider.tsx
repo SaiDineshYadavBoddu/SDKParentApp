@@ -13,8 +13,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     <ThemeContext.Provider value={theme}>
       <StatusBar 
         barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} 
-        backgroundColor={theme.colors.screenBackground}
-        translucent={false}
+        backgroundColor={'transparent'}
+        translucent={true}
       />
       {children}
     </ThemeContext.Provider>

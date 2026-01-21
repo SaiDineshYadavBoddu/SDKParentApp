@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Modal,
   View,
@@ -32,6 +33,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
   maxHeight = SCREEN_HEIGHT * 0.9,
 }) => {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const [showModal, setShowModal] = React.useState(visible);
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -100,6 +102,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
               backgroundColor: colors.background,
               transform: [{ translateY }],
               maxHeight,
+              paddingBottom: Math.max(insets.bottom, Spacing.l),
             },
           ]}
         >
@@ -133,7 +136,6 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: ms(24),
     borderTopRightRadius: ms(24),
-    paddingBottom: ms(40), // Safe area approximation
     minHeight: ms(200),
     elevation: 20,
     zIndex: 100,

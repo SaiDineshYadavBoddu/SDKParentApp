@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, FlatList, Platform, Animated, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, FlatList, Animated, ActivityIndicator, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
@@ -15,7 +15,6 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import FilterSVG from '../../../assets/svgs/FilterSVG';
 import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
-import { Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import RequestInfoGroup from '../Components/RequestInfoGroup';
 import {

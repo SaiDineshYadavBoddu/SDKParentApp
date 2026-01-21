@@ -8,7 +8,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ms } from 'react-native-size-matters';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -25,7 +24,6 @@ import { StatementHistoryItemData } from '../Components/StatementHistoryItem';
 const StatementScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   
   const [statementType, setStatementType] = useState<'new' | 'history'>('new');
   const [selectedCardId, setSelectedCardId] = useState<string>('');
@@ -163,7 +161,7 @@ const StatementScreen = () => {
 
       {/* Download Button */}
       {statementType === 'new' && (
-        <View style={[styles.bottomContainer, { paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
+        <View style={styles.bottomContainer}>
           <CustomButton
             title={t('statements.download')}
             onPress={handleDownload}

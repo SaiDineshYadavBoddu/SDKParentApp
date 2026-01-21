@@ -8,7 +8,6 @@ import CustomText, { TextType } from './CustomText';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import { Typography } from '../../theme/typography';
-import MenuHamburgerSVG from '../../assets/svgs/MenuHamburgerSVG';
 
 export interface DetailItem {
   id: string;
@@ -74,15 +73,6 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
         title={title}
         onBackPress={onBackPress}
         titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
-        rightContent={
-          <TouchableOpacity style={styles.rightButton}>
-            <MenuHamburgerSVG
-              color={colors.onSurface}
-              width={ms(24)}
-              height={ms(24)}
-            />
-          </TouchableOpacity>
-        }
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>

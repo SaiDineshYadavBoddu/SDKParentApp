@@ -11,6 +11,7 @@ import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
 import { Spacing } from '../../theme/spacing';
 import ChevronLeftSVG from '../../assets/svgs/ChevronLeftSVG';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   title: string;
@@ -28,9 +29,10 @@ export default function CustomHeader({
   rightContent,
 }: Props) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + Spacing.s }]}>
       <View style={styles.leftContainer}>
         {onBackPress && (
           <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
@@ -54,10 +56,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: Spacing.xxl,
     marginBottom: Spacing.l,
     paddingHorizontal: Spacing.l,
-    paddingTop: Spacing.l,
   },
   leftContainer: {
     flexDirection: 'row',

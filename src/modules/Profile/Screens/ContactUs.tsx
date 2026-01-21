@@ -10,7 +10,6 @@ import CustomHeader from '../../../common/components/CustomHeader';
 import { Typography } from '../../../theme/typography';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { ms } from 'react-native-size-matters';
-import MenuHamburgerSVG from '../../../assets/svgs/MenuHamburgerSVG';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useNavigation } from '@react-navigation/native';
@@ -89,15 +88,6 @@ const ContactUs = () => {
                 title={t('profile.details.contactUs.title')}
                 titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
                 onBackPress={() => navigation.goBack()}
-                rightContent={
-                    <TouchableOpacity style={styles.rightButton}>
-                        <MenuHamburgerSVG
-                            color={colors.onSurface}
-                            width={ms(24)}
-                            height={ms(24)}
-                        />
-                    </TouchableOpacity>
-                }
             />
             <ScrollView
                 style={{ flex: 1 }}

@@ -1,30 +1,25 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomTextInput from '../../../common/components/CustomTextInput';
-import CustomImage from '../../../common/components/CustomImage';
 import CloseCardSVG from '../../../assets/svgs/CloseCardSVG';
-import CustomBackButton from '../../../common/components/CustomBackButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 import { useCloseCardMutation } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 const CloseCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const insets = useSafeAreaInsets();
     const navigation = useNavigation();
     const route = useRoute<any>();
     const { card } = route.params || {};
@@ -61,45 +56,51 @@ const CloseCardScreen = () => {
     return (
         <View style={[styles.container, {
             backgroundColor: colors.background,
-            paddingTop: insets.top,
         }]}>
-            <View style={styles.header}>
-                <CustomBackButton />
-            </View>
+            <CustomHeader
+                title={''}
+                onBackPress={() => navigation.goBack()}
+            />
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? ms(100) : 0}
+            >
+                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                    <View style={styles.iconContainer}>
+                        <CloseCardSVG width={ms(40)} height={ms(40)} color={colors.primary} />
+                    </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <View style={styles.iconContainer}>
-                    <CloseCardSVG width={ms(40)} height={ms(40)} color={colors.primary} />
-                </View>
+                    <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
+                        {t('closeCard.title')}
+                    </CustomText>
 
-                <CustomText type={TextType.ScreenHeadlineMedium} style={styles.title}>
-                    {t('closeCard.title')}
-                </CustomText>
+                    <CustomText type={TextType.ScreenDisplaySmall} style={styles.subtitle}>
+                        {t('closeCard.subtitle')}
+                    </CustomText>
 
-                <CustomText type={TextType.ScreenDisplaySmall} style={styles.subtitle}>
-                    {t('closeCard.subtitle')}
-                </CustomText>
+                    <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
-                <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
+                    <CustomWarning message={t('closeCard.warning')} style={{ marginBottom: ms(24) }} />
 
-                <CustomWarning message={t('closeCard.warning')} style={{ marginBottom: ms(24) }} />
+                    <CustomTextInput
+                        label={t('common.message')}
+                        multiline
+                        numberOfLines={4}
+                        placeholder={t('closeCard.reasonPlaceholder')}
+                        value={message}
+                        onChangeText={setMessage}
+                        inputStyle={{ height: ms(80), textAlignVertical: 'top' }}
+                    />
+                </ScrollView>
+            </KeyboardAvoidingView>
 
-                <CustomTextInput
-                    label={t('common.message')}
-                    multiline
-                    numberOfLines={4}
-                    placeholder={t('closeCard.reasonPlaceholder')}
-                    value={message}
-                    onChangeText={setMessage}
-                    inputStyle={{ height: ms(80), textAlignVertical: 'top' }}
-                />
-            </ScrollView>
-
-            <View style={[styles.footer, { paddingBottom: Math.max(Spacing.l, insets.bottom) }]}>
+            <View style={styles.footer}>
                 <CustomButton
                     title={t('common.continue')}
                     onPress={handleCloseCard}
                     style={{ width: '100%' }}
+                    uppercase={false}
                 />
             </View>
             <CustomLoader loading={isLoading} />
@@ -112,16 +113,9 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: Spacing.s,
     },
-    header: {
-        paddingTop: ms(20),
-        paddingHorizontal: Spacing.m,
-    },
-    backButton: {
-        paddingHorizontal: Spacing.xs,
-    },
     scrollContent: {
         paddingHorizontal: Spacing.m,
-        paddingBottom: Spacing.xxl,
+        paddingBottom: ms(120), // Accommodation for fixed footer
     },
     iconContainer: {
         marginTop: ms(20),
@@ -134,9 +128,11 @@ const styles = StyleSheet.create({
         marginBottom: ms(24),
     },
     footer: {
-        padding: Spacing.m,
-        borderTopWidth: 1,
-        borderTopColor: '#F0F0F0',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        padding: Spacing.l,
     },
 });
 

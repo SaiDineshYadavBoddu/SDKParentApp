@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -26,7 +25,6 @@ const SetCardPin = () => {
   const route = useRoute<any>();
   const { card } = route.params || {};
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { onSetPin, isLoading: isSettingPin } = useSetPin()
@@ -134,99 +132,104 @@ const SetCardPin = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <CustomHeader
-        title=""
-        onBackPress={() => navigation.goBack()}
-      />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.headerSection}>
-          <ResetPinSVG width={ms(48)} height={ms(48)} />
-          <CustomText type={TextType.ScreenHeadlineMedium}>
-            {t('setPin.title')}
-          </CustomText>
-          <CustomText type={TextType.CardText} style={[styles.description, { color: colors.secondaryText }]}>
-            {t('setPin.description')}
-          </CustomText>
-        </View>
-
-        {errors.mismatch ? (
-          <View style={styles.mismatchErrorContainer}>
-            <CustomText type={TextType.Error} style={styles.mismatchErrorText}>
-              {errors.mismatch}
-            </CustomText>
-          </View>
-        ) : null}
-
-        <View style={styles.formSection}>
-          <CustomTextInput
-            label={t('setPin.enterNewPin')}
-            value={newPin}
-            onChangeText={(text) => {
-              const numericText = text.replace(/[^0-9]/g, '');
-              setNewPin(numericText);
-              validateNewPin(numericText, confirmPin);
-            }}
-            placeholder="****"
-            secureTextEntry={!showNewPin}
-            keyboardType="numeric"
-            maxLength={4}
-            error={errors.newPin}
-            rightIcon={
-              <TouchableOpacity onPress={() => setShowNewPin(!showNewPin)}>
-                <CustomIcon
-                  type="feather"
-                  name={showNewPin ? 'eye' : 'eye-off'}
-                  size={ms(20)}
-                  color={colors.outline}
-                />
-              </TouchableOpacity>
-            }
-          />
-
-          <CustomTextInput
-            label={t('setPin.confirmNewPin')}
-            value={confirmPin}
-            onChangeText={(text) => {
-              const numericText = text.replace(/[^0-9]/g, '');
-              setConfirmPin(numericText);
-              validateConfirmPin(numericText, newPin);
-            }}
-            placeholder="****"
-            secureTextEntry={!showConfirmPin}
-            keyboardType="numeric"
-            maxLength={4}
-            error={errors.confirmPin}
-            rightIcon={
-              <TouchableOpacity onPress={() => setShowConfirmPin(!showConfirmPin)}>
-                <CustomIcon
-                  type="feather"
-                  name={showConfirmPin ? 'eye' : 'eye-off'}
-                  size={ms(20)}
-                  color={colors.outline}
-                />
-              </TouchableOpacity>
-            }
-          />
-        </View>
-      </ScrollView>
-
-      <View style={[styles.footer, { backgroundColor: colors.background, paddingBottom: Math.max(insets.bottom, Spacing.l) }]}>
-        <CustomButton
-          title={t('common.continue')}
-          onPress={handleContinue}
-          uppercase={false}
-          disabled={newPin.length !== 4 || confirmPin.length !== 4 || newPin !== confirmPin}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title=""
+          onBackPress={() => navigation.goBack()}
         />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? ms(100) : 0}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.headerSection}>
+              <ResetPinSVG width={ms(48)} height={ms(48)} />
+              <CustomText type={TextType.ScreenHeadlineMedium}>
+                {t('setPin.title')}
+              </CustomText>
+              <CustomText type={TextType.CardText} style={[styles.description, { color: colors.secondaryText }]}>
+                {t('setPin.description')}
+              </CustomText>
+            </View>
+
+            {errors.mismatch ? (
+              <View style={styles.mismatchErrorContainer}>
+                <CustomText type={TextType.Error} style={styles.mismatchErrorText}>
+                  {errors.mismatch}
+                </CustomText>
+              </View>
+            ) : null}
+
+            <View style={styles.formSection}>
+              <CustomTextInput
+                label={t('setPin.enterNewPin')}
+                value={newPin}
+                onChangeText={(text) => {
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  setNewPin(numericText);
+                  validateNewPin(numericText, confirmPin);
+                }}
+                placeholder="****"
+                secureTextEntry={!showNewPin}
+                keyboardType="numeric"
+                maxLength={4}
+                error={errors.newPin}
+                rightIcon={
+                  <TouchableOpacity onPress={() => setShowNewPin(!showNewPin)}>
+                    <CustomIcon
+                      type="feather"
+                      name={showNewPin ? 'eye' : 'eye-off'}
+                      size={ms(20)}
+                      color={colors.outline}
+                    />
+                  </TouchableOpacity>
+                }
+              />
+
+              <CustomTextInput
+                label={t('setPin.confirmNewPin')}
+                value={confirmPin}
+                onChangeText={(text) => {
+                  const numericText = text.replace(/[^0-9]/g, '');
+                  setConfirmPin(numericText);
+                  validateConfirmPin(numericText, newPin);
+                }}
+                placeholder="****"
+                secureTextEntry={!showConfirmPin}
+                keyboardType="numeric"
+                maxLength={4}
+                error={errors.confirmPin}
+                rightIcon={
+                  <TouchableOpacity onPress={() => setShowConfirmPin(!showConfirmPin)}>
+                    <CustomIcon
+                      type="feather"
+                      name={showConfirmPin ? 'eye' : 'eye-off'}
+                      size={ms(20)}
+                      color={colors.outline}
+                    />
+                  </TouchableOpacity>
+                }
+              />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+
+        <View style={[styles.footer, { backgroundColor: colors.background }]}>
+          <CustomButton
+            title={t('common.continue')}
+            onPress={handleContinue}
+            uppercase={false}
+            disabled={newPin.length !== 4 || confirmPin.length !== 4 || newPin !== confirmPin}
+          />
+        </View>
       </View>
-    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -236,7 +239,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Spacing.l,
-    paddingBottom: ms(100),
+    paddingBottom: ms(120), // Support fixed footer
     gap: Spacing.xl,
   },
   headerSection: {
@@ -258,6 +261,10 @@ const styles = StyleSheet.create({
     gap: Spacing.l,
   },
   footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: Spacing.l,
   },
 });

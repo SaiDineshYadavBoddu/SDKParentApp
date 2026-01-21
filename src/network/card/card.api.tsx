@@ -76,7 +76,14 @@ export const cardApi = backendApi.injectEndpoints({
         params,
       }),
     }),
+    searchCards: builder.query<any, { ids: string[] }>({
+      query: body => ({
+        url: API_ENDPOINTS.SEARCH_CARDS,
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation, useGetStatementsQuery } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation, useGetStatementsQuery, useSearchCardsQuery } = cardApi;

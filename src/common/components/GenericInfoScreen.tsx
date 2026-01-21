@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
@@ -15,7 +14,6 @@ export default function GenericInfoScreen() {
   const { t } = useTranslation();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
-  const insets = useSafeAreaInsets();
 
   const {
     icon,
@@ -28,7 +26,7 @@ export default function GenericInfoScreen() {
   } = route.params || {};
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
@@ -53,7 +51,7 @@ export default function GenericInfoScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 10, Spacing.l) }]}>
+      <View style={styles.footer}>
         {primaryButton && (
              <CustomButton
                 title={t(primaryButton.title)}
@@ -72,7 +70,7 @@ export default function GenericInfoScreen() {
              />
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
