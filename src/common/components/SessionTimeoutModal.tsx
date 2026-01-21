@@ -7,7 +7,7 @@ import CustomButton from './CustomButton';
 import { Spacing } from '../../theme/spacing';
 
 const SessionTimeoutModal = () => {
-    const { isModalVisible, handleStayLoggedIn, handleLogout } = useSessionTimeout();
+    const { isModalVisible, remainingTime, handleStayLoggedIn, handleLogout } = useSessionTimeout();
 
     return (
         <Modal visible={isModalVisible} transparent animationType="fade">
@@ -16,7 +16,7 @@ const SessionTimeoutModal = () => {
                     <CustomText type={TextType.ScreenDisplayLarge} style={styles.icon}>⏱️</CustomText>
                     <CustomText type={TextType.ScreenHeadlineMedium}>Session Timeout</CustomText>
                     <CustomText type={TextType.CardText} style={styles.desc}>
-                        Your session is about to expire. Stay logged in?
+                        Your session is about to expire in {remainingTime} seconds. Stay logged in?
                     </CustomText>
                     <View style={styles.btnContainer}>
                         <CustomButton
