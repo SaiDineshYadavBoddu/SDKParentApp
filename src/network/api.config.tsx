@@ -57,6 +57,7 @@ const baseQueryWithReauth: BaseQueryFn<
   } else if (result.error && result.error.status === 400) {
     // Show global toast only if not ignored
     Logger.warn(result.error?.data || 'Something went wrong.');
+    navigateToServerErrorScreen();
   } else if (result.error && result.error.status === 500) {
     // try to get a new token
     Logger.error('Something went wrong.', result.error);

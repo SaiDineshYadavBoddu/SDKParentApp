@@ -3,10 +3,7 @@ import { Linking } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
-import ClockSVG from '../assets/svgs/ClockSVG';
-import { Typography } from '../theme/typography';
-import { navigate, getNavigationRef, resetNavigation } from './navigationRefUtils';
-import i18next from 'i18next';
+import { navigate, getNavigationRef } from './navigationRefUtils';
 
 /**
  * Navigates to no internet connection screen
@@ -18,56 +15,36 @@ export const navigateToNoInternetScreen = () => {
       style: { width: ms(160), height: ms(160) },
       resizeMode: 'contain',
     }),
-    title: i18next.t('noInternet.title'),
-    description: i18next.t('noInternet.subtitle'),
+    title: 'noInternet.title',
+    description: 'noInternet.subtitle',
     primaryButton: {
-      title: i18next.t('noInternet.primaryButton.title'),
-      onPress: () => {},
+      title: 'noInternet.primaryButton.title',
+      onPress: () => { },
     },
     secondaryButton: {
-      title: i18next.t('noInternet.secondaryButton.title'),
+      title: 'noInternet.secondaryButton.title',
       onPress: () => Linking.openSettings(),
     },
   });
 };
 
 /**
- * Navigates to server error screen when API returns 500 error
+ * Navigates to server error screen when API returns 400 or 500 error
  */
 export const navigateToServerErrorScreen = () => {
   const navigationRef = getNavigationRef();
   if (navigationRef?.isReady()) {
     navigate('GenericInfoScreen', {
       icon: React.createElement(FailureSVG, { width: ms(80), height: ms(80) }),
-      title: i18next.t('serverError.title'),
-      description: i18next.t('serverError.description'),
+      title: 'serverError.title',
+      description: 'serverError.description',
       primaryButton: {
-        title: i18next.t('serverError.tryAgain'),
+        title: 'serverError.tryAgain',
         onPress: () => {
           if (navigationRef?.canGoBack()) {
             navigationRef.goBack();
           }
         },
-      },
-    });
-  }
-};
-
-/**
- * Navigates to session expired screen
- * @param onLogin Callback to trigger login
- */
-export const navigateToSessionExpiredScreen = (onLogin: () => Promise<void>) => {
-  const navigationRef = getNavigationRef();
-  if (navigationRef?.isReady()) {
-    resetNavigation('GenericInfoScreen', {
-      icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
-      title: i18next.t('session.expiredTitle'),
-      titleStyle: Typography.headlineMedium,
-      description: i18next.t('session.expiredDescription'),
-      primaryButton: {
-        title: i18next.t('login.loginButton'),
-        onPress: onLogin,
       },
     });
   }

@@ -21,4 +21,5 @@ export const API_ENDPOINTS = {
   POST_BLOCK_CARD: '/api/v1/cards/mine/{cardId}/block',
   POST_UNBLOCK_CARD: '/api/v1/cards/mine/{cardId}/unblock',
   POST_ACTIVATE_CARD: '/api/v1/cards/mine/{cardId}/activate',
+  GET_STATEMENTS: '/api-trans-stat/api/v1/transactions/statements',
 } as const;

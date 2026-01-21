@@ -10,6 +10,8 @@ import { ms } from 'react-native-size-matters';
 
 import NoInternetToast from '../common/components/NoInternetToast';
 import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
+import { navigateToNoInternetScreen } from '../utils/navigationUtils';
+import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
 
 const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected } = useAuth();
@@ -19,41 +21,18 @@ const NavigationContent = () => {
 
   useEffect(() => {
     checkIsInternetConnected();
-  }, []);
+    initializeNavigationRef(navigationRef);
+  }, [navigationRef]);
 
   useEffect(() => {
-    if (isConnected === true) {
-      setHasLaunchCheckPassed(true);
-    }
-  }, [isConnected]);
+    if (isConnected === true) setHasLaunchCheckPassed(true);
 
-  useEffect(() => {
-    if (isConnected === false && !hasLaunchCheckPassed && navigationRef.isReady()) {
-      (navigationRef as any).navigate('GenericInfoScreen', {
-        icon:
-          <CustomImage
-            source={require('../assets/images/noInternet.gif')}
-            style={{ width: ms(160), height: ms(160) }}
-            resizeMode="contain"
-          />,
-        title: 'noInternet.title',
-        description: 'noInternet.subtitle',
-        primaryButton: {
-          title: 'noInternet.primaryButton.title',
-          onPress: () => checkIsInternetConnected(),
-        },
-        secondaryButton: {
-          title: 'noInternet.secondaryButton.title',
-          onPress: () => Linking.openSettings(),
-        },
-      });
-    } else if (isConnected === true && navigationRef.isReady()) {
-      const routeName = navigationRef.getCurrentRoute()?.name;
-      if (routeName === 'GenericInfoScreen') {
-        if (navigationRef.canGoBack()) {
-          navigationRef.goBack();
-        }
-      }
+    if (!navigationRef.isReady()) return;
+
+    if (isConnected === false && !hasLaunchCheckPassed) {
+      navigateToNoInternetScreen();
+    } else if (isConnected === true && getCurrentRouteName() === 'GenericInfoScreen') {
+      goBack();
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
 

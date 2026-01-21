@@ -69,7 +69,14 @@ export const cardApi = backendApi.injectEndpoints({
         body: {},
       }),
     }),
+    getStatements: builder.query<any, { cardId: string; pageSize?: number; pageNumber?: number }>({
+      query: params => ({
+        url: API_ENDPOINTS.GET_STATEMENTS,
+        method: 'GET',
+        params,
+      }),
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation, useGetStatementsQuery } = cardApi;

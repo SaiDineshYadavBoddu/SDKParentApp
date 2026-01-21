@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
-import { navigateToSessionExpiredScreen } from '../utils/navigationUtils';
 
 // Constants
 const SESSION_TIMEOUT_DURATION = 300; // 5 minutes in seconds
@@ -32,7 +31,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     const [isModalVisible, setIsModalVisible] = useState(false);
     const modalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const screenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const { isAuthenticated, signOut, signIn } = useAuth();
+    const { isAuthenticated, signOut } = useAuth();
 
     const clearTimers = useCallback(() => {
         if (modalTimerRef.current) clearTimeout(modalTimerRef.current);
@@ -46,8 +45,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         setIsModalVisible(false);
         clearTimers();
         await signOut();
-        navigateToSessionExpiredScreen(async () => await signIn());
-    }, [clearTimers, signOut, signIn]);
+    }, [clearTimers, signOut]);
 
     // Expose expireSessionImpl globally
     useEffect(() => {
