@@ -30,6 +30,7 @@ import { useGetRequestsQuery, useGetRequestTypesQuery } from '../../../network/r
 import CustomLoader from '../../../common/components/CustomLoader';
 
 import { RequestAction, RequestItem } from '../../../network/requests/request.types';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -38,6 +39,7 @@ import { RequestAction, RequestItem } from '../../../network/requests/request.ty
 const RequestsScreen = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const navigation = useNavigation<any>();
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [isFilterSheetVisible, setIsFilterSheetVisible] = useState(false);
@@ -228,7 +230,7 @@ const RequestsScreen = () => {
       <CustomHeader
         title={t('requests.title')}
         rightContent={
-          <TouchableOpacity style={styles.rightButton}>
+          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
             <NotificationSVG width={ms(24)} height={ms(24)} />
           </TouchableOpacity>
         }

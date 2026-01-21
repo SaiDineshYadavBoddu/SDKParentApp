@@ -112,7 +112,7 @@ const ProfileScreen = () => {
       <CustomHeader
         title={t('profile.headerTitle')}
         rightContent={
-          <TouchableOpacity style={styles.rightButton}>
+          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
             <NotificationSVG width={ms(24)} height={ms(24)} />
           </TouchableOpacity>
         }
