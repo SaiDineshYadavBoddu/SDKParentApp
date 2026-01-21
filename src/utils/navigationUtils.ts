@@ -3,9 +3,7 @@ import { Linking } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
-import ClockSVG from '../assets/svgs/ClockSVG';
-import { Typography } from '../theme/typography';
-import { navigate, getNavigationRef, resetNavigation } from './navigationRefUtils';
+import { navigate, getNavigationRef } from './navigationRefUtils';
 
 /**
  * Navigates to no internet connection screen
@@ -47,26 +45,6 @@ export const navigateToServerErrorScreen = () => {
             navigationRef.goBack();
           }
         },
-      },
-    });
-  }
-};
-
-/**
- * Navigates to session expired screen
- * @param onLogin Callback to trigger login
- */
-export const navigateToSessionExpiredScreen = (onLogin: () => Promise<void>) => {
-  const navigationRef = getNavigationRef();
-  if (navigationRef?.isReady()) {
-    resetNavigation('GenericInfoScreen', {
-      icon: React.createElement(ClockSVG, { width: ms(80), height: ms(80) }),
-      title: 'session.expiredTitle',
-      titleStyle: Typography.headlineMedium,
-      description: 'session.expiredDescription',
-      primaryButton: {
-        title: 'login.loginButton',
-        onPress: onLogin,
       },
     });
   }
