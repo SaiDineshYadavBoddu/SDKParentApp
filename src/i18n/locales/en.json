@@ -11,7 +11,8 @@
     "cardNumber": "Card Number",
     "reset": "Reset",
     "tryAgain": "Try Again",
-    "error": "Error"
+    "error": "Error",
+    "ok": "Ok"
   },
   "cardList": {
     "title": "My Cards",
@@ -305,6 +306,7 @@
     "title": "Notifications",
     "markAllAsRead": "Mark all as read",
     "viewRequest": "View request",
+    "viewCard": "View card",
     "sections": {
       "Today": "Today",
       "Yesterday": "Yesterday",

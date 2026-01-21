@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, StatusBar } from 'react-native';
 import { lightTheme, darkTheme } from './index';
 
 const ThemeContext = createContext(lightTheme);
@@ -10,7 +10,14 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const theme = scheme === 'dark' ? darkTheme : lightTheme;
 
   return (
-    <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={theme}>
+      <StatusBar 
+        barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} 
+        backgroundColor={'transparent'}
+        translucent={true}
+      />
+      {children}
+    </ThemeContext.Provider>
   );
 };
 

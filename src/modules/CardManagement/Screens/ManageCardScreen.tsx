@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -20,17 +19,16 @@ import TransactionLimitsSVG from '../../../assets/svgs/TransactionLimitsSVG';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
 import BlockCardSVG from '../../../assets/svgs/CloseCardSVG';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
-import CustomBackButton from '../../../common/components/CustomBackButton';
 import PaymentCard from '../../../common/components/PaymentCard';
 import { Animated } from 'react-native';
 import { canSetPin, canCloseCard, canViewLimits, canViewRestrictions, isCardBlocked } from '../../../utils/cardUtils';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ManageCardScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { card } = route.params || {};
@@ -98,16 +96,12 @@ const ManageCardScreen = () => {
 
   return (
     <View style={[styles.container, {
-      backgroundColor: colors.background,
-      paddingTop: Math.max(ms(20), insets.top),
-      paddingHorizontal: Spacing.l
+      backgroundColor: colors.secondaryScreenBackground,
     }]}>
-      <View style={styles.header}>
-        <CustomBackButton style={styles.backButton} />
-        <CustomText type={TextType.ScreenHeadlineSmall} style={styles.headerTitle}>
-          {t('manageCard.title')}
-        </CustomText>
-      </View>
+      <CustomHeader
+        title={t('manageCard.title')}
+        onBackPress={() => navigation.goBack()}
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -159,6 +153,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: Spacing.xxl,
+    paddingHorizontal: Spacing.l,
   },
   cardContainer: {
     paddingTop: Spacing.xl,

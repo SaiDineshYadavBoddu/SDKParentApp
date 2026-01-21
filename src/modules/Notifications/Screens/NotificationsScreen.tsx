@@ -139,9 +139,16 @@ const NotificationsScreen = () => {
             item={item}
             onPress={() => handleMarkAsRead(item.id)}
             onViewRequest={() => {
-              // if (item.subjectId) {
               setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
-              // }
+            }}
+            onViewCard={() => {
+              if (item.subjectId) {
+                // @ts-ignore
+                navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: item.subjectId },
+                });
+              }
             }}
           />
         )}

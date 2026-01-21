@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { RequestItem } from '../../../network/requests/request.types';
 import { getStatusColors } from '../../../utils/requestUtils';
 import { useGetRequestByIdQuery } from '../../../network/requests/request.api';
+import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -40,20 +41,23 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     // Use fetched details if available, otherwise fallback to the item from the list
     const activeRequest = fullRequestDetails || request;
 
+    const mainAction = activeRequest?.actions?.[0];
+    const isCardSubject = mainAction?.subject?.toLowerCase() === 'card';
+    const subjectId = mainAction?.subjectId;
+
+    const { currentData: searchResults, isFetching: isCardFetching } = useSearchCardsQuery(
+        { ids: [subjectId || ''] },
+        {
+            skip: !isCardSubject || !subjectId || !visible,
+            refetchOnMountOrArgChange: true
+        }
+    );
+
+    const cardData = searchResults?.content?.[0];
+
     if (!activeRequest && !isLoading) return null;
 
-    // Mock card data - in a real app, this might come from the request object or a separate fetch
-    const mockCardData = {
-        id: '1',
-        cardIdentifier: '1238 **** **** 0329',
-        maskedPan: '423456******0329',
-        expiryDate: '2028-07-01',
-        cvv: '329',
-        cardholderName: 'Jonathan Paul',
-    };
 
-
-    const mainAction = activeRequest?.actions?.[0];
     const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
     let actionData: any = {};
@@ -170,19 +174,30 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
+                {mainAction?.details && (
+                    <CustomText type={TextType.CardTitle} style={styles.actionDetails}>
+                        {mainAction.details}
+                    </CustomText>
+                )}
                 {/* Card Section */}
-                <View style={styles.cardContainer}>
-                    <PaymentCard
-                        item={mockCardData}
-                        index={0}
-                        scrollX={scrollX}
-                        snapInterval={ms(300)}
-                        cardWidth={ms(320)}
-                        cardMargin={0}
-                        isDetailsVisible={isCardDetailVisible}
-                        onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
-                    />
-                </View>
+                {isCardSubject && (
+                    <View style={styles.cardContainer}>
+                        {isCardFetching ? (
+                            <ActivityIndicator size="small" color={colors.primary} />
+                        ) : cardData ? (
+                            <PaymentCard
+                                item={cardData}
+                                index={0}
+                                scrollX={scrollX}
+                                snapInterval={ms(300)}
+                                cardWidth={ms(320)}
+                                cardMargin={0}
+                                isDetailsVisible={isCardDetailVisible}
+                                onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
+                            />
+                        ) : null}
+                    </View>
+                )}
 
                 {/* Basic Info Rows */}
                 <View style={styles.infoGroupWrapper}>
@@ -249,7 +264,12 @@ const styles = StyleSheet.create({
     cardContainer: {
         alignItems: 'center',
         marginBottom: Spacing.xl,
-        // Adjust PaymentCard style if needed within this parent
+        paddingHorizontal: Spacing.m,
+    },
+    actionDetails: {
+        marginBottom: Spacing.m,
+        paddingHorizontal: Spacing.m,
+        fontWeight: '600',
     },
     infoGroupWrapper: {
         marginBottom: Spacing.xl,

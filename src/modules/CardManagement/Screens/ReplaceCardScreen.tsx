@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -14,7 +13,6 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
 import ReplaceCardScreenSVG from '../../../assets/svgs/ReplaceCardScreenSVG';
-import CustomBackButton from '../../../common/components/CustomBackButton';
 import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
 import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
@@ -22,6 +20,7 @@ import CustomCardNumberDisplay from '../../../common/components/CustomCardNumber
 
 import { useGetCardTariffsQuery, useReplaceCardMutation } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 const ReplaceCardScreen = () => {
   const { t } = useTranslation();
@@ -29,7 +28,6 @@ const ReplaceCardScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { card } = route.params || {};
-  const insets = useSafeAreaInsets();
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
   const [tempReason, setTempReason] = useState<string | undefined>("");
@@ -74,10 +72,11 @@ const ReplaceCardScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <CustomBackButton />
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <CustomHeader
+          title={''}
+          onBackPress={() => navigation.goBack()}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.iconContainer}>
@@ -116,7 +115,7 @@ const ReplaceCardScreen = () => {
         </CustomWarning>
       </ScrollView>
 
-      <View style={[styles.bottomButtonContainer, { paddingBottom: Math.max(Spacing.l, insets.bottom) }]}>
+      <View style={styles.bottomButtonContainer}>
         <CustomButton
           title={t('common.submit')}
           onPress={handleSubmit}
@@ -174,10 +173,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing.s,
-  },
-  header: {
-    paddingTop: ms(20),
-    paddingHorizontal: Spacing.m,
   },
   scrollContent: {
     paddingHorizontal: Spacing.m,

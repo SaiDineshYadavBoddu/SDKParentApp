@@ -1,8 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from '../theme/ThemeProvider';
-import { View, StyleSheet, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, StyleSheet } from 'react-native';
 
 // Screens
 import CardListScreen from '../modules/CardList/Screens/CardListScreen';
@@ -16,14 +15,9 @@ import RequestsSVG from '../assets/svgs/RequestsSVG';
 import TransactionsSVG from '../assets/svgs/TransactionsSVG';
 import MyProfileSVG from '../assets/svgs/MyProfileSVG';
 
-// Vector Icons
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   return (
@@ -33,7 +27,7 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: '#666',
-        tabBarStyle: [styles.tabBar, { height: 60 + insets.bottom, paddingBottom: insets.bottom + 5 }],
+        tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIcon: ({ focused, color, size }) => {
           if (route.name === 'My Cards') {
@@ -51,7 +45,15 @@ const BottomTabNavigator = () => {
       })}
     >
       <Tab.Screen name="My Cards" component={CardListScreen} />
-      <Tab.Screen name="Transactions" component={TransactionsScreen} />
+      <Tab.Screen 
+        name="Transactions" 
+        component={TransactionsScreen} 
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+          },
+        }}
+      />
       <Tab.Screen name="Requests" component={RequestsScreen} />
       <Tab.Screen name="My Profile" component={ProfileScreen} />
       
@@ -61,10 +63,9 @@ const BottomTabNavigator = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
     shadowRadius: 4,
+    height: 60,
+    paddingBottom: 5,
   },
   tabBarLabel: {
     fontSize: 12,

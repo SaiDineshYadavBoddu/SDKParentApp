@@ -28,6 +28,7 @@ export const lightColors = {
   secondaryText: '#616161',
   tertiaryText: '#9E9E9E',
   screenBackground: '#F5F7F9',
+  secondaryScreenBackground: '#F5F9FC',
 
   // Status/Badge colors
   statusInProgress: '#2E84BF',
@@ -89,6 +90,7 @@ export const darkColors = {
   secondaryText: '#C4C6CF',
   tertiaryText: '#8E9199',
   screenBackground: '#111318',
+  secondaryScreenBackground: '#15171B',
 
   // Status/Badge colors (Dark mode versions)
   statusInProgress: '#D2E4FF',

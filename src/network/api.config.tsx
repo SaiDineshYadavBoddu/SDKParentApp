@@ -50,6 +50,7 @@ const baseQueryWithReauth: BaseQueryFn<
 
   if (result.error && result.error?.status === 'FETCH_ERROR') {
     Logger.error('Something went wrong. Please try again!', result.error);
+    navigateToServerErrorScreen();
     return result;
   }
   if (result.error && result.error.status === 401) {

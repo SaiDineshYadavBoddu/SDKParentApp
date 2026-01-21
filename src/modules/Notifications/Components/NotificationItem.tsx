@@ -11,9 +11,10 @@ interface NotificationItemProps {
   item: NotificationType;
   onPress?: () => void;
   onViewRequest?: () => void;
+  onViewCard?: () => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onViewRequest }) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onViewRequest, onViewCard }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -41,20 +42,32 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
           dot: colors.statusUnblocking,
           text: colors.statusUnblocking,
         };
-      case 'ACTIVATION':
+      case 'ACTIVATE':
         return {
           bg: colors.onStatusActivation,
           dot: colors.statusActivation,
           text: colors.statusActivation,
         };
-      case 'REPLACEMENT':
+      case 'REPLACE':
         return {
           bg: colors.onStatusReplacement,
           dot: colors.statusReplacement,
           text: colors.statusReplacement,
         };
+      case 'BLOCK':
+        return {
+          bg: colors.onStatusBlocked,
+          dot: colors.statusBlocked,
+          text: colors.statusBlocked,
+        };
+      case 'CLOSE':
+        return {
+          bg: colors.onStatusClosure,
+          dot: colors.statusClosure,
+          text: colors.statusClosure,
+        };
       default:
-        // Generic fallback for other types (e.g., ISSUED, FUNDED, FAILED)
+        // Generic fallback for other types
         return {
           bg: colors.outline + '20',
           dot: colors.secondaryText,
@@ -100,10 +113,17 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
             </CustomText>
           </View>
 
-          {item.subject === "Request" && (
+          {item.subject?.toLowerCase() === "request" && (
             <TouchableOpacity onPress={onViewRequest}>
               <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
                 {t('notifications.viewRequest')}
+              </CustomText>
+            </TouchableOpacity>
+          )}
+          {item.subject?.toLowerCase() === "card" && (
+            <TouchableOpacity onPress={onViewCard}>
+              <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
+                {t('notifications.viewCard')}
               </CustomText>
             </TouchableOpacity>
           )}

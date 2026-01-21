@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
 import { useTranslation } from 'react-i18next';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
@@ -27,7 +26,7 @@ export default function GenericInfoScreen() {
   } = route.params || {};
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
@@ -71,7 +70,7 @@ export default function GenericInfoScreen() {
              />
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: Spacing.l,
-    paddingBottom: ms(24),
     width: '100%',
     position: 'absolute',
     bottom: 0,

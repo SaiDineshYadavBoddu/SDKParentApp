@@ -10,7 +10,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -32,12 +31,12 @@ import CustomLoader from '../../../common/components/CustomLoader';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import CustomChip from '../../../common/components/CustomChip';
 import { useSelector } from 'react-redux';
+import CustomHeader from '../../../common/components/CustomHeader';
 
 
 const TransactionsScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -108,15 +107,16 @@ const TransactionsScreen = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <CustomText type={TextType.ScreenHeadlineSmall}>{t('transactions.title')}</CustomText>
-        <TouchableOpacity style={styles.iconButton}>
-          <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onSurface} stroke={colors.onSurface} />
-        </TouchableOpacity>
-      </View>
-
+      <CustomHeader
+        title={t('transactions.title')}
+        rightContent={
+          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
+            <NotificationSVG width={ms(24)} height={ms(24)} />
+          </TouchableOpacity>
+        }
+      />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Card Selector */}
         <TouchableOpacity
@@ -221,15 +221,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.l,
-    paddingVertical: Spacing.m,
-  },
-  iconButton: {
-    padding: ms(4),
+  rightButton: {
+    padding: ms(6),
+    marginRight: -ms(6),
   },
   scrollContent: {
     paddingHorizontal: Spacing.l,
