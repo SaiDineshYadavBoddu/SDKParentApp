@@ -40,7 +40,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   cardMargin,
   isDetailsVisible,
   onToggleVisibility,
-  showEyeIcon = true,
+  showEyeIcon = false,
 }) => {
   const inputRange = [
     (index - 1) * snapInterval,

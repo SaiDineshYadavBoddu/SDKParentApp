@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { ms } from "react-native-size-matters";
 import SectionContainer, { SectionItem } from "../../../common/components/SectionContainer";
@@ -29,6 +30,7 @@ import { useRoute } from "@react-navigation/native";
 import {
   isCardPendingActivation,
   isCardTempBlocked,
+  isCardBlocked,
   isCardReplaced,
   isCardPendingClosure,
   canBlockCard,
@@ -91,6 +93,7 @@ export default function CardListScreen() {
     skip: isLoading || !activeCard?.cardIdentifier
   });
   // Card status checks
+  const isBlocked = isCardBlocked(activeCard?.cardStatus);
   const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
   const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
   const isReplaced = isCardReplaced(activeCard?.cardStatus);
@@ -145,6 +148,14 @@ export default function CardListScreen() {
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={refetch}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
       >
         <View style={styles.balanceContainer}>
           <View
@@ -193,6 +204,7 @@ export default function CardListScreen() {
           data={cards}
           onIndexChange={(index) => setActiveCardIndex(index)}
           selectedIndex={activeCardIndex}
+          showEyeIcon={true}
         />
 
         {/* Action buttons - always show but disable based on status */}
@@ -220,7 +232,7 @@ export default function CardListScreen() {
           />
 
           <ActionButton
-            title={canUnblock ? t('cardList.unfreeze') : t('cardList.freeze')}
+            title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
             icon={<FreezeCardSVG color={canUnblock ? '#0066b3' : undefined} />}
             loading={isUnblocking}
             disabled={!showBlockButton}
@@ -285,8 +297,8 @@ export default function CardListScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer:{
-    flex : 1,
+  mainContainer: {
+    flex: 1,
   },
   container: {
     paddingBottom: Spacing.xxl,

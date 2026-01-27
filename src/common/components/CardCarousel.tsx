@@ -29,9 +29,10 @@ interface CardCarouselProps {
   data: CardData[];
   onIndexChange?: (index: number) => void;
   selectedIndex?: number;
+  showEyeIcon?: boolean;
 }
 
-const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex }) => {
+const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon }) => {
   const { accessToken } = useAuth();
   const { onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
@@ -79,9 +80,10 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       cardWidth={CARD_WIDTH}
       cardMargin={CARD_MARGIN}
       isDetailsVisible={visibleCardIds.has(item.cardIdentifier)}
-      onToggleVisibility={() => {}
-        // toggleCardVisibility(item.cardIdentifier)
-      }
+      onToggleVisibility={() => {
+        toggleCardVisibility(item.cardIdentifier)
+      }}
+      showEyeIcon={showEyeIcon}
     />
   );
 

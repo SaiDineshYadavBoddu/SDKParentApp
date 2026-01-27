@@ -64,7 +64,7 @@
     }
   },
   "login": {
-    "loginButton": "Log In"
+    "loginButton": "Login"
   },
   "manageCard": {
     "title": "Manage Card",
@@ -179,7 +179,7 @@
         "title": "Contact Us",
         "subtitle": "Call or email us"
       },
-      "logout": "Log out"
+      "logout": "Logout"
     },
     "details": {
       "personal": {

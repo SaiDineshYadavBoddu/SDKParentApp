@@ -1,5 +1,5 @@
-import * as React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import * as React from "react"
+import Svg, { Path } from "react-native-svg"
 
 function FreezeCardSVG(props: any) {
   return (
@@ -12,14 +12,13 @@ function FreezeCardSVG(props: any) {
       {...props}
     >
       <Path
-        d="M17.5 9l.5-3.5M3 7l3.5 2L3 7zm18 10l-3.5-2 3.5 2zm-9-5L6.5 9l5.5 3zm0 0l-5.5 3 5.5-3zm0 0V5v7zm0 0v6.5V12zm0 0l5.5 3-5.5-3zm0 0l5.5-3-5.5 3zm0-10v3-3zm0 20v-3.5V22zm9-15l-3.5 2L21 7zM3 17l3.5-2L3 17zm3.5-8L3 10l3.5-1zm0 0L6 5.5 6.5 9zm0 6L3 14l3.5 1zm0 0L6 18.5l.5-3.5zM12 5L9.5 4 12 5zm0 0l2.5-1L12 5zm0 13.5l2.5 1.5-2.5-1.5zm0 0L9.5 20l2.5-1.5zm5.5-3.5l.5 3.5-.5-3.5zm0 0l3.5-1-3.5 1zm0-6l3.5 1-3.5-1z"
-        stroke="#0069B1"
+        d="M7 8V6.8c0-1.68 0-2.52.327-3.162a3 3 0 011.311-1.311C9.28 2 10.12 2 11.8 2h.4c1.68 0 2.52 0 3.162.327a3 3 0 011.311 1.311C17 4.28 17 5.12 17 6.8V8m-5 6v2m-2.6 6h5.2c2.24 0 3.36 0 4.216-.436a4 4 0 001.748-1.748C21 18.96 21 17.84 21 15.6v-1.2c0-2.24 0-3.36-.436-4.216a4 4 0 00-1.748-1.748C17.96 8 16.84 8 14.6 8H9.4c-2.24 0-3.36 0-4.216.436a4 4 0 00-1.748 1.748C3 11.04 3 12.16 3 14.4v1.2c0 2.24 0 3.36.436 4.216a4 4 0 001.748 1.748C6.04 22 7.16 22 9.4 22z"
+        stroke="#070707"
         strokeWidth={1.5}
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </Svg>
-  );
+  )
 }
 
-export default FreezeCardSVG;
+export default FreezeCardSVG

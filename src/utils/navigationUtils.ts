@@ -31,16 +31,19 @@ export const navigateToNoInternetScreen = () => {
 /**
  * Navigates to server error screen when API returns 400 or 500 error
  */
-export const navigateToServerErrorScreen = () => {
+export const navigateToServerErrorScreen = (onRetry?: () => void) => {
   const navigationRef = getNavigationRef();
   if (navigationRef?.isReady()) {
     navigate('GenericInfoScreen', {
-      icon: React.createElement(FailureSVG, { width: ms(80), height: ms(80) }),
+      icon: React.createElement(FailureSVG, { width: ms(100), height: ms(100) }),
       title: 'serverError.title',
       description: 'serverError.description',
       primaryButton: {
         title: 'serverError.tryAgain',
         onPress: () => {
+          if (onRetry) {
+            onRetry();
+          }
           if (navigationRef?.canGoBack()) {
             navigationRef.goBack();
           }

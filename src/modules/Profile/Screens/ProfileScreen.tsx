@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import { ms } from 'react-native-size-matters';
@@ -51,7 +51,7 @@ const ProfileScreen = () => {
     },
   ];
 
-  const infoItems: ProfileItemProps[] = [ 
+  const infoItems: ProfileItemProps[] = [
     {
       id: 'contact-details',
       title: t('profile.items.contactDetails.title'),
@@ -101,7 +101,23 @@ const ProfileScreen = () => {
       id: 'logout',
       title: t('profile.items.logout'),
       Icon: LogOutSVG,
-      onPress: () => signOut(),
+      onPress: () => {
+        Alert.alert(
+          t('profile.items.logout'),
+          'Are you sure you want to signout?',
+          [
+            {
+              text: t('common.cancel'),
+              style: 'cancel',
+            },
+            {
+              text: t('profile.items.logout'),
+              onPress: () => signOut(),
+              style: 'destructive',
+            },
+          ],
+        );
+      },
     },
   ];
 
@@ -117,21 +133,21 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         }
       />
-      {isLoading ? <CustomLoader loading={isLoading}/> :
-      <ScrollView
-        style={[styles.scrollContainer, { backgroundColor: colors.screenBackground }]}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.userData}>
-          <UserData />
-        </View>
+      {isLoading ? <CustomLoader loading={isLoading} /> :
+        <ScrollView
+          style={[styles.scrollContainer, { backgroundColor: colors.screenBackground }]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.userData}>
+            <UserData />
+          </View>
 
-        <ProfileSection title={t('profile.sections.accountSettings')} items={accountSettingsItems} />
+          <ProfileSection title={t('profile.sections.accountSettings')} items={accountSettingsItems} />
 
-        <ProfileSection title={t('profile.sections.information')} items={infoItems} />
+          <ProfileSection title={t('profile.sections.information')} items={infoItems} />
 
-        <ProfileSection title={t('profile.sections.contact')} items={contactItems} />
-      </ScrollView>
+          <ProfileSection title={t('profile.sections.contact')} items={contactItems} />
+        </ScrollView>
       }
       {/* <CustomLoader loading={isLoading}/> */}
     </View>
