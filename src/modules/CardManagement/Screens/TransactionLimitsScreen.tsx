@@ -9,6 +9,7 @@ import SectionContainer from '../../../common/components/SectionContainer';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useGetCardLimitsQuery } from '../../../network/card/card.api';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
 
@@ -48,12 +49,33 @@ const TransactionLimitsScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const route = useRoute<any>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const { card } = route.params || {};
 
-    const { data: limitsData, isLoading } = useGetCardLimitsQuery(card?.cardIdentifier, {
+    const { data: limitsData, isLoading, isError, refetch, isFetching } = useGetCardLimitsQuery(card?.cardIdentifier, {
         skip: !card?.cardIdentifier,
     });
+
+    React.useEffect(() => {
+        if (isError) {
+            navigation.navigate('GenericInfoScreen', {
+                icon: <FailureSVG />,
+                title: 'serverError.title',
+                description: 'serverError.description',
+                primaryButton: {
+                    title: 'serverError.tryAgain',
+                    onPress: async () => {
+                        try {
+                            await refetch().unwrap();
+                            navigation.goBack();
+                        } catch (err) {
+                            console.error('Failed to retry limits fetch:', err);
+                        }
+                    },
+                },
+            });
+        }
+    }, [isError, navigation, refetch]);
 
     const limitItems = React.useMemo(() => {
         if (!limitsData?.limits) return [];
@@ -94,9 +116,10 @@ const TransactionLimitsScreen = () => {
                 title={t('transactionLimits.title')}
                 items={limitItems}
                 ItemSeparatorComponent={() => <View style={styles.divider} />}
-                loading={isLoading}
+                loading={isLoading || isFetching}
+                emptyMessage={t('common.noDataAvailable')}
             />
-            <CustomLoader loading={isLoading} />
+            <CustomLoader loading={isLoading || isFetching} />
         </View>
     );
 };

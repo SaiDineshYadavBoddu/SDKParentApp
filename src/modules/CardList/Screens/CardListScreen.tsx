@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { ms } from "react-native-size-matters";
 import SectionContainer, { SectionItem } from "../../../common/components/SectionContainer";
@@ -16,8 +17,10 @@ import { Spacing } from "../../../theme/spacing";
 import InfoSVG from "../../../assets/svgs/InfoSVG";
 import ReplaceCardSVG from "../../../assets/svgs/ReplaceCardSVG";
 import FreezeCardSVG from "../../../assets/svgs/FreezeCardSVG";
+import UnFreezeSVG from "../../../assets/svgs/UnFreezeSVG";
 import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
+import SuccessSVG from "../../../assets/svgs/SuccessSVG";
 import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation, useActivateCardMutation } from "../../../network/card/card.api";
 import { useSecondaryAuth } from "../../../hooks/useSecondaryAuth";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
@@ -29,6 +32,7 @@ import { useRoute } from "@react-navigation/native";
 import {
   isCardPendingActivation,
   isCardTempBlocked,
+  isCardBlocked,
   isCardReplaced,
   isCardPendingClosure,
   canBlockCard,
@@ -57,6 +61,7 @@ export default function CardListScreen() {
   const { colors } = useTheme();
   const route = useRoute<any>();
   const [activeCardIndex, setActiveCardIndex] = React.useState(0);
+  const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
 
   const { data, isLoading, refetch } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
@@ -88,9 +93,11 @@ export default function CardListScreen() {
     pageNumber: 0,
     ...dateRange,
   }, {
-    skip: isLoading || !activeCard?.cardIdentifier
+    // skip: isLoading || !activeCard?.cardIdentifier
+    skip: true
   });
   // Card status checks
+  const isBlocked = isCardBlocked(activeCard?.cardStatus);
   const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
   const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
   const isReplaced = isCardReplaced(activeCard?.cardStatus);
@@ -107,9 +114,11 @@ export default function CardListScreen() {
   const showBlockButton = (canBlock || canUnblock) && !isReplaced && !isPendingClosure;
   const showTransactions = shouldShowTransactions(activeCard?.cardStatus);
 
-  const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
-    ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)
-    : (transactionsData?.content || []);
+  // const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
+  // ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)
+  // : (transactionsData?.content || []);
+
+  const transactions: any[] = []; // Show empty message for now
 
   const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions);
 
@@ -145,6 +154,14 @@ export default function CardListScreen() {
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={refetch}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
       >
         <View style={styles.balanceContainer}>
           <View
@@ -193,6 +210,7 @@ export default function CardListScreen() {
           data={cards}
           onIndexChange={(index) => setActiveCardIndex(index)}
           selectedIndex={activeCardIndex}
+          showEyeIcon={true}
         />
 
         {/* Action buttons - always show but disable based on status */}
@@ -220,8 +238,8 @@ export default function CardListScreen() {
           />
 
           <ActionButton
-            title={canUnblock ? t('cardList.unfreeze') : t('cardList.freeze')}
-            icon={<FreezeCardSVG color={canUnblock ? '#0066b3' : undefined} />}
+            title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
+            icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
             loading={isUnblocking}
             disabled={!showBlockButton}
             onPress={async () => {
@@ -230,6 +248,15 @@ export default function CardListScreen() {
                   try {
                     await unblockCard({ cardId: activeCard.cardIdentifier }).unwrap();
                     refetch();
+                    navigation.navigate('GenericInfoScreen', {
+                      icon: <SuccessSVG />,
+                      title: 'unblockCard.successTitle',
+                      description: '',
+                      primaryButton: {
+                        title: 'common.done',
+                        onPress: () => navigation.navigate('BottomTabs'),
+                      },
+                    });
                   } catch (err) {
                     console.error('Failed to unblock card:', err);
                   }
@@ -285,8 +312,8 @@ export default function CardListScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer:{
-    flex : 1,
+  mainContainer: {
+    flex: 1,
   },
   container: {
     paddingBottom: Spacing.xxl,

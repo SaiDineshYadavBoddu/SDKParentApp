@@ -12,7 +12,11 @@
     "reset": "Reset",
     "tryAgain": "Try Again",
     "error": "Error",
-    "ok": "Ok"
+    "ok": "Ok",
+    "noDataAvailable": "No data available"
+  },
+  "unblockCard": {
+    "successTitle": "Unblock request sent for approval"
   },
   "cardList": {
     "title": "My Cards",
@@ -64,7 +68,7 @@
     }
   },
   "login": {
-    "loginButton": "Log In"
+    "loginButton": "Login"
   },
   "manageCard": {
     "title": "Manage Card",
@@ -179,7 +183,7 @@
         "title": "Contact Us",
         "subtitle": "Call or email us"
       },
-      "logout": "Log out"
+      "logout": "Logout"
     },
     "details": {
       "personal": {
