@@ -33,10 +33,13 @@ interface CardCarouselProps {
 
 const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex }) => {
   const { accessToken } = useAuth();
-  const { onGetCardDetails } = useGetCardDetails();
+  const { result, error, onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<any>(null);
+
+  console.log('NI SDK result:', result);
+  console.log('NI SDK error:', error);
 
   useEffect(() => {
     if (selectedIndex !== undefined && selectedIndex >= 0 && selectedIndex < data.length) {
@@ -79,8 +82,9 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       cardWidth={CARD_WIDTH}
       cardMargin={CARD_MARGIN}
       isDetailsVisible={visibleCardIds.has(item.cardIdentifier)}
-      onToggleVisibility={() => {}
-        // toggleCardVisibility(item.cardIdentifier)
+      onToggleVisibility={() => {
+        toggleCardVisibility(item.cardIdentifier)
+      }
       }
     />
   );

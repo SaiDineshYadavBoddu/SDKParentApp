@@ -27,7 +27,9 @@ const SetCardPin = () => {
   const { colors } = useTheme();
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
-  const { onSetPin, isLoading: isSettingPin } = useSetPin()
+  const { result, error, onSetPin, isLoading: isSettingPin } = useSetPin();
+  console.log('NI SDK result:', result);
+  console.log('NI SDK error:', error);
   const { startAuthFlow } = useSecondaryAuth();
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
