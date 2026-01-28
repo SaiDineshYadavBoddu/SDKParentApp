@@ -12,7 +12,11 @@
     "reset": "Reset",
     "tryAgain": "Try Again",
     "error": "Error",
-    "ok": "Ok"
+    "ok": "Ok",
+    "noDataAvailable": "No data available"
+  },
+  "unblockCard": {
+    "successTitle": "Unblock request sent for approval"
   },
   "cardList": {
     "title": "My Cards",

@@ -9,6 +9,7 @@ import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import SectionContainer, { SectionItem } from '../../../common/components/SectionContainer';
 import CheckmarkSVG from '../../../assets/svgs/CheckmarkSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
 
@@ -16,12 +17,33 @@ const CardUsageScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const route = useRoute<any>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const { card } = route.params || {};
 
-    const { data: restrictionsData, isLoading } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
+    const { data: restrictionsData, isLoading, isError, refetch, isFetching } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
         skip: !card?.cardIdentifier,
     });
+
+    React.useEffect(() => {
+        if (isError) {
+            navigation.navigate('GenericInfoScreen', {
+                icon: <FailureSVG />,
+                title: 'serverError.title',
+                description: 'serverError.description',
+                primaryButton: {
+                    title: 'serverError.tryAgain',
+                    onPress: async () => {
+                        try {
+                            await refetch().unwrap();
+                            navigation.goBack();
+                        } catch (err) {
+                            console.error('Failed to retry restrictions fetch:', err);
+                        }
+                    },
+                },
+            });
+        }
+    }, [isError, navigation, refetch]);
 
     const isAllowed = (type: string) => {
         if (!restrictionsData?.restrictions) return false;
@@ -29,7 +51,7 @@ const CardUsageScreen = () => {
         return restriction ? restriction.isAllowed : false;
     };
 
-    const usageItems: SectionItem[] = [
+    const usageItems: SectionItem[] = restrictionsData?.restrictions && restrictionsData.restrictions.length > 0 ? [
         {
             id: 'pos',
             top: <CustomText type={TextType.CardTitle}>{t('cardUsage.pos')}</CustomText>,
@@ -55,7 +77,7 @@ const CardUsageScreen = () => {
             top: <CustomText type={TextType.CardTitle}>{t('cardUsage.atm')}</CustomText>,
             end: isAllowed('ATM') ? <CheckmarkSVG width={ms(20)} height={ms(20)} color={colors.primary} /> : null,
         },
-    ];
+    ] : [];
 
     return (
         <View style={[styles.container, {
@@ -66,9 +88,13 @@ const CardUsageScreen = () => {
                 onBackPress={() => navigation.goBack()}
             />
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <SectionContainer items={usageItems} loading={isLoading} />
+                <SectionContainer
+                    items={usageItems}
+                    loading={isLoading || isFetching}
+                    emptyMessage={t('common.noDataAvailable')}
+                />
             </ScrollView>
-            <CustomLoader loading={isLoading} />
+            <CustomLoader loading={isLoading || isFetching} />
         </View>
     );
 };

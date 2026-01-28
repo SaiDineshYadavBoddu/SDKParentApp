@@ -14,6 +14,7 @@ export default function GenericInfoScreen() {
   const { t } = useTranslation();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
+  const [internalLoading, setInternalLoading] = React.useState(false);
 
   const {
     icon,
@@ -34,40 +35,62 @@ export default function GenericInfoScreen() {
         <View style={styles.iconContainer}>
           {icon}
         </View>
-      <View style={styles.textContainer}>
-        <CustomText
+        <View style={styles.textContainer}>
+          <CustomText
             type={TextType.ScreenHeadlineLarge}
             style={[styles.title, { color: colors.onBackground }, titleStyle]}
-        >
+          >
             {t(title)}
-        </CustomText>
+          </CustomText>
 
-        <CustomText
+          <CustomText
             type={TextType.ScreenDisplaySmall}
             style={[styles.description, { color: colors.secondaryText }, descriptionStyle]}
-        >
+          >
             {t(description)}
-        </CustomText>
+          </CustomText>
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
         {primaryButton && (
-             <CustomButton
-                title={t(primaryButton.title)}
-                onPress={primaryButton.onPress || (() => {})}
-                style={styles.button}
-                uppercase={false}
-             />
+          <CustomButton
+            title={t(primaryButton.title)}
+            onPress={async () => {
+              if (primaryButton.onPress) {
+                setInternalLoading(true);
+                try {
+                  await primaryButton.onPress();
+                } finally {
+                  setInternalLoading(false);
+                }
+              }
+            }}
+            loading={primaryButton.loading || internalLoading}
+            disabled={primaryButton.disabled || internalLoading}
+            style={styles.button}
+            uppercase={false}
+          />
         )}
         {secondaryButton && (
-             <CustomButton
-                title={t(secondaryButton.title)}
-                onPress={secondaryButton.onPress || (() => {})}
-                variant="outlined"
-                style={[styles.button, styles.secondaryButton]}
-                uppercase={false}
-             />
+          <CustomButton
+            title={t(secondaryButton.title)}
+            onPress={async () => {
+              if (secondaryButton.onPress) {
+                setInternalLoading(true);
+                try {
+                  await secondaryButton.onPress();
+                } finally {
+                  setInternalLoading(false);
+                }
+              }
+            }}
+            loading={secondaryButton.loading || internalLoading}
+            disabled={secondaryButton.disabled || internalLoading}
+            variant="outlined"
+            style={[styles.button, styles.secondaryButton]}
+            uppercase={false}
+          />
         )}
       </View>
     </View>
@@ -110,7 +133,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     marginTop: 0, // Gap handled by footer container
   },
-  textContainer : {
-    gap : Spacing.l
+  textContainer: {
+    gap: Spacing.l
   }
 });

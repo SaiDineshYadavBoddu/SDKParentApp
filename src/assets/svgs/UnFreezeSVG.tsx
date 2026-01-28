@@ -13,7 +13,7 @@ function UnFreezeSVG(props: any) {
         >
             <Path
                 d="M17 7l2.364-2.364M4.636 19.364L7 17M7 7L4.636 4.636m14.728 14.728L17 17m1.657-5H22M2 12h3.343M12 5.343V2m0 20v-3.343"
-                stroke="#070707"
+                stroke="#0066b3"
                 strokeWidth={1.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -110,7 +110,7 @@ const SetCardPin = () => {
               description: 'setPin.successMessage',
               primaryButton: {
                 title: 'common.ok',
-                onPress: () => navigation.navigate('BottomTabs'),
+                onPress: () => navigation.navigate('ManageCard'),
               },
             });
             resolve();
