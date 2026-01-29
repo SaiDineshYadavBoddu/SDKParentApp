@@ -10,6 +10,7 @@ import { getAccessToken } from '../context/AuthContext';
 import { expireSession } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
 import { navigateToServerErrorScreen } from '../utils/navigationUtils';
+import { generateTraceparent } from '../utils/tracingUtils';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
@@ -17,12 +18,13 @@ const dynamicBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
+  const traceparent = generateTraceparent();
   const rawBaseQuery = fetchBaseQuery({
     baseUrl: 'https://sit.corporate.un.infradev.w4.az.network.ae',
     prepareHeaders: (headers, { getState: _getState }) => {
       headers.set('Content-Type', 'application/json');
+      headers.set('traceparent', traceparent);
       const token = getAccessToken();
-      // Logger.log('🚀 ~ dynamicBaseQuery ~ token:', token);
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -32,7 +34,7 @@ const dynamicBaseQuery: BaseQueryFn<
 
   const url = typeof args === 'string' ? args : args.url;
   const method = typeof args === 'string' ? 'GET' : args.method;
-  Logger.log(`API Request: [${method}] ${url}`, typeof args !== 'string' ? args.body : '');
+  Logger.log(`API Request: [${method}] ${url} | traceparent: ${traceparent}`, typeof args !== 'string' ? args.body : '');
 
   return rawBaseQuery(args, WebApi, extraOptions);
 };
