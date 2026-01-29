@@ -51,10 +51,10 @@ const CloseCardScreen = () => {
             console.error('Failed to close card', error);
             navigation.navigate('GenericInfoScreen', {
                 icon: <FailureSVG />,
-                title: error?.data?.message || 'closeCard.errorTitle',
-                description: 'common.tryAgain',
+                title: 'closeCard.errorTitle',
+                description: 'closeCard.errorSubtitle',
                 primaryButton: {
-                    title: 'common.tryAgain',
+                    title: 'common.done',
                     onPress: () => navigation.goBack(),
                 },
             });

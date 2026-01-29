@@ -153,13 +153,32 @@ export default function CardListScreen() {
     try {
       await activateCard({ cardId: activeCard.cardIdentifier, actionToken }).unwrap();
       refetch();
-      navigation.navigate('BottomTabs', {
-        screen: 'My Cards',
-        params: { cardId: activeCard.cardIdentifier },
+      navigation.navigate('GenericInfoScreen', {
+        icon: <SuccessSVG />,
+        title: 'activateCard.successTitle',
+        description: 'activateCard.successSubtitle',
+        primaryButton: {
+          title: 'common.done',
+          onPress: () => navigation.navigate('BottomTabs', {
+            screen: 'My Cards',
+            params: { cardId: activeCard.cardIdentifier },
+          }),
+        },
       });
     } catch (err: any) {
       console.error('Failed to activate card:', err);
-      Alert.alert(t('common.error'), err?.data?.errorMessage || t('common.error'));
+      navigation.navigate('GenericInfoScreen', {
+        icon: <FailureSVG />,
+        title: 'activateCard.errorTitle',
+        description: 'activateCard.errorSubtitle',
+        primaryButton: {
+          title: 'common.done',
+          onPress: () => navigation.navigate('BottomTabs', {
+            screen: 'My Cards',
+            params: { cardId: activeCard.cardIdentifier },
+          }),
+        },
+      });
     }
   };
 
@@ -291,7 +310,7 @@ export default function CardListScreen() {
                         navigation.navigate('GenericInfoScreen', {
                           icon: <SuccessSVG />,
                           title: 'unblockCard.successTitle',
-                          description: '',
+                          description: 'unblockCard.successSubtitle',
                           primaryButton: {
                             title: 'common.done',
                             onPress: () => navigation.navigate('My Cards', { cardId: activeCard.cardIdentifier }),
@@ -301,8 +320,8 @@ export default function CardListScreen() {
                         console.error('Failed to unblock card:', err);
                         navigation.navigate('GenericInfoScreen', {
                           icon: <FailureSVG />,
-                          title: err?.data?.message || 'unblockCard.errorTitle',
-                          description: 'common.tryAgain',
+                          title: 'unblockCard.errorTitle',
+                          description: 'unblockCard.errorSubtitle',
                           primaryButton: {
                             title: 'common.tryAgain',
                             onPress: () => navigation.goBack(),

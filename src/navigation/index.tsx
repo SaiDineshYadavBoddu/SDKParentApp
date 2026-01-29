@@ -36,7 +36,7 @@ const NavigationContent = () => {
 
     if (isConnected === false && !hasLaunchCheckPassed) {
       navigateToNoInternetScreen();
-    } else if (isConnected === true && getCurrentRouteName() === 'GenericInfoScreen') {
+    } else if (isConnected === true && (getCurrentRouteName() === 'GenericInfoScreen' || getCurrentRouteName() === 'AuthInfoScreen')) {
       goBack();
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);

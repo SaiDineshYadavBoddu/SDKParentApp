@@ -60,11 +60,14 @@ const FreezeCardScreen = () => {
             console.error('Failed to block card', error);
             navigation.navigate('GenericInfoScreen', {
                 icon: <FailureSVG />,
-                title: error?.data?.message || 'freezeCard.errorTitle',
-                description: 'common.tryAgain',
+                title: 'freezeCard.errorTitle',
+                description: 'freezeCard.errorSubtitle',
                 primaryButton: {
-                    title: 'common.tryAgain',
-                    onPress: () => navigation.goBack(),
+                    title: 'common.done',
+                    onPress: () => navigation.navigate('BottomTabs', {
+                        screen: 'My Cards',
+                        params: { cardId: card.cardIdentifier },
+                    }),
                 },
             });
         }

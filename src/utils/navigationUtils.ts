@@ -5,12 +5,15 @@ import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
 import { Logger } from './logger';
 import { navigate, getNavigationRef } from './navigationRefUtils';
+import { getIsAuthenticated } from '../context/AuthContext';
+
+const getInfoScreenRoute = () => getIsAuthenticated() ? 'GenericInfoScreen' : 'AuthInfoScreen';
 
 /**
  * Navigates to no internet connection screen
  */
 export const navigateToNoInternetScreen = () => {
-  navigate('GenericInfoScreen', {
+  navigate(getInfoScreenRoute(), {
     icon: React.createElement(CustomImage, {
       source: require('../assets/images/noInternet.gif'),
       style: { width: ms(160), height: ms(160) },
@@ -35,7 +38,7 @@ export const navigateToNoInternetScreen = () => {
 export const navigateToServerErrorScreen = (onRetry?: () => void) => {
   const navigationRef = getNavigationRef();
   if (navigationRef?.isReady()) {
-    navigate('GenericInfoScreen', {
+    navigate(getInfoScreenRoute(), {
       icon: React.createElement(FailureSVG, { width: ms(100), height: ms(100) }),
       title: 'serverError.title',
       description: 'serverError.description',

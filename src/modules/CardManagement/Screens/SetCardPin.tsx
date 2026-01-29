@@ -97,22 +97,28 @@ const SetCardPin = () => {
           if (error) {
             navigation.navigate('GenericInfoScreen', {
               icon: <FailureSVG />,
-              title: error.message || 'setPin.failureMessage',
-              description: 'common.tryAgain',
+              title: 'setPin.errorTitle',
+              description: 'setPin.errorSubtitle',
               primaryButton: {
-                title: 'common.tryAgain',
-                onPress: () => navigation.goBack(),
+                title: 'common.done',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: card.cardIdentifier },
+                }),
               },
             });
             reject(error);
           } else {
             navigation.navigate('GenericInfoScreen', {
               icon: <SuccessSVG />,
-              title: 'common.success',
-              description: 'setPin.successMessage',
+              title: 'setPin.successTitle',
+              description: 'setPin.successSubtitle',
               primaryButton: {
-                title: 'common.ok',
-                onPress: () => navigation.navigate('ManageCard'),
+                title: 'common.done',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: card.cardIdentifier },
+                }),
               },
             });
             resolve();

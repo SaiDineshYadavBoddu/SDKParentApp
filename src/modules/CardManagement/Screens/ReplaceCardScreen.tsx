@@ -69,11 +69,14 @@ const ReplaceCardScreen = () => {
       console.error('Failed to replace card', error);
       navigation.navigate('GenericInfoScreen', {
         icon: <FailureSVG />,
-        title: error?.data?.message || 'replaceCard.errorTitle',
-        description: 'common.tryAgain',
+        title: 'replaceCard.errorTitle',
+        description: 'replaceCard.errorSubtitle',
         primaryButton: {
           title: 'common.tryAgain',
-          onPress: () => navigation.goBack(),
+          onPress: () => navigation.navigate('BottomTabs', {
+            screen: 'My Cards',
+            params: { cardId: card.cardIdentifier },
+          }),
         },
       });
     }

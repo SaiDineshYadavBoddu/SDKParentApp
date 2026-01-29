@@ -31,7 +31,9 @@ interface AuthContextData {
 }
 
 let globalAccessToken: string | null = null;
+let globalIsAuthenticated: boolean = false;
 export const getAccessToken = () => globalAccessToken;
+export const getIsAuthenticated = () => globalIsAuthenticated;
 
 const AuthContext = createContext<AuthContextData>({
   isAuthenticated: false,
@@ -101,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
       setIsAuthenticated(true);
+      globalIsAuthenticated = true;
       setSessionExpired(false);
     } catch (error) {
       console.error('Login failed:', error);
@@ -126,6 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(null);
       setExpirationDate(null);
       setIsAuthenticated(false);
+      globalIsAuthenticated = false;
       dispatch(backendApi.util.resetApiState());
     }
   };
