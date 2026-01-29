@@ -441,7 +441,8 @@
     "confirmNewPin": "Confirm new PIN",
     "errorShort": "PIN must be 4 digits",
     "errorMismatch": "PIN don't match",
-    "successMessage": "Your PIN has been successfully reset."
+    "successMessage": "Your PIN has been successfully reset.",
+    "failureMessage": "Failed to set PIN."
   },
   "resetPin": {
     "title": "Reset PIN",

@@ -9,7 +9,6 @@ import {
 import { getAccessToken } from '../context/AuthContext';
 import { expireSession } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
-import { navigateToServerErrorScreen } from '../utils/navigationUtils';
 import { generateTraceparent } from '../utils/tracingUtils';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
@@ -50,22 +49,13 @@ const baseQueryWithReauth: BaseQueryFn<
   const method = typeof args === 'string' ? 'GET' : args.method;
   Logger.log(`API Response: [${method}] ${url}`, result);
 
-  if (result.error && result.error?.status === 'FETCH_ERROR') {
-    Logger.error('Something went wrong. Please try again!', result.error);
-    navigateToServerErrorScreen();
-    return result;
-  }
   if (result.error && result.error.status === 401) {
     await expireSession();
-  } else if (result.error && result.error.status === 400) {
-    // Show global toast only if not ignored
-    Logger.warn(result.error?.data || 'Something went wrong.');
-    navigateToServerErrorScreen();
-  } else if (result.error && result.error.status === 500) {
-    // try to get a new token
-    Logger.error('Something went wrong.', result.error);
-    navigateToServerErrorScreen();
+  } else if (result.error) {
+    // We no longer navigate globally. Errors must be handled by screens.
+    Logger.error(`API Error: [${method}] ${url}`, result.error);
   }
+
   return result;
 };
 

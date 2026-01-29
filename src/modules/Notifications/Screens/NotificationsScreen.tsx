@@ -14,6 +14,7 @@ import { Spacing } from '../../../theme/spacing';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import NotificationItem from '../Components/NotificationItem';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 import RequestDetailBottomSheet from '../../Requests/Components/RequestDetailBottomSheet';
 import { useGetNotificationsMutation, useMarkAllAsReadMutation, useMarkAsReadMutation } from '../../../network/notification/notification.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
@@ -131,71 +132,73 @@ const NotificationsScreen = () => {
         onBackPress={() => navigation.goBack()}
       />
 
-      <SectionList
-        sections={groupedNotifications}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <NotificationItem
-            item={item}
-            onPress={() => handleMarkAsRead(item.id)}
-            onViewRequest={() => {
-              setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
-            }}
-            onViewCard={() => {
-              if (item.subjectId) {
-                // @ts-ignore
-                navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: item.subjectId },
-                });
-              }
-            }}
-          />
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.sectionHeader}>
-            <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
-              {t(`notifications.sections.${title}`)}
-            </CustomText>
-            {title === 'Today' && (
-              <TouchableOpacity onPress={handleMarkAllAsRead}>
-                <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
-                  {t('notifications.markAllAsRead')}
-                </CustomText>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isLoading ? (
-            <ActivityIndicator style={{ margin: Spacing.m }} />
-          ) : hasError && notifications.length > 0 ? (
-            <TouchableOpacity onPress={() => fetchNotifications(page + 1)} style={styles.retryFooter}>
-              <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary }}>
-                {t('notifications.errors.loadMoreFailed')}
+      {hasError ? (
+        <CustomErrorView
+          onRetry={() => fetchNotifications(0)}
+          loading={isLoading}
+        />
+      ) : (
+        <SectionList
+          sections={groupedNotifications}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <NotificationItem
+              item={item}
+              onPress={() => handleMarkAsRead(item.id)}
+              onViewRequest={() => {
+                setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
+              }}
+              onViewCard={() => {
+                if (item.subjectId) {
+                  // @ts-ignore
+                  navigation.navigate('BottomTabs', {
+                    screen: 'My Cards',
+                    params: { cardId: item.subjectId },
+                  });
+                }
+              }}
+            />
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <View style={styles.sectionHeader}>
+              <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
+                {t(`notifications.sections.${title}`)}
               </CustomText>
-            </TouchableOpacity>
-          ) : null
-        }
-        ListEmptyComponent={
-          !isLoading && hasError && notifications.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <CustomText type={TextType.Label} style={{ marginBottom: Spacing.m }}>
-                {t('notifications.errors.fetchFailed')}
-              </CustomText>
-              <TouchableOpacity onPress={() => fetchNotifications(0)} style={[styles.retryButton, { borderColor: colors.outline }]}>
-                <CustomText type={TextType.Button} style={{ color: colors.primary }}>
-                  {t('notifications.errors.retry')}
-                </CustomText>
-              </TouchableOpacity>
+              {title === 'Today' && (
+                <TouchableOpacity onPress={handleMarkAllAsRead}>
+                  <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
+                    {t('notifications.markAllAsRead')}
+                  </CustomText>
+                </TouchableOpacity>
+              )}
             </View>
-          ) : null
-        }
-        stickySectionHeadersEnabled={false}
-      />
+          )}
+          contentContainerStyle={styles.listContent}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoading ? (
+              <ActivityIndicator style={{ margin: Spacing.m }} />
+            ) : hasError && notifications.length > 0 ? (
+              <TouchableOpacity onPress={() => fetchNotifications(page + 1)} style={styles.retryFooter}>
+                <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary }}>
+                  {t('notifications.errors.loadMoreFailed')}
+                </CustomText>
+              </TouchableOpacity>
+            ) : null
+          }
+          ListEmptyComponent={
+            !isLoading && !hasError && notifications.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <CustomText type={TextType.Label}>
+                  {t('notifications.empty')}
+                </CustomText>
+              </View>
+            ) : null
+          }
+          stickySectionHeadersEnabled={false}
+        />
+      )}
 
       <RequestDetailBottomSheet
         visible={!!selectedRequest}

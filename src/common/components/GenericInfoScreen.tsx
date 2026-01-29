@@ -37,7 +37,7 @@ export default function GenericInfoScreen() {
         </View>
         <View style={styles.textContainer}>
           <CustomText
-            type={TextType.ScreenHeadlineLarge}
+            type={TextType.ScreenHeadlineMedium}
             style={[styles.title, { color: colors.onBackground }, titleStyle]}
           >
             {t(title)}

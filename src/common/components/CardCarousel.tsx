@@ -38,15 +38,23 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef<any>(null);
+  const isDragging = useRef(false);
 
   console.log('NI SDK result:', result);
   console.log('NI SDK error:', error);
 
   useEffect(() => {
     if (selectedIndex !== undefined && selectedIndex >= 0 && selectedIndex < data.length) {
-      flatListRef.current?.scrollToIndex({
-        index: selectedIndex,
-        animated: true,
+      // Use requestAnimationFrame to ensure FlatList has measured or is ready
+      requestAnimationFrame(() => {
+        try {
+          flatListRef.current?.scrollToIndex({
+            index: selectedIndex,
+            animated: true,
+          });
+        } catch (e) {
+          // Silent catch for potential ref errors during unmount or rapid updates
+        }
       });
     }
   }, [selectedIndex, data.length]);
@@ -97,6 +105,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.cardIdentifier}
+        initialScrollIndex={selectedIndex && selectedIndex > 0 ? selectedIndex : undefined}
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={SNAP_INTERVAL}
@@ -104,19 +113,21 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         contentContainerStyle={{
           paddingHorizontal: SIDE_SPACER,
         }}
+        onMomentumScrollBegin={() => { isDragging.current = true; }}
+        onMomentumScrollEnd={(event: any) => {
+          isDragging.current = false;
+          const offsetX = event.nativeEvent.contentOffset.x;
+          const index = Math.round(offsetX / SNAP_INTERVAL);
+          if (onIndexChange) {
+            onIndexChange(index);
+          }
+        }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          {
-            useNativeDriver: false,
-            listener: (event: any) => {
-              const offsetX = event.nativeEvent.contentOffset.x;
-              const index = Math.round(offsetX / SNAP_INTERVAL);
-              if (onIndexChange) {
-                onIndexChange(index);
-              }
-            },
-          },
+          { useNativeDriver: false }
         )}
+        onScrollBeginDrag={() => { isDragging.current = true; }}
+        onScrollEndDrag={() => { isDragging.current = false; }}
         scrollEventThrottle={16}
         removeClippedSubviews={false}
         getItemLayout={(_, index) => ({

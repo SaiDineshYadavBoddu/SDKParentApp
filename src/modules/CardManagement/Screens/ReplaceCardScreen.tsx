@@ -10,8 +10,9 @@ import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
-import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import ReplaceCardScreenSVG from '../../../assets/svgs/ReplaceCardScreenSVG';
 import { REPLACE_CARD_REASONS } from '../../../constants/appConstants';
 import CustomWarning from '../../../common/components/CustomWarning';
@@ -25,13 +26,12 @@ import CustomHeader from '../../../common/components/CustomHeader';
 const ReplaceCardScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { card } = route.params || {};
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
   const [tempReason, setTempReason] = useState<string | undefined>("");
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const { data: tariffData, isLoading: isTariffLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
     skip: !card?.cardIdentifier,
@@ -53,29 +53,39 @@ const ReplaceCardScreen = () => {
     if (!card?.cardIdentifier || !selectedReason) return;
     try {
       await replaceCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
-      setIsSuccess(true);
-    } catch (error) {
+      navigation.navigate('GenericInfoScreen', {
+        icon: <SuccessSVG />,
+        title: 'replaceCard.successTitle',
+        description: 'replaceCard.successSubtitle',
+        primaryButton: {
+          title: 'common.done',
+          onPress: () => navigation.navigate('BottomTabs', {
+            screen: 'My Cards',
+            params: { cardId: card.cardIdentifier },
+          }),
+        },
+      });
+    } catch (error: any) {
       console.error('Failed to replace card', error);
+      navigation.navigate('GenericInfoScreen', {
+        icon: <FailureSVG />,
+        title: error?.data?.message || 'replaceCard.errorTitle',
+        description: 'common.tryAgain',
+        primaryButton: {
+          title: 'common.tryAgain',
+          onPress: () => navigation.goBack(),
+        },
+      });
     }
   };
 
-  if (isSuccess) {
-    return (
-      <CustomResultScreen
-        title={t('replaceCard.successTitle')}
-        subtitle={t('replaceCard.successSubtitle')}
-        iconName="check"
-        buttonTitle={t('common.done')}
-        onButtonPress={() => navigation.goBack()}
-      />
-    );
-  }
+
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader
-          title={''}
-          onBackPress={() => navigation.goBack()}
+        title={''}
+        onBackPress={() => navigation.goBack()}
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>

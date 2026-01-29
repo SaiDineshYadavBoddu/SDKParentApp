@@ -32,6 +32,7 @@ import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import CustomChip from '../../../common/components/CustomChip';
 import { useSelector } from 'react-redux';
 import CustomHeader from '../../../common/components/CustomHeader';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 
 const TransactionsScreen = () => {
@@ -66,7 +67,7 @@ const TransactionsScreen = () => {
     [selectedTimeRange, customDateRange]
   );
 
-  const { data: txnData, isLoading: isTxnLoading } = useGetTransactionsQuery({
+  const { data: txnData, isLoading: isTxnLoading, isError, refetch, isFetching } = useGetTransactionsQuery({
     cardId: selectedCardId,
     pageSize: 20,
     pageNumber: 0,
@@ -118,79 +119,85 @@ const TransactionsScreen = () => {
         }
       />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Card Selector */}
-        <TouchableOpacity
-          style={[styles.cardSelector, { borderColor: colors.outline }]}
-          onPress={() => setCardSheetVisible(true)}
-        >
-          <View style={styles.cardSelectorLeft}>
-            <CustomImage
-              source={require('../../../assets/images/SmallCard.png')}
-              style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
-              resizeMode="contain"
-            />
-            <CustomText type={TextType.CardTitle}>{selectedCard?.maskedPan}</CustomText>
-          </View>
-          <ChevronSVG width={ms(20)} height={ms(20)} color={colors.primary} />
-        </TouchableOpacity>
+        {isError && !isFetching ? (
+          <CustomErrorView onRetry={refetch} loading={isFetching} />
+        ) : (
+          <>
+            {/* Card Selector */}
+            <TouchableOpacity
+              style={[styles.cardSelector, { borderColor: colors.outline }]}
+              onPress={() => setCardSheetVisible(true)}
+            >
+              <View style={styles.cardSelectorLeft}>
+                <CustomImage
+                  source={require('../../../assets/images/SmallCard.png')}
+                  style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
+                  resizeMode="contain"
+                />
+                <CustomText type={TextType.CardTitle}>{selectedCard?.maskedPan}</CustomText>
+              </View>
+              <ChevronSVG width={ms(20)} height={ms(20)} color={colors.primary} />
+            </TouchableOpacity>
 
-        {/* Search and Filters */}
-        <View style={styles.searchRow}>
-          <View style={[styles.searchBar, { borderColor: colors.outline }]}>
-            <SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} style={styles.searchIcon} />
-            <TextInput
-              placeholder={t('transactions.searchPlaceholder')}
-              placeholderTextColor={colors.textColorDisabled}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={[styles.searchInput, { color: colors.onSurface }]}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.downloadButton}
-            onPress={() => {
-              navigation.navigate('Statement');
-            }}
-          >
-            <StatementDownloadSVG width={ms(48)} height={ms(48)} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Time chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.timeRangeScroll}
-          contentContainerStyle={styles.timeRangeContent}
-        >
-          {TIME_RANGES.map((range) => (
-            <CustomChip
-              key={range}
-              label={t(`transactions.timeRanges.${range}`)}
-              selected={selectedTimeRange === range}
-              onPress={() => {
-                if (range === 'custom') {
-                  setDatePickerVisible(true);
-                } else {
-                  setSelectedTimeRange(range);
-                }
-              }}
-            />
-          ))}
-        </ScrollView>
-
-        {/* Transaction List */}
-        <FlatList
-          data={filteredTransactions}
-          renderItem={renderTransactionItem}
-          keyExtractor={(item) => item.transactionRefId}
-          scrollEnabled={false}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
+            {/* Search and Filters */}
+            <View style={styles.searchRow}>
+              <View style={[styles.searchBar, { borderColor: colors.outline }]}>
+                <SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} style={styles.searchIcon} />
+                <TextInput
+                  placeholder={t('transactions.searchPlaceholder')}
+                  placeholderTextColor={colors.textColorDisabled}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  style={[styles.searchInput, { color: colors.onSurface }]}
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.downloadButton}
+                onPress={() => {
+                  navigation.navigate('Statement');
+                }}
+              >
+                <StatementDownloadSVG width={ms(48)} height={ms(48)} />
+              </TouchableOpacity>
             </View>
-          }
-        />
+
+            {/* Time chips */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.timeRangeScroll}
+              contentContainerStyle={styles.timeRangeContent}
+            >
+              {TIME_RANGES.map((range) => (
+                <CustomChip
+                  key={range}
+                  label={t(`transactions.timeRanges.${range}`)}
+                  selected={selectedTimeRange === range}
+                  onPress={() => {
+                    if (range === 'custom') {
+                      setDatePickerVisible(true);
+                    } else {
+                      setSelectedTimeRange(range);
+                    }
+                  }}
+                />
+              ))}
+            </ScrollView>
+
+            {/* Transaction List */}
+            <FlatList
+              data={filteredTransactions}
+              renderItem={renderTransactionItem}
+              keyExtractor={(item) => item.transactionRefId}
+              scrollEnabled={false}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
+                </View>
+              }
+            />
+          </>
+        )}
       </ScrollView>
 
       {/* Bottom Sheets */}

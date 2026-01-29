@@ -9,9 +9,9 @@ import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import SectionContainer, { SectionItem } from '../../../common/components/SectionContainer';
 import CheckmarkSVG from '../../../assets/svgs/CheckmarkSVG';
-import FailureSVG from '../../../assets/svgs/FailureSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 const CardUsageScreen = () => {
     const { t } = useTranslation();
@@ -23,27 +23,6 @@ const CardUsageScreen = () => {
     const { data: restrictionsData, isLoading, isError, refetch, isFetching } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
         skip: !card?.cardIdentifier,
     });
-
-    React.useEffect(() => {
-        if (isError) {
-            navigation.navigate('GenericInfoScreen', {
-                icon: <FailureSVG />,
-                title: 'serverError.title',
-                description: 'serverError.description',
-                primaryButton: {
-                    title: 'serverError.tryAgain',
-                    onPress: async () => {
-                        try {
-                            await refetch().unwrap();
-                            navigation.goBack();
-                        } catch (err) {
-                            console.error('Failed to retry restrictions fetch:', err);
-                        }
-                    },
-                },
-            });
-        }
-    }, [isError, navigation, refetch]);
 
     const isAllowed = (type: string) => {
         if (!restrictionsData?.restrictions) return false;
@@ -87,13 +66,17 @@ const CardUsageScreen = () => {
                 title={t('cardUsage.title')}
                 onBackPress={() => navigation.goBack()}
             />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <SectionContainer
-                    items={usageItems}
-                    loading={isLoading || isFetching}
-                    emptyMessage={t('common.noDataAvailable')}
-                />
-            </ScrollView>
+            {isError && !isFetching ? (
+                <CustomErrorView onRetry={refetch} loading={isFetching} />
+            ) : (
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <SectionContainer
+                        items={usageItems}
+                        loading={isLoading || isFetching}
+                        emptyMessage={t('common.noDataAvailable')}
+                    />
+                </ScrollView>
+            )}
             <CustomLoader loading={isLoading || isFetching} />
         </View>
     );

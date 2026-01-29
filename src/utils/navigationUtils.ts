@@ -3,6 +3,7 @@ import { Linking } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
+import { Logger } from './logger';
 import { navigate, getNavigationRef } from './navigationRefUtils';
 
 /**
@@ -40,12 +41,16 @@ export const navigateToServerErrorScreen = (onRetry?: () => void) => {
       description: 'serverError.description',
       primaryButton: {
         title: 'serverError.tryAgain',
-        onPress: () => {
-          if (onRetry) {
-            onRetry();
-          }
-          if (navigationRef?.canGoBack()) {
-            navigationRef.goBack();
+        onPress: async () => {
+          try {
+            if (onRetry) {
+              await onRetry();
+            }
+            if (navigationRef?.canGoBack()) {
+              navigationRef.goBack();
+            }
+          } catch (error) {
+            Logger.error('Global retry failed:', error);
           }
         },
       },

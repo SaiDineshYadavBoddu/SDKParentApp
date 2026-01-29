@@ -97,8 +97,8 @@ const SetCardPin = () => {
           if (error) {
             navigation.navigate('GenericInfoScreen', {
               icon: <FailureSVG />,
-              title: error.message || 'otp.sendErrorTitle',
-              description: 'otp.sendErrorSubtitle',
+              title: error.message || 'setPin.failureMessage',
+              description: 'common.tryAgain',
               primaryButton: {
                 title: 'common.tryAgain',
                 onPress: () => navigation.goBack(),

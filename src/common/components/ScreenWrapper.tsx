@@ -2,12 +2,16 @@ import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle, Platform } from 'react-native';
 import { useSafeAreaInsets, Edge } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeProvider';
+import CustomErrorView from './CustomErrorView';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   edges?: Edge[];
   backgroundColor?: string;
+  error?: boolean;
+  onRetry?: () => void;
+  isLoading?: boolean;
 }
 
 const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
@@ -15,6 +19,9 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
   style,
   edges = ['top', 'bottom', 'left', 'right'],
   backgroundColor,
+  error,
+  onRetry,
+  isLoading,
 }) => {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -28,7 +35,15 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
     paddingRight: edges.includes('right') ? insets.right : 0,
   };
 
-  return <View style={[containerStyle, style]}>{children}</View>;
+  return (
+    <View style={[containerStyle, style]}>
+      {error && onRetry ? (
+        <CustomErrorView onRetry={onRetry} loading={isLoading} />
+      ) : (
+        children
+      )}
+    </View>
+  );
 };
 
 export default ScreenWrapper;

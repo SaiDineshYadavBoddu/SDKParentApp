@@ -10,8 +10,9 @@ import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
-import CustomResultScreen from '../../../common/components/CustomResultScreen';
 import FreezeCardSVG from '../../../assets/svgs/FreezeCardSVG';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import { FREEZE_CARD_REASONS } from '../../../constants/appConstants';
 import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
@@ -22,13 +23,12 @@ import CustomHeader from '../../../common/components/CustomHeader';
 const FreezeCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const { card } = route.params || {};
     const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
     const [selectedReason, setSelectedReason] = useState<string | undefined>(undefined);
     const [tempReason, setTempReason] = useState<string | undefined>(undefined);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const [blockCard, { isLoading }] = useBlockCardMutation();
 
@@ -44,27 +44,37 @@ const FreezeCardScreen = () => {
         if (!card?.cardIdentifier || !selectedReason) return;
         try {
             await blockCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
-            setIsSuccess(true);
-        } catch (error) {
+            navigation.navigate('GenericInfoScreen', {
+                icon: <SuccessSVG />,
+                title: 'freezeCard.successTitle',
+                description: isPermanent ? 'freezeCard.successSubtitlePerm' : 'freezeCard.successSubtitleTemp',
+                primaryButton: {
+                    title: 'common.done',
+                    onPress: () => navigation.navigate('BottomTabs', {
+                        screen: 'My Cards',
+                        params: { cardId: card.cardIdentifier },
+                    }),
+                },
+            });
+        } catch (error: any) {
             console.error('Failed to block card', error);
+            navigation.navigate('GenericInfoScreen', {
+                icon: <FailureSVG />,
+                title: error?.data?.message || 'freezeCard.errorTitle',
+                description: 'common.tryAgain',
+                primaryButton: {
+                    title: 'common.tryAgain',
+                    onPress: () => navigation.goBack(),
+                },
+            });
         }
     };
 
-    if (isSuccess) {
-        return (
-            <CustomResultScreen
-                title={t('freezeCard.successTitle')}
-                subtitle={isPermanent ? t('freezeCard.successSubtitlePerm') : t('freezeCard.successSubtitleTemp')}
-                iconName="check"
-                buttonTitle={t('common.done')}
-                onButtonPress={() => navigation.goBack()}
-            />
-        );
-    }
+
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            
+
             <CustomHeader
                 title={''}
                 onBackPress={() => navigation.goBack()}

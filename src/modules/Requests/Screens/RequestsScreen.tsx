@@ -15,6 +15,7 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import FilterSVG from '../../../assets/svgs/FilterSVG';
 import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import RequestInfoGroup from '../Components/RequestInfoGroup';
 import {
@@ -156,7 +157,7 @@ const RequestsScreen = () => {
         </View>
       );
     }
-    
+
     return null;
   };
 
@@ -269,27 +270,31 @@ const RequestsScreen = () => {
             {data?.totalElements || 0} {t('requests.count')}
           </CustomText>
 
-          <FlatList
-            data={data?.content || []}
-            renderItem={renderRequestItem}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.1}
-            keyboardDismissMode="on-drag"
-            keyboardShouldPersistTaps="handled"
-            ListFooterComponent={renderFooter}
-            ListEmptyComponent={
-              !isLoading && !isFetching ? (
-                <View style={styles.emptyContainer}>
-                  <CustomText type={TextType.CardText} style={styles.emptyText}>
-                    {t('requests.noRequests')}
-                  </CustomText>
-                </View>
-              ) : null
-            }
-            contentContainerStyle={styles.listContent}
-          />
+          {error && !isFetching ? (
+            <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+          ) : (
+            <FlatList
+              data={data?.content || []}
+              renderItem={renderRequestItem}
+              keyExtractor={(item) => item.id.toString()}
+              showsVerticalScrollIndicator={false}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.1}
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="handled"
+              ListFooterComponent={renderFooter}
+              ListEmptyComponent={
+                !isLoading && !isFetching ? (
+                  <View style={styles.emptyContainer}>
+                    <CustomText type={TextType.CardText} style={styles.emptyText}>
+                      {t('requests.noRequests')}
+                    </CustomText>
+                  </View>
+                ) : null
+              }
+              contentContainerStyle={styles.listContent}
+            />
+          )}
         </View>
       </TouchableWithoutFeedback>
 
@@ -397,8 +402,8 @@ const RequestsScreen = () => {
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
                     inputContainerStyle={[
-                      styles.filterInputContainer, 
-                      { 
+                      styles.filterInputContainer,
+                      {
                         borderColor: colors.outline,
                         backgroundColor: colors.surface // Force surface background even if editable is false
                       }
@@ -428,7 +433,7 @@ const RequestsScreen = () => {
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    STATUS_OPTIONS.find(s => s.name === selectedStatus)?.displayName || 
+                    STATUS_OPTIONS.find(s => s.name === selectedStatus)?.displayName ||
                     (selectedStatus === '' ? t('requests.filters.selectStatus') : selectedStatus)
                   }
                   onPress={() => toggleFilterView('status')}
@@ -444,7 +449,7 @@ const RequestsScreen = () => {
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    requestTypes?.find((t: any) => t.name === selectedRequestType)?.displayName || 
+                    requestTypes?.find((t: any) => t.name === selectedRequestType)?.displayName ||
                     (selectedRequestType === '' ? t('requests.filters.selectType') : selectedRequestType)
                   }
                   onPress={() => toggleFilterView('type')}

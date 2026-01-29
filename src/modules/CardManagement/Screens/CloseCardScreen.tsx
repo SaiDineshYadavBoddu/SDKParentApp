@@ -9,7 +9,8 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomTextInput from '../../../common/components/CustomTextInput';
 import CloseCardSVG from '../../../assets/svgs/CloseCardSVG';
-import CustomResultScreen from '../../../common/components/CustomResultScreen';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
+import FailureSVG from '../../../assets/svgs/FailureSVG';
 import CustomWarning from '../../../common/components/CustomWarning';
 import CustomCardNumberDisplay from '../../../common/components/CustomCardNumberDisplay';
 
@@ -20,11 +21,10 @@ import CustomHeader from '../../../common/components/CustomHeader';
 const CloseCardScreen = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const { card } = route.params || {};
     const [message, setMessage] = useState('');
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const [closeCard, { isLoading }] = useCloseCardMutation();
 
@@ -34,24 +34,34 @@ const CloseCardScreen = () => {
             const body = message ? { comment: message } : {};
             const result = await closeCard({ cardId: card.cardIdentifier, body }).unwrap();
             if (result?.status === 'PENDING_APPROVAL') {
-                setIsSuccess(true);
+                navigation.navigate('GenericInfoScreen', {
+                    icon: <SuccessSVG />,
+                    title: 'closeCard.successTitle',
+                    description: 'closeCard.successSubtitle',
+                    primaryButton: {
+                        title: 'common.done',
+                        onPress: () => navigation.navigate('BottomTabs', {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                        }),
+                    },
+                });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to close card', error);
+            navigation.navigate('GenericInfoScreen', {
+                icon: <FailureSVG />,
+                title: error?.data?.message || 'closeCard.errorTitle',
+                description: 'common.tryAgain',
+                primaryButton: {
+                    title: 'common.tryAgain',
+                    onPress: () => navigation.goBack(),
+                },
+            });
         }
     };
 
-    if (isSuccess) {
-        return (
-            <CustomResultScreen
-                title={t('closeCard.successTitle')}
-                subtitle={t('closeCard.successSubtitle')}
-                iconName="check"
-                buttonTitle={t('common.done')}
-                onButtonPress={() => navigation.goBack()}
-            />
-        );
-    }
+
 
     return (
         <View style={[styles.container, {

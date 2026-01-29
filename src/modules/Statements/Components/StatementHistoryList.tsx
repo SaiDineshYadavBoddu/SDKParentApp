@@ -7,20 +7,21 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomLoader from '../../../common/components/CustomLoader';
 import StatementHistoryItem, { StatementHistoryItemData } from './StatementHistoryItem';
 import { useGetStatementsQuery } from '../../../network/card/card.api';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 interface StatementHistoryListProps {
   cardId: string;
   onDownload: (item: StatementHistoryItemData) => void;
 }
 
-const StatementHistoryList: React.FC<StatementHistoryListProps> = ({ 
+const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
   cardId,
-  onDownload 
+  onDownload
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const { data: statementHistory, isLoading } = useGetStatementsQuery(
+  const { data: statementHistory, isLoading, isError, refetch, isFetching } = useGetStatementsQuery(
     {
       cardId,
       pageSize: 20,
@@ -29,7 +30,10 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
   );
 
   return (
-      <View style={styles.historyContainer}>
+    <View style={styles.historyContainer}>
+      {isError && !isFetching ? (
+        <CustomErrorView onRetry={refetch} loading={isFetching} />
+      ) : (
         <FlatList
           data={statementHistory?.content || []}
           renderItem={({ item }) => (
@@ -46,9 +50,10 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
             </View>
           }
         />
-        <CustomLoader loading={isLoading} />
-      </View>
-      
+      )}
+      <CustomLoader loading={isLoading} />
+    </View>
+
 
   );
 };

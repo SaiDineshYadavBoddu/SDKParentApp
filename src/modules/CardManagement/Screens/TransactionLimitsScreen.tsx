@@ -9,9 +9,9 @@ import SectionContainer from '../../../common/components/SectionContainer';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useGetCardLimitsQuery } from '../../../network/card/card.api';
-import FailureSVG from '../../../assets/svgs/FailureSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 const LimitProgress = ({ label, spent, total, currency }: { label: string, spent: number, total: number, currency: string }) => {
     const { colors } = useTheme();
@@ -56,27 +56,6 @@ const TransactionLimitsScreen = () => {
         skip: !card?.cardIdentifier,
     });
 
-    React.useEffect(() => {
-        if (isError) {
-            navigation.navigate('GenericInfoScreen', {
-                icon: <FailureSVG />,
-                title: 'serverError.title',
-                description: 'serverError.description',
-                primaryButton: {
-                    title: 'serverError.tryAgain',
-                    onPress: async () => {
-                        try {
-                            await refetch().unwrap();
-                            navigation.goBack();
-                        } catch (err) {
-                            console.error('Failed to retry limits fetch:', err);
-                        }
-                    },
-                },
-            });
-        }
-    }, [isError, navigation, refetch]);
-
     const limitItems = React.useMemo(() => {
         if (!limitsData?.limits) return [];
         return limitsData.limits.map((limit: any) => {
@@ -112,13 +91,17 @@ const TransactionLimitsScreen = () => {
                 title={t('transactionLimits.title')}
                 onBackPress={() => navigation.goBack()}
             />
-            <SectionContainer
-                title={t('transactionLimits.title')}
-                items={limitItems}
-                ItemSeparatorComponent={() => <View style={styles.divider} />}
-                loading={isLoading || isFetching}
-                emptyMessage={t('common.noDataAvailable')}
-            />
+            {isError && !isFetching ? (
+                <CustomErrorView onRetry={refetch} loading={isFetching} />
+            ) : (
+                <SectionContainer
+                    title={t('transactionLimits.title')}
+                    items={limitItems}
+                    ItemSeparatorComponent={() => <View style={styles.divider} />}
+                    loading={isLoading || isFetching}
+                    emptyMessage={t('common.noDataAvailable')}
+                />
+            )}
             <CustomLoader loading={isLoading || isFetching} />
         </View>
     );
