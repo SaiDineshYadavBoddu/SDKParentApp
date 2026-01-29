@@ -33,6 +33,7 @@ import CustomChip from '../../../common/components/CustomChip';
 import { useSelector } from 'react-redux';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 
 const TransactionsScreen = () => {
@@ -67,7 +68,7 @@ const TransactionsScreen = () => {
     [selectedTimeRange, customDateRange]
   );
 
-  const { data: txnData, isLoading: isTxnLoading, isError, refetch, isFetching } = useGetTransactionsQuery({
+  const { data: txnData, isLoading: isTxnLoading, isError, refetch, isFetching, error } = useGetTransactionsQuery({
     cardId: selectedCardId,
     pageSize: 20,
     pageNumber: 0,
@@ -75,6 +76,22 @@ const TransactionsScreen = () => {
   }, {
     skip: !selectedCardId,
   });
+
+  const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+
+
+  if (isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={t('transactions.title')}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   const transactions = useMemo(() => {
     return txnData?.content || [];

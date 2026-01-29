@@ -12,6 +12,7 @@ import { useGetCardLimitsQuery } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 const LimitProgress = ({ label, spent, total, currency }: { label: string, spent: number, total: number, currency: string }) => {
     const { colors } = useTheme();
@@ -52,9 +53,24 @@ const TransactionLimitsScreen = () => {
     const navigation = useNavigation<any>();
     const { card } = route.params || {};
 
-    const { data: limitsData, isLoading, isError, refetch, isFetching } = useGetCardLimitsQuery(card?.cardIdentifier, {
+    const { data: limitsData, isLoading, isError, refetch, isFetching, error } = useGetCardLimitsQuery(card?.cardIdentifier, {
         skip: !card?.cardIdentifier,
     });
+
+    const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+    if (isTimeoutError) {
+        return (
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <CustomHeader
+                    title={t('transactionLimits.title')}
+                    onBackPress={() => navigation.goBack()}
+                />
+                <RequestTimeoutScreen onRetry={refetch} />
+                <CustomLoader loading={isFetching} />
+            </View>
+        );
+    }
 
     const limitItems = React.useMemo(() => {
         if (!limitsData?.limits) return [];

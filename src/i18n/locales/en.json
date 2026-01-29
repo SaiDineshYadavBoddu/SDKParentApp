@@ -442,6 +442,10 @@
       "primaryButton": "Try Again"
     }
   },
+  "timeoutError": {
+    "title": "Request Timed Out",
+    "description": "The request took too long to complete. Please try again."
+  },
   "serverError": {
     "title": "Server Error",
     "description": "We are currently experiencing server issues. Please try again.",

@@ -15,6 +15,8 @@ import CustomHeader from '../../../common/components/CustomHeader';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import NotificationItem from '../Components/NotificationItem';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import CustomLoader from '../../../common/components/CustomLoader';
 import RequestDetailBottomSheet from '../../Requests/Components/RequestDetailBottomSheet';
 import { useGetNotificationsMutation, useMarkAllAsReadMutation, useMarkAsReadMutation } from '../../../network/notification/notification.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
@@ -29,6 +31,7 @@ const NotificationsScreen = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [isTimeoutError, setIsTimeoutError] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
 
   const [getNotifications, { isLoading }] = useGetNotificationsMutation();
@@ -44,6 +47,7 @@ const NotificationsScreen = () => {
 
     try {
       setHasError(false);
+      setIsTimeoutError(false);
       const response = await getNotifications({
         unreadOnly: false,
         pageSize: 10,
@@ -58,9 +62,13 @@ const NotificationsScreen = () => {
 
       setHasMore(!response.last);
       setPage(pageNumber);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch notifications', error);
-      setHasError(true);
+      if (error?.status === 'TIMEOUT_ERROR') {
+        setIsTimeoutError(true);
+      } else {
+        setHasError(true);
+      }
     }
   };
 
@@ -132,7 +140,9 @@ const NotificationsScreen = () => {
         onBackPress={() => navigation.goBack()}
       />
 
-      {hasError ? (
+      {isTimeoutError ? (
+        <RequestTimeoutScreen onRetry={() => fetchNotifications(0)} />
+      ) : hasError ? (
         <CustomErrorView
           onRetry={() => fetchNotifications(0)}
           loading={isLoading}
@@ -205,6 +215,7 @@ const NotificationsScreen = () => {
         onClose={() => setSelectedRequest(null)}
         request={selectedRequest}
       />
+      <CustomLoader loading={isLoading} />
     </View>
   );
 };

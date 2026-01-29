@@ -22,6 +22,7 @@ import CustomCardNumberDisplay from '../../../common/components/CustomCardNumber
 import { useGetCardTariffsQuery, useReplaceCardMutation } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 const ReplaceCardScreen = () => {
   const { t } = useTranslation();
@@ -33,9 +34,24 @@ const ReplaceCardScreen = () => {
   const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
   const [tempReason, setTempReason] = useState<string | undefined>("");
 
-  const { data: tariffData, isLoading: isTariffLoading } = useGetCardTariffsQuery(card?.cardIdentifier, {
+  const { data: tariffData, isLoading: isTariffLoading, error, refetch, isFetching } = useGetCardTariffsQuery(card?.cardIdentifier, {
     skip: !card?.cardIdentifier,
   });
+
+  const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+  if (isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={''}
+          onBackPress={() => navigation.goBack()}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   const [replaceCard, { isLoading: isReplaceLoading }] = useReplaceCardMutation();
 

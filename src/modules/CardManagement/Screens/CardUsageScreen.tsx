@@ -12,6 +12,7 @@ import CheckmarkSVG from '../../../assets/svgs/CheckmarkSVG';
 import CustomLoader from '../../../common/components/CustomLoader';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 const CardUsageScreen = () => {
     const { t } = useTranslation();
@@ -20,9 +21,24 @@ const CardUsageScreen = () => {
     const navigation = useNavigation<any>();
     const { card } = route.params || {};
 
-    const { data: restrictionsData, isLoading, isError, refetch, isFetching } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
+    const { data: restrictionsData, isLoading, isError, refetch, isFetching, error } = useGetCardRestrictionsQuery(card?.cardIdentifier, {
         skip: !card?.cardIdentifier,
     });
+
+    const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+    if (isTimeoutError) {
+        return (
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <CustomHeader
+                    title={t('cardUsage.title')}
+                    onBackPress={() => navigation.goBack()}
+                />
+                <RequestTimeoutScreen onRetry={refetch} />
+                <CustomLoader loading={isFetching} />
+            </View>
+        );
+    }
 
     const isAllowed = (type: string) => {
         if (!restrictionsData?.restrictions) return false;

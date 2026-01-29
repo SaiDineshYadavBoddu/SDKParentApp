@@ -27,6 +27,7 @@ import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation, useA
 import { useSecondaryAuth } from "../../../hooks/useSecondaryAuth";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
+import RequestTimeoutScreen from "../../../common/components/RequestTimeoutScreen";
 import { useNavigation } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
@@ -66,7 +67,7 @@ export default function CardListScreen() {
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
 
-  const { data, isLoading, refetch, isError, isFetching } = useGetCardsQuery(CARD_QUERY_PARAMS, {
+  const { data, isLoading, refetch, isError, isFetching, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -188,6 +189,22 @@ export default function CardListScreen() {
       externalLoading: isActivating,
     });
   };
+
+  const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+
+
+  if (isTimeoutError) {
+    return (
+      <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
+        <CustomHeader
+          title={t('requests.title')}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>

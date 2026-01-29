@@ -11,6 +11,7 @@ import { expireSession } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
 import { generateTraceparent } from '../utils/tracingUtils';
 
+
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -29,6 +30,7 @@ const dynamicBaseQuery: BaseQueryFn<
       }
       return headers;
     },
+    timeout: 10000,
   });
 
   const url = typeof args === 'string' ? args : args.url;
@@ -51,6 +53,8 @@ const baseQueryWithReauth: BaseQueryFn<
 
   if (result.error && result.error.status === 401) {
     await expireSession();
+  } else if (result.error && result.error.status === 'TIMEOUT_ERROR') {
+    Logger.error(`API Timeout: [${method}] ${url}`, result.error);
   } else if (result.error) {
     // We no longer navigate globally. Errors must be handled by screens.
     Logger.error(`API Error: [${method}] ${url}`, result.error);

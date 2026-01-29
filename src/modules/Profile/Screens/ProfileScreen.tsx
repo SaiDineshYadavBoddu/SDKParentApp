@@ -24,13 +24,30 @@ import { useAuth } from '../../../context/AuthContext';
 import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
 import CustomLoader from '../../../common/components/CustomLoader';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const { signOut, changePassword, changeCompany } = useAuth();
   const { t } = useTranslation();
-  const { data: userDetails, isLoading } = useGetUserDetailsQuery();
+  const { data: userDetails, isLoading, error, refetch, isFetching } = useGetUserDetailsQuery();
+
+  const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+
+
+  if (isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.screenBackground }]}>
+        <CustomHeader
+          title={t('profile.headerTitle')}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   console.log(userDetails);
 

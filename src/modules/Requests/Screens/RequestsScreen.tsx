@@ -29,6 +29,7 @@ import { TimelineEvent } from '../Components/RequestTimeline';
 import { useTranslation } from 'react-i18next';
 import { useGetRequestsQuery, useGetRequestTypesQuery } from '../../../network/requests/request.api';
 import CustomLoader from '../../../common/components/CustomLoader';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 import { RequestAction, RequestItem } from '../../../network/requests/request.types';
 import { useNavigation } from '@react-navigation/native';
@@ -121,7 +122,7 @@ const RequestsScreen = () => {
     };
   }, [searchQuery]);
 
-  const { data, isLoading, isFetching, error } = useGetRequestsQuery({
+  const { data, isLoading, isFetching, error, refetch } = useGetRequestsQuery({
     status: appliedFilters.status || undefined,
     actionType: appliedFilters.type || undefined,
     startDate: appliedFilters.startDate || undefined,
@@ -132,6 +133,22 @@ const RequestsScreen = () => {
     sortDirection: 'DESC',
     search: debouncedSearchQuery || undefined,
   })
+
+  const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
+
+
+
+  if (isTimeoutError) {
+    return (
+      <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
+        <CustomHeader
+          title={t('requests.title')}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   useEffect(() => {
     if (isFilterSheetVisible) {
