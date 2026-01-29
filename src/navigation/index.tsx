@@ -15,10 +15,11 @@ import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/n
 import ScreenWrapper from '../common/components/ScreenWrapper';
 import { useTheme } from '../theme/ThemeProvider';
 import CustomWarning from '../common/components/CustomWarning';
+import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 import { Spacing } from '../theme/spacing';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired } = useAuth();
+  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
@@ -50,11 +51,21 @@ const NavigationContent = () => {
     }
   }, [sessionExpired, setSessionExpired]);
 
+  const renderMainContent = () => {
+    if (isAuthenticated) {
+      if (!isCardholder) {
+        return <AccessRestrictedScreen />;
+      }
+      return <MainStack />;
+    }
+    return <AuthStack />;
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <NavigationContainer ref={navigationRef}>
         <ScreenWrapper edges={['bottom']}>
-          {isAuthenticated ? <MainStack /> : <AuthStack />}
+          {renderMainContent()}
         </ScreenWrapper>
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (

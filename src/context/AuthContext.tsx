@@ -12,6 +12,7 @@ import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
 import { useDispatch } from 'react-redux';
 import { backendApi } from '../network/api.config';
+import { hasRole } from '../utils/jwtUtils';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -28,12 +29,15 @@ interface AuthContextData {
   refreshAccessToken: () => Promise<void>;
   sessionExpired: boolean;
   setSessionExpired: (value: boolean) => void;
+  isCardholder: boolean;
 }
 
 let globalAccessToken: string | null = null;
 let globalIsAuthenticated: boolean = false;
+let globalIsCardholder: boolean = false;
 export const getAccessToken = () => globalAccessToken;
 export const getIsAuthenticated = () => globalIsAuthenticated;
+export const getIsCardholder = () => globalIsCardholder;
 
 const AuthContext = createContext<AuthContextData>({
   isAuthenticated: false,
@@ -50,6 +54,7 @@ const AuthContext = createContext<AuthContextData>({
   refreshAccessToken: async () => { },
   sessionExpired: false,
   setSessionExpired: () => { },
+  isCardholder: false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -60,6 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [expirationDate, setExpirationDate] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [isCardholder, setIsCardholder] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -102,6 +108,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIdToken(result.idToken);
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
+
+      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
+      setIsCardholder(hasCardholderRole);
+      globalIsCardholder = hasCardholderRole;
+
       setIsAuthenticated(true);
       globalIsAuthenticated = true;
       setSessionExpired(false);
@@ -130,6 +141,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setExpirationDate(null);
       setIsAuthenticated(false);
       globalIsAuthenticated = false;
+      setIsCardholder(false);
+      globalIsCardholder = false;
       dispatch(backendApi.util.resetApiState());
     }
   };
@@ -225,6 +238,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         refreshAccessToken,
         sessionExpired,
         setSessionExpired,
+        isCardholder,
       }}
     >
       {children}
