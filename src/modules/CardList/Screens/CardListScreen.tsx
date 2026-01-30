@@ -244,15 +244,14 @@ export default function CardListScreen() {
           <>
             <View style={styles.balanceContainer}>
               <View
-                style={{ flexDirection: 'row', alignItems: 'baseline', gap: ms(4) }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}
               >
                 <CurrencySVG
-                  width={ms(24)}
-                  height={ms(24)}
-                  style={{ transform: [{ translateY: ms(4) }] }}
+                  width={ms(18)}
+                  height={ms(22)}
                 />
                 {(() => {
-                  const { integer, decimal } = formatAmount(activeCard?.balance?.toString() || '0.00');
+                  const { integer, decimal } = formatAmount(activeCard?.balance ?? 0);
                   return (
                     <Text>
                       <CustomText type={TextType.ScreenHeadlineLarge}>
@@ -280,9 +279,17 @@ export default function CardListScreen() {
                 <InfoSVG />
               </View>
 
-              <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
-                {activeCard?.cardStatus}
-              </CustomText>
+              <View style={styles.statusIndicator}>
+                <View
+                  style={[
+                    styles.statusDot,
+                    { backgroundColor: activeCard?.cardStatus === 'Active' ? '#2ECC71' : '#707070' }
+                  ]}
+                />
+                <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
+                  {activeCard?.cardStatus}
+                </CustomText>
+              </View>
             </View>
 
             <CardCarousel
@@ -481,19 +488,14 @@ const styles = StyleSheet.create({
   statusIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: ms(6),
-    marginBottom: Spacing.l,
-    marginTop: Spacing.m,
+    marginTop: Spacing.xs,
   },
-
   statusDot: {
     width: ms(8),
     height: ms(8),
     borderRadius: ms(4),
-    backgroundColor: '#707070',
   },
-
   statusText: {
     color: '#707070',
     fontSize: ms(14),

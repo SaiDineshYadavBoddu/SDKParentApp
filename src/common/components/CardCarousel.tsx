@@ -4,7 +4,8 @@ import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../theme/spacing';
 import PaymentCard from './PaymentCard';
 import { toggleInSet } from '../../utils/selectionUtils';
-import { useGetCardDetails, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
+import { useTheme } from '../../theme/ThemeProvider';
+import { useGetCardDetails, type NIErrorResponse } from '@networkinternational/ni-card-management-sdk'
 import { TEST_INPUT } from '../../config/NISDKConfig';
 import { useAuth } from '../../context/AuthContext';
 
@@ -33,6 +34,7 @@ interface CardCarouselProps {
 }
 
 const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon }) => {
+  const { colors } = useTheme();
   const { accessToken } = useAuth();
   const { result, error, onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
@@ -109,7 +111,9 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={SNAP_INTERVAL}
+        snapToAlignment="start"
         decelerationRate="fast"
+        disableIntervalMomentum={true}
         contentContainerStyle={{
           paddingHorizontal: SIDE_SPACER,
         }}
@@ -147,20 +151,20 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
 
           const dotWidth = scrollX.interpolate({
             inputRange,
-            outputRange: [ms(8), ms(40), ms(8)],
+            outputRange: [ms(12), ms(24), ms(12)],
             extrapolate: 'clamp',
           });
 
-          const opacity = scrollX.interpolate({
+          const backgroundColor = scrollX.interpolate({
             inputRange,
-            outputRange: [0.3, 1, 0.3],
+            outputRange: ['#B3D9FF', '#FFFFFF', '#B3D9FF'],
             extrapolate: 'clamp',
           });
 
           return (
             <Animated.View
               key={i.toString()}
-              style={[styles.dot, { width: dotWidth, opacity }]}
+              style={[styles.dot, { width: dotWidth, backgroundColor }]}
             />
           );
         })}

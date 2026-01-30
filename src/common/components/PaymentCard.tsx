@@ -139,7 +139,6 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           >
             <CustomText type={TextType.ImageSmall}>
               {(() => {
-                if (!isDetailsVisible) return '**/**';
                 const date = item.expiryDate || '';
                 const parts = date.split('-');
                 if (parts.length >= 2) {
