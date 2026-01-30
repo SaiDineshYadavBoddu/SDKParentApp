@@ -66,20 +66,21 @@
   },
   "onboarding": {
     "step1": {
-      "title": "Accept Payments",
+      "title": "Accept\nPayments",
       "description": "Tap or link, seamless payments"
     },
     "step2": {
-      "title": "Track Every Transaction",
+      "title": "Track Every\nTransaction",
       "description": "Clear, fast and reliable tracking"
     },
     "step3": {
-      "title": "Instant Settlements",
+      "title": "Instant\nSettlements",
       "description": "Withdraw funds anytime, instantly"
     }
   },
   "login": {
-    "loginButton": "Login"
+    "loginButton": "Sign in",
+    "footerText": "If you're an existing merchant, please contact your Relationship Manager or call 8004448 to access the app."
   },
   "manageCard": {
     "title": "Manage Card",

@@ -64,36 +64,18 @@ const LoginScreen = () => {
     item: (typeof LOGIN_ONBOARDING_DATA)[0];
     index: number;
   }) => {
-    const inputRange = [
-      (index - 1) * width,
-      index * width,
-      (index + 1) * width,
-    ];
-
-    const opacity = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.4, 1, 0.4],
-      extrapolate: 'clamp',
-    });
-
-    const scale = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.8, 1, 0.8],
-      extrapolate: 'clamp',
-    });
-
     return (
-      <Animated.View style={[styles.slide, { opacity, transform: [{ scale }] }]}>
+      <View style={styles.slide}>
         <Image source={item.image} style={styles.image} resizeMode="contain" />
         <View style={styles.textContainer}>
-          <CustomText type={TextType.ScreenHeadlineMedium}>
+          <CustomText type={TextType.ScreenHeadlineLarge} style={styles.title}>
             {t(item.title)}
           </CustomText>
-          <CustomText type={TextType.ScreenDisplayMedium}>
+          <CustomText type={TextType.ScreenDisplayMedium} style={styles.description}>
             {t(item.description)}
           </CustomText>
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -104,6 +86,14 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={require('../../../assets/images/Logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
+
       <View style={styles.sliderContainer}>
         <FlatList
           ref={flatListRef}
@@ -116,6 +106,7 @@ const LoginScreen = () => {
           onScroll={onScroll}
           scrollEventThrottle={16}
         />
+
         <View style={styles.pagination}>
           {LOGIN_ONBOARDING_DATA.map((_, index) => {
             const inputRange = [
@@ -151,8 +142,12 @@ const LoginScreen = () => {
 
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>{t('login.loginButton')}</Text>
+          <CustomText type={TextType.Button}>{t('login.loginButton')}</CustomText>
         </TouchableOpacity>
+
+        <CustomText type={TextType.ScreenDisplaySmall} style={styles.footerText}>
+          {t('login.footerText')}
+        </CustomText>
       </View>
     </View>
   );
@@ -164,80 +159,70 @@ const createStyles = (colors: any) =>
       flex: 1,
       backgroundColor: colors.backgroundVariant,
     },
+    header: {
+      paddingHorizontal: moderateScale(24),
+      paddingTop: moderateScale(60),
+      backgroundColor: colors.backgroundVariant,
+    },
+    logo: {
+      width: moderateScale(120),
+      height: moderateScale(40),
+      alignSelf: 'flex-start',
+    },
     sliderContainer: {
-      flex: 3,
-      justifyContent: 'center',
-      alignItems: 'center',
+      marginTop: moderateScale(10),
     },
     slide: {
       width: width,
-      paddingHorizontal: 20,
-      paddingVertical: height * 0.1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      paddingHorizontal: moderateScale(24),
     },
     image: {
-      width: width * 0.8,
-      height: height * 0.4,
-      marginBottom: 20,
+      width: width * 0.9,
+      height: height * 0.38,
+      alignSelf: 'center',
     },
     textContainer: {
-      alignItems: 'center',
-      gap: moderateScale(10),
+      alignItems: 'flex-start',
+      marginTop: moderateScale(20),
     },
     title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: colors.onBackgroundVariant,
-      textAlign: 'left',
+      fontSize: moderateScale(36),
+      lineHeight: moderateScale(40),
+      fontWeight: '700',
+      marginBottom: moderateScale(4),
+      color: colors.onBackground,
     },
     description: {
-      fontSize: 16,
-      color: colors.onBackgroundVariant,
-      textAlign: 'left',
+      color: colors.secondaryText,
+      fontSize: moderateScale(16),
+      lineHeight: moderateScale(22),
     },
     pagination: {
       flexDirection: 'row',
-      position: 'absolute',
-      bottom: 20,
+      paddingHorizontal: moderateScale(24),
+      marginTop: moderateScale(15),
     },
     dot: {
-      width: 8,
       height: 8,
       borderRadius: 4,
-      marginHorizontal: 4,
-    },
-    activeDot: {
-      backgroundColor: colors.primary,
-      width: 20,
-    },
-    inactiveDot: {
-      backgroundColor: colors.primary,
-      opacity: 0.3,
+      marginRight: 8,
     },
     bottomContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      paddingHorizontal: 20,
+      paddingHorizontal: moderateScale(24),
+      marginTop: moderateScale(30),
     },
     loginButton: {
       backgroundColor: colors.primary,
       paddingVertical: 15,
       borderRadius: 10,
       alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
+      marginBottom: moderateScale(16),
     },
-    loginButtonText: {
-      color: colors.onPrimary,
-      fontSize: 18,
-      fontWeight: 'bold',
+    footerText: {
+      color: colors.secondaryText,
+      textAlign: 'left',
+      lineHeight: moderateScale(16),
+      fontSize: moderateScale(12),
     },
   });
 
