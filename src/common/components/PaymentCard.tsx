@@ -85,13 +85,16 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {
             transform: [{ scale }, { translateX }],
             zIndex,
+            backgroundColor: !disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) ? '#C5C5C5' : undefined,
           },
         ]}
       >
-        <CustomImage
-          source={require('../../assets/images/cardbackground.png')}
-          resizeMode="cover"
-        />
+        {(disableBlur || !shouldBlurCard(item.cardStatus, item.statusCause)) && (
+          <CustomImage
+            source={require('../../assets/images/cardbackground.png')}
+            resizeMode="cover"
+          />
+        )}
 
         <CustomImage
           source={require('../../assets/images/LogoDefault.png')}
@@ -170,9 +173,6 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           resizeMode="contain"
         />
 
-        {!disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) && (
-          <View style={styles.blockOverlay} />
-        )}
       </Animated.View>
     </View>
   );
@@ -211,11 +211,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: Spacing.xl,
     bottom: Spacing.xl,
-  },
-  blockOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    zIndex: 10,
   },
 });
 
