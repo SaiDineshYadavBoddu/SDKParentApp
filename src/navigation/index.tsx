@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { Linking, StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View, BackHandler, Alert } from 'react-native';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,7 +19,7 @@ import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRest
 import { Spacing } from '../theme/spacing';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder } = useAuth();
+  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder, signOut } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
@@ -41,6 +41,29 @@ const NavigationContent = () => {
       goBack();
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (!navigationRef.isReady()) return false;
+
+      if (!navigationRef.canGoBack()) {
+        Alert.alert(
+          'Exit App',
+          'Are you sure you want to close the app?', // Use translation if available, but hardcoded for now as requested
+          [
+            { text: 'Cancel', onPress: () => null, style: 'cancel' },
+            { text: 'OK', onPress: () => signOut() },
+          ]
+        );
+        return true;
+      }
+      return false;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+    return () => subscription.remove();
+  }, [navigationRef]);
 
   useEffect(() => {
     if (sessionExpired) {

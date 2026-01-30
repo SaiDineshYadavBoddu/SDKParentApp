@@ -143,6 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       globalIsAuthenticated = false;
       setIsCardholder(false);
       globalIsCardholder = false;
+      prevTokenRef.current = null; // Reset prev token to avoid triggering resetApiState on next login
       dispatch(backendApi.util.resetApiState());
     }
   };
