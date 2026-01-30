@@ -43,12 +43,14 @@ export default function GenericInfoScreen() {
             {t(title)}
           </CustomText>
 
-          <CustomText
-            type={TextType.ScreenDisplaySmall}
-            style={[styles.description, { color: colors.secondaryText }, descriptionStyle]}
-          >
-            {t(description)}
-          </CustomText>
+          {!!description && t(description) !== '' && (
+            <CustomText
+              type={TextType.ScreenDisplaySmall}
+              style={[styles.description, { color: colors.secondaryText }, descriptionStyle]}
+            >
+              {t(description)}
+            </CustomText>
+          )}
         </View>
       </ScrollView>
 

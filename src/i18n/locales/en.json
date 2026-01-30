@@ -10,16 +10,16 @@
     "continue": "Continue",
     "cardNumber": "Card Number",
     "reset": "Reset",
-    "tryAgain": "Try Again",
+    "tryAgain": "Try again",
     "error": "Error",
     "ok": "Ok",
     "noDataAvailable": "No data available"
   },
   "unblockCard": {
-    "successTitle": "Unblock request sent for approval",
-    "successSubtitle": "Your card unblock request has been submitted successfully.",
+    "successTitle": "Unblock request submitted to your manager for approval",
+    "successSubtitle": "Your card unfreezing is being processed. We’ll notify you once it’s done.",
     "errorTitle": "Unblock request failed",
-    "errorSubtitle": "Please try again later"
+    "errorSubtitle": "Please try again"
   },
   "cardList": {
     "title": "My Cards",
@@ -42,7 +42,7 @@
     "successTitle": "Card activated successfully",
     "successSubtitle": "Your card has been activated successfully.",
     "errorTitle": "Card activation failed",
-    "errorSubtitle": "Please try again later"
+    "errorSubtitle": "Please try again"
   },
   "replaceCard": {
     "title": "Replace Card",
@@ -56,7 +56,7 @@
     "successTitle": "Card replacement request submitted successfully",
     "successSubtitle": "Your card replacement is being processed. We’ll notify you once it’s ready to be shipped.",
     "errorTitle": "Card replacement request failed",
-    "errorSubtitle": "Please try again later",
+    "errorSubtitle": "Please try again",
     "reasons": {
       "Lost": "Card lost",
       "Stolen": "Card is stolen",
@@ -99,10 +99,10 @@
     "subtitle": "Are you sure you want to close this card?",
     "warning": "After request approval the closure process will be initiated. Card actions will be unavailable",
     "reasonPlaceholder": "Optional",
-    "successTitle": "Card closure request submitted successfully",
-    "successSubtitle": "Your card closure request has been submitted successfully.",
+    "successTitle": "Card Closed successfully",
+    "successSubtitle": "",
     "errorTitle": "Card closure request failed",
-    "errorSubtitle": "Please try again later"
+    "errorSubtitle": "Please try again"
   },
   "cardUsage": {
     "title": "Card Usage",
@@ -131,7 +131,7 @@
     "successSubtitleTemp": "Your card has been temporarily blocked. You can unblock it at any time from the app.",
     "successSubtitlePerm": "Your card has been permanently blocked. You will need to request a new card to use it again.",
     "errorTitle": "Card block failed",
-    "errorSubtitle": "Please try again later",
+    "errorSubtitle": "Please try again",
     "reasons": {
       "Temp": "No spend expected/ Staff member out of office",
       "Loss": "Suspected loss of card (misplaced)",
@@ -326,7 +326,7 @@
     "requestSuccessTitle": "Support request #{{id}} submitted successfully",
     "requestSuccessSubtitle": "",
     "requestFailureTitle": "Request Submission Failed",
-    "requestFailureSubtitle": "Please try again later"
+    "requestFailureSubtitle": "Please try again"
   },
   "notifications": {
     "title": "Notifications",
@@ -469,10 +469,10 @@
     "errorMismatch": "PIN don't match",
     "successMessage": "Your PIN has been successfully reset.",
     "failureMessage": "Failed to set PIN.",
-    "successTitle": "PIN set successfully",
-    "successSubtitle": "Your card PIN has been set successfully.",
-    "errorTitle": "PIN set failed",
-    "errorSubtitle": "Please try again later"
+    "successTitle": "Card PIN has been set successfully",
+    "successSubtitle": "",
+    "errorTitle": "We couldn't set your PIN.",
+    "errorSubtitle": "Please try again"
   },
   "resetPin": {
     "title": "Reset PIN",
