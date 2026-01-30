@@ -79,7 +79,7 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
         {EXPORT_FORMATS.map((format) => (
           <TouchableOpacity
             key={format}
-            style={styles.formatItem}
+            style={[styles.formatItem, { borderBottomColor: colors.outline }]}
             onPress={() => onFormatChange(format)}
             activeOpacity={0.7}
           >
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.m,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   formatLeft: {
     flexDirection: 'row',

@@ -163,7 +163,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
 
           const backgroundColor = scrollX.interpolate({
             inputRange,
-            outputRange: ['#B3D9FF', '#FFFFFF', '#B3D9FF'],
+            outputRange: [colors.primaryContainer, colors.onPrimary, colors.primaryContainer],
             extrapolate: 'clamp',
           });
 
@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
     height: ms(8),
     borderRadius: ms(4),
     marginHorizontal: ms(4),
-    backgroundColor: '#00205b',
   },
 });
 

@@ -136,20 +136,20 @@ const ReplaceCardScreen = () => {
         />
 
         <CustomWarning>
-          <CustomText type={TextType.CardText} style={styles.infoText}>
+          <CustomText type={TextType.CardText} style={[styles.infoText, { color: colors.statusUnblocking }]}>
             {t('replaceCard.feePrefix')}
-            <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
+            <CurrencySVG width={ms(18)} height={ms(10)} color={colors.statusUnblocking} />
             {t('replaceCard.feeSuffix', { amount: replacementFee })}
           </CustomText>
         </CustomWarning>
       </ScrollView>
 
-      <View style={styles.bottomButtonContainer}>
+      <View style={[styles.bottomButtonContainer, { borderTopColor: colors.outline }]}>
         <CustomButton
           title={t('common.submit')}
           onPress={handleSubmit}
           disabled={!selectedReason}
-          style={selectedReason ? styles.submitButtonActive : styles.submitButtonDisabled}
+          style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
         />
       </View>
 
@@ -176,9 +176,9 @@ const ReplaceCardScreen = () => {
           ))}
 
           <CustomWarning style={{ marginTop: Spacing.m, marginBottom: ms(24) }}>
-            <CustomText type={TextType.CardText} style={styles.infoText}>
+            <CustomText type={TextType.CardText} style={[styles.infoText, { color: colors.statusUnblocking }]}>
               {t('replaceCard.feePrefix')}
-              <CurrencySVG width={ms(18)} height={ms(10)} color="#856404" />
+              <CurrencySVG width={ms(18)} height={ms(10)} color={colors.statusUnblocking} />
               {t('replaceCard.feeSuffix', { amount: replacementFee })}
             </CustomText>
           </CustomWarning>
@@ -223,19 +223,11 @@ const styles = StyleSheet.create({
   // Removed infoBox, bottomSheetInfoBox, infoIcon as they are replaced by CustomWarning styles
   infoText: {
     flex: 1,
-    color: '#856404',
     lineHeight: ms(18),
   },
   bottomButtonContainer: {
     padding: Spacing.m,
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-  },
-  submitButtonActive: {
-    backgroundColor: '#0169B2',
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#E0E0E0',
   },
   bottomSheetContent: {
     width: '100%',

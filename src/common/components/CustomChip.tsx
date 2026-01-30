@@ -26,7 +26,7 @@ const CustomChip: React.FC<CustomChipProps> = ({
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? colors.primary : '#F5F5F5',
+          backgroundColor: selected ? colors.primary : colors.backgroundVariant,
         },
         style,
       ]}
@@ -35,7 +35,7 @@ const CustomChip: React.FC<CustomChipProps> = ({
       <CustomText
         type={TextType.CardText}
         style={{
-          color: selected ? '#FFF' : '#666',
+          color: selected ? colors.onPrimary : colors.secondaryText,
           fontWeight: selected ? '600' : '400',
         }}
       >

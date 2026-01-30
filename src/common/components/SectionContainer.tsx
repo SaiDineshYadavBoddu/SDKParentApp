@@ -75,7 +75,7 @@ export default function SectionContainer({
   };
 
   return (
-    <View style={[styles.root, style]}>
+    <View style={[styles.root, { backgroundColor: colors.surface }, style]}>
       {title ? (
         <View style={styles.headerRow}>
           <CustomText type={TextType.SectionTitle}>{title}</CustomText>
@@ -106,7 +106,7 @@ export default function SectionContainer({
             ListEmptyComponent ??
             (emptyMessage ? (
               <View style={styles.emptyContainer}>
-                <CustomText type={TextType.CardText} style={styles.emptyText}>
+                <CustomText type={TextType.CardText} style={[styles.emptyText, { color: colors.secondaryText }]}>
                   {emptyMessage}
                 </CustomText>
               </View>
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: ms(12),
     paddingHorizontal: ms(18),
-    backgroundColor: '#fff',
     borderRadius: ms(20),
     elevation: 2,
     shadowColor: '#000',
@@ -160,7 +159,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.m,
   },
   emptyText: {
-    color: '#707070',
     textAlign: 'center',
   },
 });

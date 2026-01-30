@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
   leftIconContainer: {
     paddingRight: Spacing.s,
     borderRightWidth: ms(1),
-    borderRightColor: '#E0E0E0',
   },
   errorText: {
     marginTop: Spacing.xs,

@@ -97,7 +97,7 @@ const StatementScreen = () => {
               styles.segment,
               styles.segmentLeft,
               {
-                backgroundColor: statementType === 'new' ? colors.primary : '#F5F5F5',
+                backgroundColor: statementType === 'new' ? colors.primary : colors.backgroundVariant,
               },
             ]}
             onPress={() => setStatementType('new')}
@@ -107,7 +107,7 @@ const StatementScreen = () => {
               style={[
                 styles.segmentText,
                 {
-                  color: statementType === 'new' ? '#FFF' : '#666',
+                  color: statementType === 'new' ? colors.onPrimary : colors.secondaryText,
                   fontWeight: statementType === 'new' ? '600' : '400',
                 },
               ]}
@@ -120,7 +120,7 @@ const StatementScreen = () => {
               styles.segment,
               styles.segmentRight,
               {
-                backgroundColor: statementType === 'history' ? colors.primary : '#F5F5F5',
+                backgroundColor: statementType === 'history' ? colors.primary : colors.backgroundVariant,
               },
             ]}
             onPress={() => setStatementType('history')}
@@ -130,7 +130,7 @@ const StatementScreen = () => {
               style={[
                 styles.segmentText,
                 {
-                  color: statementType === 'history' ? '#FFF' : '#666',
+                  color: statementType === 'history' ? colors.onPrimary : colors.secondaryText,
                   fontWeight: statementType === 'history' ? '600' : '400',
                 },
               ]}

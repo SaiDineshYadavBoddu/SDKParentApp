@@ -28,7 +28,8 @@ export const formatTransactionDate = (dateString: string) => {
  * Maps API transaction objects to SectionItem objects for display in SectionContainer.
  * @param transactions Array of transaction objects from the API.
  */
-export const mapTransactionsToSectionItems = (transactions: any[]): SectionItem[] => {
+export const mapTransactionsToSectionItems = (transactions: any[], secondaryTextColor?: string): SectionItem[] => {
+    const textColor = secondaryTextColor || '#707070';
     return transactions.map((txn) => ({
         id: txn.transactionRefId,
         top: (
@@ -42,10 +43,10 @@ export const mapTransactionsToSectionItems = (transactions: any[]): SectionItem[
         ),
         middle: (
             <>
-                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: '#707070', fontSize: ms(12) }}>
+                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: textColor, fontSize: ms(12) }}>
                     {txn.transactionRefId}
                 </CustomText>
-                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: '#707070', fontSize: ms(12) }}>
+                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: textColor, fontSize: ms(12) }}>
                     {formatTransactionDate(txn.transactionDate)}
                 </CustomText>
             </>

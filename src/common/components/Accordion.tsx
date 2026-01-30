@@ -50,7 +50,7 @@ const Accordion: React.FC<AccordionProps> = ({
     });
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }, containerStyle]}>
+        <View style={[styles.container, { backgroundColor: colors.background, borderColor: colors.outline }, containerStyle]}>
             <TouchableOpacity
                 onPress={toggleExpand}
                 style={[styles.header, headerStyle]}
@@ -65,7 +65,7 @@ const Accordion: React.FC<AccordionProps> = ({
             </TouchableOpacity>
             {isExpanded && (
                 <>
-                    <View style={styles.separator} />
+                    <View style={[styles.separator, { backgroundColor: colors.outline }]} />
                     <View style={[styles.content, contentStyle]}>{children}</View>
                 </>
             )}
@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     container: {
         borderRadius: ms(16),
         borderWidth: 1,
-        borderColor: '#F0F0F0',
         marginBottom: Spacing.m,
         overflow: 'hidden',
         // Subtle shadow for premium feel
@@ -95,7 +94,6 @@ const styles = StyleSheet.create({
     },
     separator: {
         height: 1,
-        backgroundColor: '#F0F0F0',
         marginHorizontal: ms(16),
     },
     title: {

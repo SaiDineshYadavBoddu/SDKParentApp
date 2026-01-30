@@ -30,7 +30,7 @@ const StatementHistoryItem: React.FC<StatementHistoryItemProps> = ({ item, onDow
   const createdText = formatCreationTimestamp(item?.requestedAt);
 
   return (
-    <View style={styles.historyItem}>
+    <View style={[styles.historyItem, { borderBottomColor: colors.outline }]}>
       <View style={styles.historyItemLeft}>
         <CustomText type={TextType.CardTitle} style={styles.historyItemTitle}>
           {t('statements.cardStatement')}
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: Spacing.l,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   historyItemLeft: {
     flex: 1,

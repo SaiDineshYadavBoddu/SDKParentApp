@@ -106,7 +106,7 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
             },
           ]}
         >
-          <View style={styles.header}>
+          <View style={[styles.header, { borderBottomColor: colors.outline }]}>
             {title && (
               typeof title === 'string' ? (
                 <CustomText type={TextType.SectionTitle}>{title}</CustomText>
@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Spacing.l,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
   },
   closeButton: {
     padding: ms(4),

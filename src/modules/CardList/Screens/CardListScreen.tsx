@@ -157,7 +157,7 @@ export default function CardListScreen() {
 
   const transactions: any[] = []; // Show empty message for now
 
-  const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions);
+  const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions, colors.secondaryText);
 
   // Handlers for card activation using secondary auth
   const handleActivationSuccess = async (actionToken: string) => {
@@ -283,10 +283,10 @@ export default function CardListScreen() {
                 <View
                   style={[
                     styles.statusDot,
-                    { backgroundColor: activeCard?.cardStatus === 'Active' ? '#2ECC71' : '#707070' }
+                    { backgroundColor: activeCard?.cardStatus === 'Active' ? colors.statusResolved : colors.secondaryText }
                   ]}
                 />
-                <CustomText type={TextType.ScreenDisplaySmall} style={styles.statusText}>
+                <CustomText type={TextType.ScreenDisplaySmall} style={[styles.statusText, { color: colors.secondaryText }]}>
                   {activeCard?.cardStatus}
                 </CustomText>
               </View>
@@ -370,15 +370,15 @@ export default function CardListScreen() {
             </View>
 
             {isPendingActivation && (
-              <View style={styles.activationCard}>
+              <View style={[styles.activationCard, { backgroundColor: colors.surface }]}>
                 <CustomText type={TextType.SectionTitle} style={styles.activationTitle}>
                   {t('cardList.cardPendingActivation')}
                 </CustomText>
-                <CustomText type={TextType.CardText} style={styles.activationDescription}>
+                <CustomText type={TextType.CardText} style={[styles.activationDescription, { color: colors.secondaryText }]}>
                   {t('cardList.activationInstruction')}
                 </CustomText>
                 <TouchableOpacity
-                  style={[styles.activateButton, isActivating && { opacity: 0.7 }]}
+                  style={[styles.activateButton, { backgroundColor: colors.primary }, isActivating && { opacity: 0.7 }]}
                   onPress={async () => {
                     if (activeCard) {
                       startSensitiveAction();
@@ -386,7 +386,7 @@ export default function CardListScreen() {
                   }}
                   disabled={isActivating}
                 >
-                  <CustomText type={TextType.Button} style={styles.activateButtonText}>
+                  <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
                     {t('cardList.activateCard')}
                   </CustomText>
                 </TouchableOpacity>
@@ -448,7 +448,6 @@ const styles = StyleSheet.create({
   activationCard: {
     marginHorizontal: Spacing.l,
     padding: Spacing.xl,
-    backgroundColor: '#FFFFFF',
     borderRadius: ms(20),
     alignItems: 'center',
     marginBottom: Spacing.xl,
@@ -465,14 +464,12 @@ const styles = StyleSheet.create({
   },
 
   activationDescription: {
-    color: '#707070',
     textAlign: 'center',
     marginBottom: Spacing.xl,
     paddingHorizontal: Spacing.m,
   },
 
   activateButton: {
-    backgroundColor: '#0066b3',
     paddingVertical: ms(14),
     paddingHorizontal: ms(24),
     borderRadius: ms(10),
@@ -481,7 +478,6 @@ const styles = StyleSheet.create({
   },
 
   activateButtonText: {
-    color: 'white',
     fontWeight: '600',
   },
 
@@ -497,7 +493,6 @@ const styles = StyleSheet.create({
     borderRadius: ms(4),
   },
   statusText: {
-    color: '#707070',
     fontSize: ms(14),
   },
 });

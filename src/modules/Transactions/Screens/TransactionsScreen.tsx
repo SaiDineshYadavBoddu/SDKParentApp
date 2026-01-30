@@ -103,7 +103,7 @@ const TransactionsScreen = () => {
   }, [transactions, searchQuery]);
 
   const renderTransactionItem = ({ item }: { item: any }) => (
-    <View style={styles.transactionItem}>
+    <View style={[styles.transactionItem, { borderBottomColor: colors.outline }]}>
       <View style={styles.txnLeft}>
         <CustomText type={TextType.CardTitle} style={styles.txnTitle}>
           {item.merchantName || item.description}
@@ -113,7 +113,7 @@ const TransactionsScreen = () => {
       <View style={styles.txnRight}>
         <CustomText
           type={TextType.CardTitle}
-          style={[styles.txnAmount, { color: item.isCredit ? '#28A745' : colors.onSurface }]}
+          style={[styles.txnAmount, { color: item.isCredit ? colors.statusResolved : colors.onSurface }]}
         >
           {item.isCredit ? `+ ${item.amount}` : item.amount}
         </CustomText>
@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.m,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
   },
   txnLeft: {
     flex: 1,

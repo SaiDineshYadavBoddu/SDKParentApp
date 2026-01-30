@@ -5,6 +5,7 @@ import CustomText, { TextType } from './CustomText';
 import CustomIcon from './CustomIcon';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeProvider';
 import { shouldBlurCard } from '../../utils/cardUtils';
 
 interface CardData {
@@ -44,6 +45,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   showEyeIcon = false,
   disableBlur = false,
 }) => {
+  const { colors } = useTheme();
   const inputRange = [
     (index - 1) * snapInterval,
     index * snapInterval,
@@ -85,7 +87,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {
             transform: [{ scale }, { translateX }],
             zIndex,
-            backgroundColor: !disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) ? '#C5C5C5' : undefined,
+            backgroundColor: !disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) ? colors.outline : undefined,
           },
         ]}
       >

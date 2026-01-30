@@ -333,12 +333,10 @@ const styles = StyleSheet.create({
     gridLabel: {
         fontSize: ms(12),
         fontWeight: '500',
-        color: '#636E72', // Desaturated blue/grey for labels as in image
     },
     gridValue: {
         fontSize: ms(16),
         fontWeight: '600',
-        color: '#2D3436', // Dark grey/black for values
     },
     gridValueScroll: {
         maxWidth: '100%',

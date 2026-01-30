@@ -39,7 +39,7 @@ export default function ActionButton({
         ]}
       >
         {loading ? (
-          <View style={styles.loader} />
+          <View style={[styles.loader, { borderColor: colors.outline }]} />
         ) : (
           <>
             <View style={styles.iconWrapper}>{icon}</View>
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     height: ICON_SIZE,
     borderRadius: ICON_SIZE / 2,
     borderWidth: ms(2),
-    borderColor: '#cccccc',
     borderTopColor: 'transparent',
   },
 });
