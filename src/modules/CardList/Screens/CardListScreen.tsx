@@ -85,22 +85,31 @@ export default function CardListScreen() {
     if (cards.length > 0) {
       const paramCardId = route.params?.cardId;
       if (paramCardId) {
-        // Activate lock when receiving target cardId
-        isInitializing.current = true;
-        setActiveCardId(paramCardId);
-        // Clear param to avoid fighting with manual swipes later
-        navigation.setParams({ cardId: undefined });
+        // Always try to set active card ID from params if it's there
+        if (activeCardId !== paramCardId) {
+          setActiveCardId(paramCardId);
+          isInitializing.current = true;
+        }
 
-        // Release lock after carousel has time to align
-        setTimeout(() => {
-          isInitializing.current = false;
-        }, 800);
+        // Only clear the param once we've successfully found it in the list
+        const foundIndex = cards.findIndex((c: any) => c.cardIdentifier === paramCardId);
+        if (foundIndex !== -1) {
+          // Clear param to avoid fighting with manual swipes later
+          navigation.setParams({ cardId: undefined });
+
+          // Release lock after carousel has time to align
+          const timer = setTimeout(() => {
+            isInitializing.current = false;
+          }, 1000); // Increased slightly for better reliability
+          return () => clearTimeout(timer);
+        }
       } else if (!activeCardId) {
         // Initial load default
         setActiveCardId(cards[0].cardIdentifier);
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           isInitializing.current = false;
         }, 800);
+        return () => clearTimeout(timer);
       }
     }
   }, [route.params?.cardId, cards, activeCardId]);

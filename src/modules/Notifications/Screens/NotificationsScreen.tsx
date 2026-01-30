@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -160,11 +160,28 @@ const NotificationsScreen = () => {
               }}
               onViewCard={() => {
                 if (item.subjectId) {
-                  // @ts-ignore
-                  navigation.navigate('BottomTabs', {
-                    screen: 'My Cards',
-                    params: { cardId: item.subjectId },
-                  });
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: 'BottomTabs',
+                          state: {
+                            index: 0,
+                            routes: [
+                              {
+                                name: 'My Cards',
+                                params: { cardId: item.subjectId },
+                              },
+                              { name: 'Transactions' },
+                              { name: 'Requests' },
+                              { name: 'My Profile' },
+                            ],
+                          },
+                        },
+                      ],
+                    })
+                  );
                 }
               }}
             />
