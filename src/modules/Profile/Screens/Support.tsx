@@ -28,6 +28,7 @@ import UAESVG from '../../../assets/svgs/UAESVG';
 import { useCreateSupportRequestMutation } from '../../../network/profile/profile.api';
 import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 import FailureSVG from '../../../assets/svgs/FailureSVG';
+import CustomLoader from '../../../common/components/CustomLoader';
 
 const Support = () => {
   const { colors } = useTheme();
@@ -58,11 +59,11 @@ const Support = () => {
         topic: t(`support.topics.${selectedTopic}`),
         description: description,
       }).unwrap();
-      
+
       setSelectedTopic('');
       setPhoneNumber('');
       setDescription('');
-      
+
       // @ts-ignore
       navigation.navigate('GenericInfoScreen', {
         icon: <SuccessSVG />,
@@ -188,8 +189,7 @@ const Support = () => {
           <CustomButton
             title={t('support.contactMe')}
             onPress={handleContactMe}
-            disabled={!isFormValid}
-            loading={isSubmitting}
+            disabled={!isFormValid || isSubmitting}
             uppercase={false}
           />
         </View>
@@ -232,6 +232,7 @@ const Support = () => {
             />
           </View>
         </CustomBottomSheet>
+        <CustomLoader loading={isSubmitting} />
       </View>
     </TouchableWithoutFeedback>
   );

@@ -22,6 +22,7 @@ import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
 import { useSendOtpTokenMutation, useVerifyOtpTokenMutation } from '../../network/otp/otp.api';
+import CustomLoader from './CustomLoader';
 
 export default function GenericOTPScreen() {
   const { colors } = useTheme();
@@ -248,11 +249,11 @@ export default function GenericOTPScreen() {
           <CustomButton
             title={t(verifyButtonText)}
             onPress={handleVerify}
-            loading={isLoading || localLoading || isVerifying}
             disabled={otp.join('').length < 6 || isLoading || localLoading || isVerifying}
             uppercase={false}
           />
         </View>
+        <CustomLoader loading={isLoading || localLoading || isVerifying} />
       </View>
     </TouchableWithoutFeedback>
   );

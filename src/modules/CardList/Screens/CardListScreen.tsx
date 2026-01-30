@@ -96,23 +96,24 @@ export default function CardListScreen() {
         if (foundIndex !== -1) {
           // Clear param to avoid fighting with manual swipes later
           navigation.setParams({ cardId: undefined });
-
-          // Release lock after carousel has time to align
-          const timer = setTimeout(() => {
-            isInitializing.current = false;
-          }, 1000); // Increased slightly for better reliability
-          return () => clearTimeout(timer);
         }
       } else if (!activeCardId) {
         // Initial load default
         setActiveCardId(cards[0].cardIdentifier);
-        const timer = setTimeout(() => {
-          isInitializing.current = false;
-        }, 800);
-        return () => clearTimeout(timer);
       }
     }
   }, [route.params?.cardId, cards, activeCardId]);
+
+  // Separate effect to handle the initialization lock to prevent it from being stuck
+  // due to dependency-triggered re-renders clearing the timer.
+  React.useEffect(() => {
+    if (isInitializing.current) {
+      const timer = setTimeout(() => {
+        isInitializing.current = false;
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [activeCardId]);
 
   const [unblockCard, { isLoading: isUnblocking }] = useUnblockCardMutation();
   const [activateCard, { isLoading: isActivating }] = useActivateCardMutation(); // Added activateCard mutation
@@ -287,7 +288,7 @@ export default function CardListScreen() {
             <CardCarousel
               data={cards}
               onIndexChange={(index) => {
-                if (!isInitializing.current && cards[index]) {
+                if (cards[index]) {
                   const newId = cards[index].cardIdentifier;
                   if (newId !== activeCardId) {
                     setActiveCardId(newId);
@@ -325,7 +326,6 @@ export default function CardListScreen() {
               <ActionButton
                 title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
                 icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
-                loading={isUnblocking}
                 disabled={!showBlockButton}
                 onPress={async () => {
                   if (activeCard) {
@@ -402,7 +402,7 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={isLoading || isFetching} />
+      <CustomLoader loading={isLoading || isFetching || isUnblocking} />
     </View>
   );
 }

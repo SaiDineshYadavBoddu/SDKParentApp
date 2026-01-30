@@ -14,6 +14,7 @@ import CustomRadioButton from './CustomRadioButton';
 import FlexibleCard from './FlexibleCard';
 import VerificationSVG from '../../assets/svgs/VerificationSVG';
 import { useSendOtpTokenMutation } from '../../network/otp/otp.api';
+import CustomLoader from './CustomLoader';
 
 export interface SelectionOption {
   id: string;
@@ -205,10 +206,10 @@ export default function GenericSelectionScreen() {
           title={t(continueButtonText)}
           uppercase={false}
           onPress={handleContinue}
-          loading={isLoading || localLoading || isSendingOtp}
           disabled={!selectedValue || isLoading || localLoading || isSendingOtp}
         />
       </View>
+      <CustomLoader loading={isLoading || localLoading || isSendingOtp} />
     </View>
   );
 }
