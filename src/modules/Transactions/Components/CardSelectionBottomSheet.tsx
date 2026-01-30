@@ -9,6 +9,7 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomImage from '../../../common/components/CustomImage';
 import { useTranslation } from 'react-i18next';
+import { formatMaskedCardNumber } from '../../../utils/cardUtils';
 
 interface CardSelectionBottomSheetProps {
     visible: boolean;
@@ -60,7 +61,7 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                                 style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
                                 resizeMode="contain"
                             />
-                            <CustomText type={TextType.CardTitle}>{card.maskedPan}</CustomText>
+                            <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(card.maskedPan)}</CustomText>
                         </View>
                         <CustomRadioButton
                             selected={tempSelectedId === card.cardIdentifier}

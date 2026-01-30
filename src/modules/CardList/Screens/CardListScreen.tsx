@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Text,
-  Alert,
   RefreshControl,
 } from "react-native";
 import { ms } from "react-native-size-matters";
@@ -47,6 +46,7 @@ import {
 import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
 import CustomHeader from '../../../common/components/CustomHeader';
+import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 import { APP_CONFIG } from "../../../config/appConfig";
 import { useTheme } from '../../../theme/ThemeProvider';
 
@@ -66,6 +66,7 @@ export default function CardListScreen() {
   const [activeCardId, setActiveCardId] = React.useState<string | null>(null);
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
+  const [showUnblockConfirm, setShowUnblockConfirm] = React.useState(false);
 
   const { data, isLoading, refetch, isError, isFetching, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
@@ -334,33 +335,10 @@ export default function CardListScreen() {
                 title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
                 icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
                 disabled={!showBlockButton}
-                onPress={async () => {
+                onPress={() => {
                   if (activeCard) {
                     if (canUnblock) {
-                      try {
-                        await unblockCard({ cardId: activeCard.cardIdentifier }).unwrap();
-                        refetch();
-                        navigation.navigate('GenericInfoScreen', {
-                          icon: <SuccessSVG />,
-                          title: 'unblockCard.successTitle',
-                          description: 'unblockCard.successSubtitle',
-                          primaryButton: {
-                            title: 'common.done',
-                            onPress: () => navigation.navigate('My Cards', { cardId: activeCard.cardIdentifier }),
-                          },
-                        });
-                      } catch (err: any) {
-                        console.error('Failed to unblock card:', err);
-                        navigation.navigate('GenericInfoScreen', {
-                          icon: <FailureSVG />,
-                          title: 'unblockCard.errorTitle',
-                          description: 'unblockCard.errorSubtitle',
-                          primaryButton: {
-                            title: 'common.tryAgain',
-                            onPress: () => navigation.goBack(),
-                          },
-                        });
-                      }
+                      setShowUnblockConfirm(true);
                     } else if (canBlock) {
                       navigation.navigate('FreezeCard', { card: activeCard })
                     }
@@ -409,7 +387,47 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={isLoading || isFetching || isUnblocking} />
+      <CustomLoader loading={isLoading || isFetching} />
+      
+      <ConfirmationBottomSheet
+        visible={showUnblockConfirm}
+        onClose={() => setShowUnblockConfirm(false)}
+        title={t('unblockCard.confirmTitle')}
+        message={t('unblockCard.confirmMessage')}
+        cancelText={t('common.cancel')}
+        confirmText={t('common.confirm')}
+        isLoading={isUnblocking}
+        onConfirm={async () => {
+          if (activeCard) {
+            try {
+              await unblockCard({ cardId: activeCard.cardIdentifier }).unwrap();
+              setShowUnblockConfirm(false);
+              refetch();
+              navigation.navigate('GenericInfoScreen', {
+                icon: <SuccessSVG />,
+                title: 'unblockCard.successTitle',
+                description: 'unblockCard.successSubtitle',
+                primaryButton: {
+                  title: 'common.done',
+                  onPress: () => navigation.navigate('My Cards', { cardId: activeCard.cardIdentifier }),
+                },
+              });
+            } catch (err: any) {
+              console.error('Failed to unblock card:', err);
+              setShowUnblockConfirm(false);
+              navigation.navigate('GenericInfoScreen', {
+                icon: <FailureSVG />,
+                title: 'unblockCard.errorTitle',
+                description: 'unblockCard.errorSubtitle',
+                primaryButton: {
+                  title: 'common.tryAgain',
+                  onPress: () => navigation.goBack(),
+                },
+              });
+            }
+          }
+        }}
+      />
     </View>
   );
 }

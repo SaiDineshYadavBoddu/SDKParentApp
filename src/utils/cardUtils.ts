@@ -1,3 +1,22 @@
+// Card number formatting utilities
+/**
+ * Formats a card number to show last 8 digits with first 4 masked.
+ * Format: "**** 1234"
+ * @param cardNumber - The full or masked card number/pan
+ * @returns Formatted string like "**** 1234"
+ */
+export const formatMaskedCardNumber = (cardNumber?: string): string => {
+    if (!cardNumber) return '**** ****';
+    
+    // Remove any existing spaces or special characters
+    const cleanNumber = cardNumber.replace(/[\s-]/g, '');
+    
+    // Get the last 4 digits
+    const lastFour = cleanNumber.slice(-4);
+    
+    return `**** ${lastFour}`;
+};
+
 // Card status check utilities
 export const isCardPendingActivation = (status?: string) => {
     return status === 'Pending Activation' || status === 'PENDING_ACTIVATION';

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import { ms } from 'react-native-size-matters';
@@ -25,6 +25,7 @@ import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
@@ -32,6 +33,7 @@ const ProfileScreen = () => {
   const { signOut, changePassword, changeCompany } = useAuth();
   const { t } = useTranslation();
   const { data: userDetails, isLoading, error, refetch, isFetching } = useGetUserDetailsQuery();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
@@ -118,23 +120,7 @@ const ProfileScreen = () => {
       id: 'logout',
       title: t('profile.items.logout'),
       Icon: LogOutSVG,
-      onPress: () => {
-        Alert.alert(
-          t('profile.items.logout'),
-          'Are you sure you want to signout?',
-          [
-            {
-              text: t('common.cancel'),
-              style: 'cancel',
-            },
-            {
-              text: t('profile.items.logout'),
-              onPress: () => signOut(),
-              style: 'destructive',
-            },
-          ],
-        );
-      },
+      onPress: () => setShowLogoutConfirm(true),
     },
   ];
 
@@ -167,6 +153,19 @@ const ProfileScreen = () => {
         </ScrollView>
       }
       {/* <CustomLoader loading={isLoading}/> */}
+      
+      <ConfirmationBottomSheet
+        visible={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        title={t('profile.items.logout')}
+        message={t('profile.items.logoutConfirmMessage')}
+        cancelText={t('common.cancel')}
+        confirmText={t('common.confirm')}
+        onConfirm={() => {
+          setShowLogoutConfirm(false);
+          signOut();
+        }}
+      />
     </View>
   );
 };

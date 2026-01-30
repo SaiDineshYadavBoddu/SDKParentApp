@@ -10,6 +10,7 @@ import CustomChip from '../../../common/components/CustomChip';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import FileIconSVG from '../../../assets/svgs/FileIconSVG';
+import { formatMaskedCardNumber } from '../../../utils/cardUtils';
 
 const STATEMENT_TIME_RANGES = ['lastWeek', 'lastMonth', 'last3Months', 'custom'];
 const EXPORT_FORMATS = ['csv', 'excel', 'pdf', 'word'];
@@ -48,7 +49,7 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
             resizeMode="contain"
           />
           <CustomText type={TextType.CardTitle}>
-            {selectedCard?.maskedPan || t('statements.selectCard')}
+            {selectedCard?.maskedPan ? formatMaskedCardNumber(selectedCard.maskedPan) : t('statements.selectCard')}
           </CustomText>
         </View>
         <ChevronSVG width={ms(20)} height={ms(20)} color={colors.primary} />

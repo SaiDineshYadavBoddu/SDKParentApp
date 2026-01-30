@@ -15,7 +15,13 @@
     "ok": "Ok",
     "noDataAvailable": "No data available"
   },
+  "exitApp": {
+    "title": "Exit App",
+    "message": "Are you sure you want to close the app?"
+  },
   "unblockCard": {
+    "confirmTitle": "Unblock Card",
+    "confirmMessage": "Are you sure you want to unblock this card?",
     "successTitle": "Unblock request submitted to your manager for approval",
     "successSubtitle": "Your card unfreezing is being processed. We’ll notify you once it’s done.",
     "errorTitle": "Unblock request failed",
@@ -205,7 +211,8 @@
         "title": "Contact Us",
         "subtitle": "Call or email us"
       },
-      "logout": "Logout"
+      "logout": "Logout",
+      "logoutConfirmMessage": "Are you sure you want to logout?"
     },
     "details": {
       "personal": {

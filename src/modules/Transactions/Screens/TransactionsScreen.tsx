@@ -25,6 +25,7 @@ import {
   sortTransactions,
   calculateDateRange,
 } from '../../../utils/transactionUtils';
+import { formatMaskedCardNumber } from '../../../utils/cardUtils';
 import CardSelectionBottomSheet from '../Components/CardSelectionBottomSheet';
 import { useGetTransactionsQuery } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
@@ -151,7 +152,7 @@ const TransactionsScreen = () => {
                   style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
                   resizeMode="contain"
                 />
-                <CustomText type={TextType.CardTitle}>{selectedCard?.maskedPan}</CustomText>
+                <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(selectedCard?.maskedPan)}</CustomText>
               </View>
               <ChevronSVG width={ms(20)} height={ms(20)} color={colors.primary} />
             </TouchableOpacity>

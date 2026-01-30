@@ -6,6 +6,7 @@ import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
 import CustomImage from './CustomImage';
 import { useTheme } from '../../theme/ThemeProvider';
+import { formatMaskedCardNumber } from '../../utils/cardUtils';
 
 interface CustomCardNumberDisplayProps {
     maskedPan?: string;
@@ -33,7 +34,7 @@ const CustomCardNumberDisplay: React.FC<CustomCardNumberDisplayProps> = ({
                     />
                 </View>
                 <CustomText type={TextType.CardTitle}>
-                    {maskedPan}
+                    {formatMaskedCardNumber(maskedPan)}
                 </CustomText>
             </View>
         </View>

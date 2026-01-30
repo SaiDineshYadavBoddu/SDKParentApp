@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
-import { Linking, StyleSheet, View, BackHandler, Alert } from 'react-native';
+import { StyleSheet, View, BackHandler } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AuthStack from './AuthStack';
 import MainStack from './MainStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,12 +19,15 @@ import CustomWarning from '../common/components/CustomWarning';
 import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 import { Spacing } from '../theme/spacing';
 import CustomLoader from '../common/components/CustomLoader';
+import ConfirmationBottomSheet from '../common/components/ConfirmationBottomSheet';
 
 const NavigationContent = () => {
   const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder, signOut, isLoading } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
-  const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
+  const { t } = useTranslation();
+  const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -48,14 +52,13 @@ const NavigationContent = () => {
       if (!navigationRef.isReady()) return false;
 
       if (!navigationRef.canGoBack()) {
-        Alert.alert(
-          'Exit App',
-          'Are you sure you want to close the app?', // Use translation if available, but hardcoded for now as requested
-          [
-            { text: 'Cancel', onPress: () => null, style: 'cancel' },
-            { text: 'OK', onPress: () => signOut() },
-          ]
-        );
+        // Don't show confirmation on login screen (when not authenticated)
+        if (!isAuthenticated) {
+          BackHandler.exitApp();
+          return true;
+        }
+        // Show confirmation bottom sheet for authenticated users
+        setShowExitConfirm(true);
         return true;
       }
       return false;
@@ -64,7 +67,7 @@ const NavigationContent = () => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
     return () => subscription.remove();
-  }, [navigationRef]);
+  }, [navigationRef, isAuthenticated]);
 
   useEffect(() => {
     if (sessionExpired) {
@@ -113,6 +116,19 @@ const NavigationContent = () => {
       <CustomLoader
         loading={isLoading}
         overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
+      />
+      
+      <ConfirmationBottomSheet
+        visible={showExitConfirm}
+        onClose={() => setShowExitConfirm(false)}
+        title={t('exitApp.title')}
+        message={t('exitApp.message')}
+        cancelText={t('common.cancel')}
+        confirmText={t('common.confirm')}
+        onConfirm={() => {
+          setShowExitConfirm(false);
+          BackHandler.exitApp();
+        }}
       />
     </View>
   );
