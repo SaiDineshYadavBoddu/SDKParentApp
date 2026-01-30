@@ -28,3 +28,37 @@ export const hasRole = (token: string, roleName: string, clientName: string): bo
 
     return false;
 };
+
+/**
+ * Extracts bank_code from JWT token
+ * @param token - JWT access token
+ * @returns bank_code value or null
+ */
+export const getBankCode = (token: string): string | null => {
+    const decoded = decodeJWT(token);
+    return decoded?.bank_code || null;
+};
+
+/**
+ * Extracts bank_id from JWT token
+ * @param token - JWT access token
+ * @returns bank_id value or null
+ */
+export const getBankId = (token: string): string | null => {
+    const decoded = decodeJWT(token);
+    return decoded?.bank_id || null;
+};
+
+/**
+ * Extracts role from JWT token groups array
+ * Example: groups: ["/FI/d2c/TEST 1"] => "/FI/d2c/TEST 1"
+ * @param token - JWT access token
+ * @returns role (entire first group path) or null
+ */
+export const getRole = (token: string): string | null => {
+    const decoded = decodeJWT(token);
+    if (decoded?.groups && Array.isArray(decoded.groups) && decoded.groups.length > 0) {
+        return decoded.groups[0] || null;
+    }
+    return null;
+};

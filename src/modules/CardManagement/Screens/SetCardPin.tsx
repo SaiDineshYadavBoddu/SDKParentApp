@@ -16,7 +16,7 @@ import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 import FailureSVG from '../../../assets/svgs/FailureSVG';
 import { useSecondaryAuth } from '../../../hooks/useSecondaryAuth';
 import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth, getGlobalBankId } from '../../../context/AuthContext';
 import { TEST_INPUT } from '../../../config/NISDKConfig';
 
 const SetCardPin = () => {
@@ -84,13 +84,21 @@ const SetCardPin = () => {
         return;
       }
 
+      const bankId = getGlobalBankId();
+      if (!bankId) {
+        console.warn('No bank ID available from token');
+        reject(new Error('No bank ID'));
+        return;
+      }
+
       console.log('accessToken', accessToken);
       console.log('cardIdentifierId', cardIdentifierId);
+      console.log('bankId', bankId);
       console.log('pin', confirmPin);
-      console.log('input', TEST_INPUT(accessToken, cardIdentifierId));
+      console.log('input', TEST_INPUT(accessToken, cardIdentifierId, bankId));
       onSetPin(
         confirmPin,
-        TEST_INPUT(accessToken, cardIdentifierId),
+        TEST_INPUT(accessToken, cardIdentifierId, bankId),
         (error: NIErrorResponse | null, result: string | null) => {
           console.log('NI SDK set PIN error:', error);
           console.log('NI SDK set PIN result:', result);

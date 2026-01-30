@@ -17,7 +17,6 @@ const getTraceparent = () => {
 };
 
 const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
-const BANK_CODE = 'D2C';
 const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string) => {
@@ -35,9 +34,10 @@ const connectionProperties = (token: string) => {
   } as NIConnectionProperties;
 };
 
-export const TEST_INPUT = (token: string, CardId: string) => {
+export const TEST_INPUT = (token: string, CardId: string, bankCode: string) => {
+  Logger.log('🚀 ~ NI SDK bankCode:', bankCode);
   return {
-    bankCode: BANK_CODE,
+    bankCode: bankCode,
     cardIdentifierId: CardId,
     cardIdentifierType: CARD_TYPE,
     connectionProperties: connectionProperties(token),

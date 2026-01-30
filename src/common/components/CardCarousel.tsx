@@ -7,7 +7,7 @@ import { toggleInSet } from '../../utils/selectionUtils';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useGetCardDetails, type NIErrorResponse } from '@networkinternational/ni-card-management-sdk'
 import { TEST_INPUT } from '../../config/NISDKConfig';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, getGlobalBankId } from '../../context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_MARGIN = ms(5);
@@ -67,8 +67,14 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       return;
     }
 
+    const bankId = getGlobalBankId();
+    if (!bankId) {
+      console.warn('No bank ID available from token');
+      return;
+    }
+
     onGetCardDetails(
-      TEST_INPUT(accessToken, cardIdentifierId),
+      TEST_INPUT(accessToken, cardIdentifierId, bankId),
       (error: NIErrorResponse | null, result: string | null) => {
         console.log('NI SDK error:', error);
         console.log('NI SDK result:', result);

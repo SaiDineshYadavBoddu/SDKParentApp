@@ -12,7 +12,7 @@ import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
 import { useDispatch } from 'react-redux';
 import { backendApi } from '../network/api.config';
-import { hasRole } from '../utils/jwtUtils';
+import { hasRole, getBankCode, getBankId, getRole } from '../utils/jwtUtils';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -36,9 +36,16 @@ interface AuthContextData {
 let globalAccessToken: string | null = null;
 let globalIsAuthenticated: boolean = false;
 let globalIsCardholder: boolean = false;
+let globalBankCode: string | null = null;
+let globalBankId: string | null = null;
+let globalRole: string | null = null;
+
 export const getAccessToken = () => globalAccessToken;
 export const getIsAuthenticated = () => globalIsAuthenticated;
 export const getIsCardholder = () => globalIsCardholder;
+export const getGlobalBankCode = () => globalBankCode;
+export const getGlobalBankId = () => globalBankId;
+export const getGlobalRole = () => globalRole;
 
 const AuthContext = createContext<AuthContextData>({
   isAuthenticated: false,
@@ -137,6 +144,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsCardholder(hasCardholderRole);
       globalIsCardholder = hasCardholderRole;
 
+      // Extract and store bank claims
+      globalBankCode = getBankCode(result.accessToken);
+      globalBankId = getBankId(result.accessToken);
+      globalRole = getRole(result.accessToken);
+      console.log('🚀 ~ Bank Claims - bankCode:', globalBankCode, 'bankId:', globalBankId, 'role:', globalRole);
+
       setIsAuthenticated(true);
       globalIsAuthenticated = true;
       setSessionExpired(false);
@@ -189,6 +202,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIdToken(result.idToken);
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
+
+      // Extract and store updated bank claims
+      globalBankCode = getBankCode(result.accessToken);
+      globalBankId = getBankId(result.accessToken);
+      globalRole = getRole(result.accessToken);
     } catch (error) {
       if (error instanceof Error &&
         (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
@@ -214,6 +232,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIdToken(result.idToken);
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
+
+      // Extract and store updated bank claims
+      globalBankCode = getBankCode(result.accessToken);
+      globalBankId = getBankId(result.accessToken);
+      globalRole = getRole(result.accessToken);
     } catch (error) {
       if (error instanceof Error &&
         (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
@@ -236,6 +259,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIdToken(result.idToken);
         setRefreshToken(result.refreshToken);
         setExpirationDate(result.accessTokenExpirationDate);
+
+        // Extract and store updated bank claims
+        globalBankCode = getBankCode(result.accessToken);
+        globalBankId = getBankId(result.accessToken);
+        globalRole = getRole(result.accessToken);
       }
     } catch (error) {
       console.error('Token refresh failed:', error);
