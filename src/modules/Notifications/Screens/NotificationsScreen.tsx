@@ -154,11 +154,16 @@ const NotificationsScreen = () => {
           renderItem={({ item }) => (
             <NotificationItem
               item={item}
-              onPress={() => handleMarkAsRead(item.id)}
               onViewRequest={() => {
+                if (!item.isRead) {
+                  handleMarkAsRead(item.id);
+                }
                 setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
               }}
               onViewCard={() => {
+                if (!item.isRead) {
+                  handleMarkAsRead(item.id);
+                }
                 if (item.subjectId) {
                   navigation.dispatch(
                     CommonActions.reset({
