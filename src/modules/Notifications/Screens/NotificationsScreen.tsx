@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -165,28 +165,10 @@ const NotificationsScreen = () => {
                   handleMarkAsRead(item.id);
                 }
                 if (item.subjectId) {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [
-                        {
-                          name: 'BottomTabs',
-                          state: {
-                            index: 0,
-                            routes: [
-                              {
-                                name: 'My Cards',
-                                params: { cardId: item.subjectId },
-                              },
-                              { name: 'Transactions' },
-                              { name: 'Requests' },
-                              { name: 'My Profile' },
-                            ],
-                          },
-                        },
-                      ],
-                    })
-                  );
+                  (navigation as any).navigate('BottomTabs', {
+                    screen: 'My Cards',
+                    params: { cardId: item.subjectId },
+                  });
                 }
               }}
             />
