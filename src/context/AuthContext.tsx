@@ -7,7 +7,7 @@ import React, {
   useRef,
 } from 'react';
 import { authorize, logout, refresh, AuthConfiguration } from 'react-native-app-auth';
-import { Linking } from 'react-native';
+import { Linking, AppState, AppStateStatus } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
 import { useDispatch } from 'react-redux';
@@ -30,6 +30,7 @@ interface AuthContextData {
   sessionExpired: boolean;
   setSessionExpired: (value: boolean) => void;
   isCardholder: boolean;
+  isLoading: boolean;
 }
 
 let globalAccessToken: string | null = null;
@@ -55,6 +56,7 @@ const AuthContext = createContext<AuthContextData>({
   sessionExpired: false,
   setSessionExpired: () => { },
   isCardholder: false,
+  isLoading: false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -66,7 +68,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [isCardholder, setIsCardholder] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const isSigningIn = useRef(false);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      // If we are leaving the app during a sign-in operation, turn on the loader 
+      // so it's ready when the user comes back.
+      if ((nextAppState === 'background' || nextAppState === 'inactive') && isSigningIn.current) {
+        setIsLoading(true);
+      }
+
+      // Also ensure it stays on if we return and sign-in is still pending
+      if (nextAppState === 'active' && isSigningIn.current) {
+        setIsLoading(true);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -95,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   const signIn = async () => {
+    isSigningIn.current = true;
     try {
       const result = await authorize({
         ...keycloakConfig,
@@ -119,6 +143,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Login failed:', error);
       // Handle error appropriately
+    } finally {
+      setIsLoading(false);
+      isSigningIn.current = false;
     }
   };
 
@@ -240,6 +267,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         sessionExpired,
         setSessionExpired,
         isCardholder,
+        isLoading,
       }}
     >
       {children}

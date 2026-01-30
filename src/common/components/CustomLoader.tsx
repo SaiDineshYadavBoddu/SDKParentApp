@@ -43,7 +43,7 @@ const CapsuleIndicator = ({ colors }: { colors: any }) => {
       {Array.from({ length: numCapsules }).map((_, i) => {
         const angle = (i * 360) / numCapsules;
         const normalizedIndex = i / numCapsules;
-        
+
         // Color trailing effect matching image: Black outlines, white inside, one light blue active
         const backgroundColor = rotation.interpolate({
           inputRange: [
@@ -94,11 +94,13 @@ const CustomLoader: React.FC<CustomLoaderProps> = ({
       onRequestClose={() => { }}
       statusBarTranslucent={true}
     >
-      <View style={styles.container}>
-        <View style={[styles.overlay, { backgroundColor: colors.inverseSurface + '80' }, overlayStyle]} />
-        <View style={[styles.card, { width: '90%', backgroundColor: colors.surface }]}>
+      <View style={[styles.container, overlayStyle]}>
+        {!overlayStyle && (
+          <View style={[styles.overlay, { backgroundColor: colors.inverseSurface + '80' }]} />
+        )}
+        <View style={[styles.card, { backgroundColor: colors.surface }]}>
           <CapsuleIndicator colors={colors} />
-          
+
           <View style={styles.textContainer}>
             <CustomText type={TextType.ScreenHeadlineSmall} style={[styles.titleText, { color: colors.onBackground }]}>
               {title ?? t('loader.title')}

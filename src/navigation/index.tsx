@@ -17,9 +17,10 @@ import { useTheme } from '../theme/ThemeProvider';
 import CustomWarning from '../common/components/CustomWarning';
 import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 import { Spacing } from '../theme/spacing';
+import CustomLoader from '../common/components/CustomLoader';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder, signOut } = useAuth();
+  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder, signOut, isLoading } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = React.useState(false);
@@ -75,6 +76,12 @@ const NavigationContent = () => {
   }, [sessionExpired, setSessionExpired]);
 
   const renderMainContent = () => {
+    if (isLoading) {
+      // Return null or a simple View during loading to prevent stacks from mounting/flashing
+      return (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
+      );
+    }
     if (isAuthenticated) {
       if (!isCardholder) {
         return <AccessRestrictedScreen />;
@@ -103,6 +110,10 @@ const NavigationContent = () => {
           />
         </View>
       )}
+      <CustomLoader
+        loading={isLoading}
+        overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
+      />
     </View>
   );
 };
