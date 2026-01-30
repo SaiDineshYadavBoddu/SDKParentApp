@@ -72,7 +72,7 @@ export default function CustomText({
             case TextType.CardTitle:
                 return { color: colors.onSurface, text: Typography.titleMedium };
             case TextType.CardSubtitle:
-                return { color: colors.onSurface, text: Typography.titleSmall };
+                return { color: colors.secondaryText, text: Typography.titleSmall };
             case TextType.CardText:
                 return { color: colors.onSurface, text: Typography.bodySmall };
 

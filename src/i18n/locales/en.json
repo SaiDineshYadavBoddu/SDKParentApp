@@ -125,7 +125,7 @@
     "subtitle": "In case of a lost, stolen card",
     "selectReason": "Freeze reason",
     "reasonLabel": "Reason",
-    "warningTemp": "This will temporarily block your card",
+    "warningTemp": "Note: This will temporarily block your card transactions, card actions will be unavailable as well. To use your card again, simply unblock it.",
     "warningPerm": "This will permanently close your card",
     "successTitle": "Card blocked successfully",
     "successSubtitleTemp": "Your card has been temporarily blocked. You can unblock it at any time from the app.",

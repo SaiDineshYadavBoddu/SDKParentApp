@@ -25,7 +25,7 @@ export const lightColors = {
   warningContainer: "#FEF8E6",
 
   outline: '#E0E0E0',
-  secondaryText: '#616161',
+  secondaryText: '#707070',
   tertiaryText: '#9E9E9E',
   screenBackground: '#F5F7F9',
   secondaryScreenBackground: '#F5F9FC',
