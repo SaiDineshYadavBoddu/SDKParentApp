@@ -1,6 +1,7 @@
 export type RequestAction = {
   id: number;
   actionType: string;
+  description?: string;
   subject: string;
   subjectId: string;
   displayName: string;

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Animated, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Animated, Dimensions } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -33,7 +33,6 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const { colors } = useTheme();
     const { t } = useTranslation();
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
-    const [tooltipInfo, setTooltipInfo] = useState<{ label: string; value: string } | null>(null);
     const scrollX = useRef(new Animated.Value(0)).current;
 
     const { data: fullRequestDetails, isLoading } = useGetRequestByIdQuery(request?.id || '', {
@@ -185,6 +184,17 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                 {mainAction.details}
                             </CustomText>
                         )}
+
+                        {/* Description Quote Box */}
+                        {mainAction?.description && (
+                            <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
+                                <CustomText style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
+                                <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
+                                    {mainAction.description}
+                                </CustomText>
+                            </View>
+                        )}
+
                         {/* Card Section */}
                         {isCardSubject && (
                             <View style={styles.cardContainer}>
@@ -200,6 +210,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                         cardMargin={0}
                                         isDetailsVisible={isCardDetailVisible}
                                         onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
+                                        disableBlur
                                     />
                                 ) : null}
                             </View>
@@ -218,16 +229,15 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                         <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]}>
                                             {item.label}:
                                         </CustomText>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setTooltipInfo({ label: item.label, value: item.value });
-                                            }}
-                                            activeOpacity={0.7}
+                                        <ScrollView
+                                            horizontal
+                                            showsHorizontalScrollIndicator={false}
+                                            style={styles.gridValueScroll}
                                         >
-                                            <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]} numberOfLines={1} ellipsizeMode="tail">
+                                            <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]}>
                                                 {item.value}
                                             </CustomText>
-                                        </TouchableOpacity>
+                                        </ScrollView>
                                     </View>
                                 ))}
                             </View>
@@ -242,24 +252,6 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                     </ScrollView>
                 )}
             </CustomBottomSheet>
-
-            {/* Tooltip Info Box */}
-            {tooltipInfo && (
-                <TouchableOpacity
-                    style={styles.tooltipOverlay}
-                    activeOpacity={1}
-                    onPress={() => setTooltipInfo(null)}
-                >
-                    <View style={[styles.tooltipBox, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
-                        <CustomText type={TextType.CardTitle} style={[styles.tooltipLabel, { color: colors.primary }]}>
-                            {tooltipInfo.label}
-                        </CustomText>
-                        <CustomText type={TextType.CardSubtitle} style={[styles.tooltipValue, { color: colors.onSurface }]}>
-                            {tooltipInfo.value}
-                        </CustomText>
-                    </View>
-                </TouchableOpacity>
-            )}
         </>
     );
 };
@@ -304,6 +296,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.m,
         fontWeight: '600',
     },
+    descriptionBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: Spacing.m,
+        marginBottom: Spacing.l,
+        padding: Spacing.m,
+        borderRadius: ms(12),
+        gap: Spacing.s,
+    },
+    quoteIcon: {
+        fontSize: ms(32),
+        fontWeight: '700',
+        lineHeight: ms(36),
+        textAlign: 'center',
+        textAlignVertical: 'center',
+    },
+    descriptionText: {
+        flex: 1,
+        fontSize: ms(14),
+        lineHeight: ms(20),
+    },
     infoGroupWrapper: {
         marginBottom: Spacing.xl,
         paddingHorizontal: Spacing.s,
@@ -327,43 +340,13 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#2D3436', // Dark grey/black for values
     },
+    gridValueScroll: {
+        maxWidth: '100%',
+    },
     loadingWrapper: {
         paddingVertical: Spacing.m,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    tooltipOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 1000,
-    },
-    tooltipBox: {
-        marginHorizontal: Spacing.xl,
-        padding: Spacing.l,
-        borderRadius: ms(12),
-        borderWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 8,
-        elevation: 5,
-        maxWidth: '80%',
-    },
-    tooltipLabel: {
-        fontSize: ms(14),
-        fontWeight: '700',
-        marginBottom: Spacing.xs,
-    },
-    tooltipValue: {
-        fontSize: ms(14),
-        fontWeight: '400',
-        lineHeight: ms(20),
     },
 });
 

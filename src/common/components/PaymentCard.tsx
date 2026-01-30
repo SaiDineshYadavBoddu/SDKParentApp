@@ -29,6 +29,7 @@ interface PaymentCardProps {
   isDetailsVisible: boolean;
   onToggleVisibility: (id: string) => void;
   showEyeIcon?: boolean;
+  disableBlur?: boolean;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -41,6 +42,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   isDetailsVisible,
   onToggleVisibility,
   showEyeIcon = false,
+  disableBlur = false,
 }) => {
   const inputRange = [
     (index - 1) * snapInterval,
@@ -168,7 +170,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           resizeMode="contain"
         />
 
-        {shouldBlurCard(item.cardStatus, item.statusCause) && (
+        {!disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) && (
           <View style={styles.blockOverlay} />
         )}
       </Animated.View>
