@@ -7,13 +7,13 @@
  */
 export const formatMaskedCardNumber = (cardNumber?: string): string => {
     if (!cardNumber) return '**** ****';
-    
+
     // Remove any existing spaces or special characters
     const cleanNumber = cardNumber.replace(/[\s-]/g, '');
-    
+
     // Get the last 4 digits
     const lastFour = cleanNumber.slice(-4);
-    
+
     return `**** ${lastFour}`;
 };
 
@@ -108,4 +108,10 @@ export const shouldShowManageCard = (status?: string) => {
     return !isCardPendingActivation(status) &&
         !isCardReplaced(status) &&
         !isCardPendingClosure(status);
+};
+
+export const hasResourceAction = (card: any, resourceName: string, action: string) => {
+    if (!card?.availableActions) return false;
+    const resource = card.availableActions.find((a: any) => a.resourceName === resourceName);
+    return resource?.scopes?.includes(action) || false;
 };

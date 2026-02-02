@@ -41,7 +41,8 @@ import {
   canUnblockCard,
   canReplaceCard,
   shouldShowTransactions,
-  shouldShowManageCard
+  shouldShowManageCard,
+  hasResourceAction
 } from "../../../utils/cardUtils";
 import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
@@ -355,19 +356,28 @@ export default function CardListScreen() {
                 <CustomText type={TextType.CardText} style={[styles.activationDescription, { color: colors.secondaryText }]}>
                   {t('cardList.activationInstruction')}
                 </CustomText>
-                <TouchableOpacity
-                  style={[styles.activateButton, { backgroundColor: colors.primary }, isActivating && { opacity: 0.7 }]}
-                  onPress={async () => {
-                    if (activeCard) {
-                      startSensitiveAction();
-                    }
-                  }}
-                  disabled={isActivating}
-                >
-                  <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
-                    {t('cardList.activateCard')}
-                  </CustomText>
-                </TouchableOpacity>
+                {(() => {
+                  const isActivateEnabled = hasResourceAction(activeCard, 'card-mine', 'activate');
+                  return (
+                    <TouchableOpacity
+                      style={[
+                        styles.activateButton,
+                        { backgroundColor: colors.primary },
+                        (isActivating || !isActivateEnabled) && { opacity: 0.7 }
+                      ]}
+                      onPress={async () => {
+                        if (activeCard && isActivateEnabled) {
+                          startSensitiveAction();
+                        }
+                      }}
+                      disabled={isActivating || !isActivateEnabled}
+                    >
+                      <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
+                        {t('cardList.activateCard')}
+                      </CustomText>
+                    </TouchableOpacity>
+                  );
+                })()}
               </View>
             )}
 
@@ -388,7 +398,7 @@ export default function CardListScreen() {
         )}
       </ScrollView>
       <CustomLoader loading={isLoading || isFetching} />
-      
+
       <ConfirmationBottomSheet
         visible={showUnblockConfirm}
         onClose={() => setShowUnblockConfirm(false)}
