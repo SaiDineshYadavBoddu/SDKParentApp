@@ -13,7 +13,7 @@ interface ConfirmationBottomSheetProps {
   title: string;
   message: string;
   confirmText: string;
-  cancelText: string;
+  cancelText?: string;
   onConfirm: () => void;
   onCancel?: () => void;
   confirmButtonColor?: string;
@@ -52,25 +52,28 @@ const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = ({
       title={title}
     >
       <View style={styles.container}>
-        <CustomText 
-          type={TextType.CardText} 
+        <CustomText
+          type={TextType.CardText}
           style={[styles.message, { color: colors.secondaryText }]}
         >
           {message}
         </CustomText>
-        
+
         <View style={styles.buttonContainer}>
-          <CustomButton
-            title={cancelText}
-            onPress={handleCancel}
-            style={[styles.button, { backgroundColor: colors.outline }]}
-            disabled={isLoading}
-          />
+          {cancelText && (
+            <CustomButton
+              title={cancelText}
+              onPress={handleCancel}
+              variant="outlined"
+              style={styles.button}
+              disabled={isLoading}
+            />
+          )}
           <CustomButton
             title={confirmText}
             onPress={handleConfirm}
             style={[
-              styles.button, 
+              styles.button,
               { backgroundColor: confirmButtonColor || colors.primary }
             ]}
             loading={isLoading}

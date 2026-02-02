@@ -6,7 +6,7 @@ import CustomIcon from './CustomIcon';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
-import { shouldBlurCard } from '../../utils/cardUtils';
+import { shouldBlurCard, isCardActive } from '../../utils/cardUtils';
 
 interface CardData {
   cardIdentifier: string;
@@ -87,11 +87,11 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {
             transform: [{ scale }, { translateX }],
             zIndex,
-            backgroundColor: !disableBlur && shouldBlurCard(item.cardStatus, item.statusCause) ? colors.outline : undefined,
+            backgroundColor: !disableBlur && !isCardActive(item.cardStatus) ? '#a7a6a6ff' : undefined,
           },
         ]}
       >
-        {(disableBlur || !shouldBlurCard(item.cardStatus, item.statusCause)) && (
+        {(disableBlur || isCardActive(item.cardStatus)) && (
           <CustomImage
             source={require('../../assets/images/cardbackground.png')}
             resizeMode="cover"

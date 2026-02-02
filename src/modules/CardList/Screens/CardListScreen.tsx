@@ -68,10 +68,18 @@ export default function CardListScreen() {
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
   const [showUnblockConfirm, setShowUnblockConfirm] = React.useState(false);
+  const [showActivationDisabledAlert, setShowActivationDisabledAlert] = React.useState(false);
+  const [isManualRefresh, setIsManualRefresh] = React.useState(false);
 
   const { data, isLoading, refetch, isError, isFetching, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
   });
+
+  const onRefresh = React.useCallback(async () => {
+    setIsManualRefresh(true);
+    await refetch();
+    setIsManualRefresh(false);
+  }, [refetch]);
 
   const cards = data?.content || [];
 
@@ -233,8 +241,8 @@ export default function CardListScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={isLoading || isFetching}
-            onRefresh={refetch}
+            refreshing={isManualRefresh}
+            onRefresh={onRefresh}
             colors={[colors.primary]}
             tintColor={colors.primary}
           />
@@ -363,14 +371,18 @@ export default function CardListScreen() {
                       style={[
                         styles.activateButton,
                         { backgroundColor: colors.primary },
-                        (isActivating || !isActivateEnabled) && { opacity: 0.7 }
+                        (isActivating || !isActivateEnabled) && { opacity: 0.5 }
                       ]}
                       onPress={async () => {
-                        if (activeCard && isActivateEnabled) {
-                          startSensitiveAction();
+                        if (activeCard) {
+                          if (isActivateEnabled) {
+                            startSensitiveAction();
+                          } else {
+                            setShowActivationDisabledAlert(true);
+                          }
                         }
                       }}
-                      disabled={isActivating || !isActivateEnabled}
+                      disabled={isActivating}
                     >
                       <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
                         {t('cardList.activateCard')}
@@ -397,7 +409,7 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={isLoading || isFetching} />
+      <CustomLoader loading={isLoading || (isFetching && !isManualRefresh)} />
 
       <ConfirmationBottomSheet
         visible={showUnblockConfirm}
@@ -438,7 +450,16 @@ export default function CardListScreen() {
           }
         }}
       />
-    </View>
+
+      <ConfirmationBottomSheet
+        visible={showActivationDisabledAlert}
+        onClose={() => setShowActivationDisabledAlert(false)}
+        title={t('common.alert')}
+        message="This card can be activated after production. Please try later"
+        confirmText={t('common.close')}
+        onConfirm={() => setShowActivationDisabledAlert(false)}
+      />
+    </View >
   );
 }
 

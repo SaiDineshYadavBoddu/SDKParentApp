@@ -13,7 +13,9 @@
     "tryAgain": "Try again",
     "error": "Error",
     "ok": "Ok",
-    "noDataAvailable": "No data available"
+    "noDataAvailable": "No data available",
+    "alert": "Alert",
+    "close": "Close"
   },
   "exitApp": {
     "title": "Exit App",
