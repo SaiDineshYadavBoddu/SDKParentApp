@@ -27,7 +27,7 @@ import {
 import RequestDetailBottomSheet from '../Components/RequestDetailBottomSheet';
 import { TimelineEvent } from '../Components/RequestTimeline';
 import { useTranslation } from 'react-i18next';
-import { useGetRequestsQuery, useGetRequestTypesQuery } from '../../../network/requests/request.api';
+import { useGetRequestsQuery, useGetRequestTypesQuery, useCancelRequestMutation } from '../../../network/requests/request.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
@@ -178,7 +178,8 @@ const RequestsScreen = () => {
     return null;
   };
 
-  const { data: requestTypes } = useGetRequestTypesQuery()
+  const { data: requestTypes } = useGetRequestTypesQuery();
+  const [cancelRequest, { isLoading: isCancelling }] = useCancelRequestMutation();
 
   const toggleFilterView = (view: 'main' | 'status' | 'type') => {
     Animated.parallel([
@@ -210,6 +211,17 @@ const RequestsScreen = () => {
     });
   };
   // Local renderIcon removed, now imported from RequestInfoGroup
+
+  const handleCancelRequest = async (requestId: string) => {
+    try {
+      await cancelRequest(requestId).unwrap();
+      setIsDetailSheetVisible(false);
+      setSelectedRequest(null);
+      refetch();
+    } catch (error: any) {
+      console.error('Failed to cancel request', error);
+    }
+  };
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
     const mainAction = item.actions[0];
@@ -521,8 +533,9 @@ const RequestsScreen = () => {
           setSelectedRequest(null);
         }}
         request={selectedRequest}
+        onCancelRequest={() => handleCancelRequest(String(selectedRequest?.id))}
       />
-      <CustomLoader loading={isLoading || (isFetching && pageNumber === 0)} />
+      <CustomLoader loading={isLoading || (isFetching && pageNumber === 0) || isCancelling} />
     </View>
   );
 };

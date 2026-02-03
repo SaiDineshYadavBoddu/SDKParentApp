@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Animated, Dimensions } from 'react-native
 import { ms } from 'react-native-size-matters';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomText, { TextType } from '../../../common/components/CustomText';
+import CustomButton from '../../../common/components/CustomButton';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
 import PaymentCard from '../../../common/components/PaymentCard';
@@ -23,12 +24,14 @@ interface RequestDetailBottomSheetProps {
     visible: boolean;
     onClose: () => void;
     request: RequestItem | null;
+    onCancelRequest?: () => void;
 }
 
 const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     visible,
     onClose,
     request,
+    onCancelRequest,
 }) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
@@ -249,6 +252,16 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                 <RequestTimeline events={timeline} />
                             </Accordion>
                         )}
+                         {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
+                        {activeRequest?.status === 'PENDING_APPROVAL' && (
+                                <CustomButton
+                                    title={t('requests.detailSheet.cancelRequest')}
+                                    onPress={onCancelRequest}
+                                    variant="outlined"
+                                    style={[styles.cancelButton, { borderColor: colors.error}]}
+                                    uppercase={false}
+                                />
+                        )}
                     </ScrollView>
                 )}
             </CustomBottomSheet>
@@ -345,6 +358,9 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.m,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    cancelButton: {
+        marginTop: Spacing.xl
     },
 });
 

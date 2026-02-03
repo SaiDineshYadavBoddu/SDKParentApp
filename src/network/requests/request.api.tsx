@@ -88,6 +88,14 @@ export const requestApi = backendApi.injectEndpoints({
         };
       },
     }),
+    cancelRequest: builder.mutation<any, string | number>({
+      query: (requestId: string) => {
+        return {
+          url: API_ENDPOINTS.POST_CANCEL_REQUEST.replace('{requestId}', requestId),
+          method: 'POST',
+        };
+      },
+    }),
   }),
 });
 
@@ -97,4 +105,5 @@ export const {
   useGetRequestTypesQuery,
   useGetRequestByIdQuery,
   useLazyGetRequestByIdQuery,
+  useCancelRequestMutation,
 } = requestApi;
