@@ -6,6 +6,8 @@ PODS:
   - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
   - boost (1.84.0)
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - DoubleConversion (1.1.6)
   - fast_float (8.0.0)
   - FBLazyVector (0.81.5)
@@ -14,6 +16,7 @@ PODS:
   - hermes-engine (0.81.5):
     - hermes-engine/Pre-built (= 0.81.5)
   - hermes-engine/Pre-built (0.81.5)
+  - NICardManagementSDK (1.1.0-alpha.1)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1787,6 +1790,37 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - react-native-netinfo (11.4.1):
+    - React-Core
+  - react-native-ni-card-management (1.0.4):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - NICardManagementSDK (= 1.1.0-alpha.1)
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-otp-verify (1.1.8):
     - React-Core
   - react-native-safe-area-context (5.6.2):
@@ -2558,6 +2592,7 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -2600,6 +2635,8 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-app-auth (from `../node_modules/react-native-app-auth`)
   - react-native-config (from `../node_modules/react-native-config`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - "react-native-ni-card-management (from `../node_modules/@networkinternational/ni-card-management-sdk`)"
   - react-native-otp-verify (from `../node_modules/react-native-otp-verify`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2642,11 +2679,14 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - NICardManagementSDK
     - SocketRocket
 
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   fast_float:
@@ -2730,6 +2770,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-app-auth"
   react-native-config:
     :path: "../node_modules/react-native-config"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
+  react-native-ni-card-management:
+    :path: "../node_modules/@networkinternational/ni-card-management-sdk"
   react-native-otp-verify:
     :path: "../node_modules/react-native-otp-verify"
   react-native-safe-area-context:
@@ -2808,12 +2852,14 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 5beb8028d5a2e75dd9634917f23e23d3a061d2aa
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
+  NICardManagementSDK: 53fa5d6a2a7a57667f020fb55b8e7fac361ea9e3
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: 5eb1d2eeff5fb91151e8a8eef45b6c7658b6c897
   RCTRequired: cebcf9442fc296c9b89ac791dfd463021d9f6f23
@@ -2849,6 +2895,8 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 55f4c45b6319f7af1955a5dc7621eaf31bd114ce
   react-native-app-auth: 9b0a0e3ca279c3426a451e2607c8483808b8ed4a
   react-native-config: d11015cb98b2973fec0e49407181720225733567
+  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-ni-card-management: a4463ca0c17b0dd5efd254677566d5afa548b776
   react-native-otp-verify: b524a7f44b691644bea08376d6a4782a2df57e09
   react-native-safe-area-context: 54d812805f3c4e08a4580ad086cbde1d8780c2e4
   React-NativeModulesApple: 5497ff3f4ab94454a3aee13e94f3f5f07cc5f70a

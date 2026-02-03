@@ -43,7 +43,7 @@ const Support = () => {
   const [createSupportRequest, { isLoading: isSubmitting }] = useCreateSupportRequestMutation();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  const isFormValid = phoneNumber.length > 0 && !!selectedTopic && description.length > 0;
+  const isFormValid = phoneNumber.length === 9 && !!selectedTopic && description.length > 0;
 
   const handleConfirm = () => {
     setSelectedTopic(tempTopic);
