@@ -70,7 +70,10 @@
       "Stolen": "Card is stolen",
       "Damaged": "Card damaged",
       "Fraud": "Fraud on the card"
-    }
+    },
+    "confirmTitle": "Confirm Card Replacement",
+    "confirmMessage": "Once the replacement is confirmed, the card will be blocked due to the selected reason.",
+    "sendRequest": "Send request"
   },
   "onboarding": {
     "step1": {

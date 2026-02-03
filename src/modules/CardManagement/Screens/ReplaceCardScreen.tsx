@@ -8,6 +8,7 @@ import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
+import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
@@ -33,6 +34,7 @@ const ReplaceCardScreen = () => {
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
   const [tempReason, setTempReason] = useState<string | undefined>("");
+  const [isConfirmSheetVisible, setConfirmSheetVisible] = useState(false);
 
   const { data: tariffData, isLoading: isTariffLoading, error, refetch, isFetching } = useGetCardTariffsQuery(card?.cardIdentifier, {
     skip: !card?.cardIdentifier,
@@ -147,7 +149,7 @@ const ReplaceCardScreen = () => {
       <View style={[styles.bottomButtonContainer, { borderTopColor: colors.outline }]}>
         <CustomButton
           title={t('common.submit')}
-          onPress={handleSubmit}
+          onPress={() => setConfirmSheetVisible(true)}
           disabled={!selectedReason}
           style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
         />
@@ -191,6 +193,22 @@ const ReplaceCardScreen = () => {
           />
         </View>
       </CustomBottomSheet>
+
+      <ConfirmationBottomSheet
+        visible={isConfirmSheetVisible}
+        onClose={() => setConfirmSheetVisible(false)}
+        title={t('replaceCard.confirmTitle')}
+        message={t('replaceCard.confirmMessage')}
+        confirmText={t('replaceCard.sendRequest')}
+        cancelText={t('common.cancel')}
+        onConfirm={() => {
+          setConfirmSheetVisible(false);
+          handleSubmit();
+        }}
+        onCancel={() => setConfirmSheetVisible(false)}
+        confirmButtonColor={colors.primary}
+        isLoading={isReplaceLoading}
+      />
       <CustomLoader loading={isTariffLoading || isReplaceLoading} />
     </View>
   );
