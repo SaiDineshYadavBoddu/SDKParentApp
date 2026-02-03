@@ -32,8 +32,8 @@ const ReplaceCardScreen = () => {
   const route = useRoute<any>();
   const { card } = route.params || {};
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
-  const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
-  const [tempReason, setTempReason] = useState<string | undefined>("");
+  const [selectedReason, setSelectedReason] = useState<string | undefined>(undefined);
+  const [tempReason, setTempReason] = useState<string | undefined>(undefined);
   const [isConfirmSheetVisible, setConfirmSheetVisible] = useState(false);
 
   const { data: tariffData, isLoading: isTariffLoading, error, refetch, isFetching } = useGetCardTariffsQuery(card?.cardIdentifier, {
@@ -123,7 +123,7 @@ const ReplaceCardScreen = () => {
         <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
         <CustomDropdown
-          label={t('replaceCard.selectReasonForReplacement')}
+          label={`${t('replaceCard.selectReasonForReplacement')}*`}
           placeholder={t('common.select')}
           selectedValue={
             selectedReason
@@ -151,7 +151,7 @@ const ReplaceCardScreen = () => {
           title={t('common.submit')}
           onPress={() => setConfirmSheetVisible(true)}
           disabled={!selectedReason}
-          style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
+          style={{ width: '100%' }}
         />
       </View>
 
@@ -160,7 +160,10 @@ const ReplaceCardScreen = () => {
         onClose={() => setBottomSheetVisible(false)}
         title={t('replaceCard.selectReason')}
       >
-        <View style={styles.bottomSheetContent}>
+        <ScrollView
+          contentContainerStyle={styles.bottomSheetContent}
+          showsVerticalScrollIndicator={false}
+        >
           {REPLACE_CARD_REASONS.map((reason) => (
             <CustomRadioButton
               key={reason}
@@ -191,7 +194,7 @@ const ReplaceCardScreen = () => {
             disabled={!tempReason}
             style={styles.confirmButton}
           />
-        </View>
+        </ScrollView>
       </CustomBottomSheet>
 
       <ConfirmationBottomSheet
@@ -238,10 +241,7 @@ const styles = StyleSheet.create({
   dropdown: {
     marginBottom: ms(24),
   },
-  // Removed infoBox, bottomSheetInfoBox, infoIcon as they are replaced by CustomWarning styles
   infoText: {
-    flex: 1,
-    lineHeight: ms(18),
   },
   bottomButtonContainer: {
     padding: Spacing.m,

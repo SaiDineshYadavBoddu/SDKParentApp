@@ -99,7 +99,7 @@ const FreezeCardScreen = () => {
                 <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
                 <CustomDropdown
-                    label={t('freezeCard.reasonLabel')}
+                    label={`${t('freezeCard.reasonLabel')}*`}
                     placeholder={t('common.select')}
                     selectedValue={selectedReason ? t(`freezeCard.reasons.${selectedReason}`) : undefined}
                     onPress={() => {
@@ -122,7 +122,7 @@ const FreezeCardScreen = () => {
                     title={t('common.submit')}
                     onPress={handleSubmit}
                     disabled={!selectedReason}
-                    style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
+                    style={{ width: '100%' }}
                 />
             </View>
 
@@ -131,7 +131,10 @@ const FreezeCardScreen = () => {
                 onClose={() => setBottomSheetVisible(false)}
                 title={t('freezeCard.title')}
             >
-                <View style={styles.bottomSheetContent}>
+                <ScrollView
+                    contentContainerStyle={styles.bottomSheetContent}
+                    showsVerticalScrollIndicator={false}
+                >
                     {FREEZE_CARD_REASONS.map((reason) => (
                         <CustomRadioButton
                             key={reason}
@@ -161,7 +164,7 @@ const FreezeCardScreen = () => {
                         disabled={!tempReason}
                         style={styles.confirmButton}
                     />
-                </View>
+                </ScrollView>
             </CustomBottomSheet>
         </View>
     );

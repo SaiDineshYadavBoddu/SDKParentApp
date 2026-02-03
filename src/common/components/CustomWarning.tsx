@@ -36,8 +36,8 @@ const CustomWarning: React.FC<Props> = ({ message, children, style }) => {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        padding: Spacing.l,
-        paddingRight: Spacing.xl,
+        paddingVertical: Spacing.l,
+        paddingHorizontal: Spacing.m,
         borderRadius: ms(8),
         alignItems: 'flex-start',
     },
@@ -46,7 +46,8 @@ const styles = StyleSheet.create({
         marginTop: ms(2),
     },
     contentContainer: {
-        flex: 1,
+        flexGrow: 1,
+        flexShrink: 1,
     },
 });
 

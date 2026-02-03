@@ -37,25 +37,21 @@ export default function CustomButton({
   const { colors } = useTheme();
   const isDisabled = disabled || loading;
 
-  const backgroundColor = isDisabled
-    ? '#F5F8FA'
-    : variant === 'primary'
+  const backgroundColor = variant === 'primary'
     ? colors.primary
     : 'transparent';
 
-  const borderColor = isDisabled
-    ? '#E0E4E8'
-    : variant === 'outlined'
-    ? colors.primary
+  const borderColor = variant === 'outlined'
+    ? (isDisabled ? '#E0E4E8' : colors.primary)
     : 'transparent';
 
-  const borderWidth = isDisabled || variant === 'outlined' ? ms(1) : 0;
+  const borderWidth = variant === 'outlined' ? ms(1) : 0;
 
   const textColor = isDisabled
-    ? colors.textColorDisabled
+    ? (variant === 'primary' ? colors.onPrimary : colors.textColorDisabled)
     : variant === 'primary'
-    ? colors.onPrimary
-    : colors.primary;
+      ? colors.onPrimary
+      : colors.primary;
 
   const textType =
     variant === 'primary' ? TextType.Button : TextType.OutlinedButton;
@@ -71,6 +67,7 @@ export default function CustomButton({
           backgroundColor,
           borderColor,
           borderWidth,
+          opacity: isDisabled ? 0.5 : 1,
         },
         style,
       ]}
@@ -95,7 +92,7 @@ const styles = StyleSheet.create({
     height: ms(44),
     borderRadius: ms(8),
     paddingHorizontal: Spacing.l,
-    paddingVertical : Spacing.s,
+    paddingVertical: Spacing.s,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
