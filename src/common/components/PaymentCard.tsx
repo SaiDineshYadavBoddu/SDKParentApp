@@ -87,16 +87,13 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           {
             transform: [{ scale }, { translateX }],
             zIndex,
-            backgroundColor: !disableBlur && !isCardActive(item.cardStatus) ? '#a7a6a6ff' : undefined,
           },
         ]}
       >
-        {(disableBlur || isCardActive(item.cardStatus)) && (
-          <CustomImage
-            source={require('../../assets/images/cardbackground.png')}
-            resizeMode="cover"
-          />
-        )}
+        <CustomImage
+          source={require('../../assets/images/cardbackground.png')}
+          resizeMode="cover"
+        />
 
         <CustomImage
           source={require('../../assets/images/LogoDefault.png')}
