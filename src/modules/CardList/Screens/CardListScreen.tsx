@@ -86,7 +86,12 @@ export default function CardListScreen() {
   // Derive active index from ID
   const activeCardIndex = React.useMemo(() => {
     if (!activeCardId || cards.length === 0) return 0;
-    const index = cards.findIndex((c: any) => c.cardIdentifier === activeCardId);
+    const targetId = String(activeCardId);
+    const index = cards.findIndex((c: any) =>
+      String(c.cardIdentifier) === targetId ||
+      String(c.maskedPan) === targetId ||
+      String(c.id) === targetId
+    );
     return index !== -1 ? index : 0;
   }, [cards, activeCardId]);
 
@@ -95,14 +100,21 @@ export default function CardListScreen() {
     if (cards.length > 0) {
       const paramCardId = route.params?.cardId;
       if (paramCardId) {
+        const targetId = String(paramCardId);
+
         // Always try to set active card ID from params if it's there
-        if (activeCardId !== paramCardId) {
+        if (String(activeCardId) !== targetId) {
           setActiveCardId(paramCardId);
           isInitializing.current = true;
         }
 
         // Only clear the param once we've successfully found it in the list
-        const foundIndex = cards.findIndex((c: any) => c.cardIdentifier === paramCardId);
+        const foundIndex = cards.findIndex((c: any) =>
+          String(c.cardIdentifier) === targetId ||
+          String(c.maskedPan) === targetId ||
+          String(c.id) === targetId
+        );
+
         if (foundIndex !== -1) {
           // Clear param to avoid fighting with manual swipes later
           navigation.setParams({ cardId: undefined });

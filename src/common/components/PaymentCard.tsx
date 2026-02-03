@@ -123,14 +123,12 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             {isDetailsVisible
               ? item.cardIdentifier
               : (() => {
-                let masked = item.maskedPan || '';
-                if (masked.length >= 6) {
-                  // Mask 5th and 6th characters (index 4 and 5)
-                  masked =
-                    masked.substring(0, 4) + '**' + masked.substring(6);
-                }
-                // Basic formatting: grouping by 4 if possible, otherwise just return
-                return masked.replace(/(.{4})/g, '$1 ').trim();
+                const masked = item.maskedPan || '';
+                const clean = masked.replace(/[\s-]/g, '');
+                if (clean.length < 12) return clean;
+                const first = clean.slice(0, 4);
+                const last = clean.slice(-4);
+                return `${first} **** **** ${last}`;
               })()}
           </CustomText>
 

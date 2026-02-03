@@ -110,7 +110,7 @@
     "subtitle": "Are you sure you want to close this card?",
     "warning": "After request approval the closure process will be initiated. Card actions will be unavailable",
     "reasonPlaceholder": "Optional",
-    "successTitle": "Card Closed successfully",
+    "successTitle": "Card closure request sent for approval",
     "successSubtitle": "",
     "errorTitle": "Card closure request failed",
     "errorSubtitle": "Please try again"

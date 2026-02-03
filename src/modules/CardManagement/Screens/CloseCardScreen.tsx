@@ -108,7 +108,7 @@ const CloseCardScreen = () => {
 
             <View style={styles.footer}>
                 <CustomButton
-                    title={t('common.continue')}
+                    title={t('common.submit')}
                     onPress={handleCloseCard}
                     style={{ width: '100%' }}
                     uppercase={false}
