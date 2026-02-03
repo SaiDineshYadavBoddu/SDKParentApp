@@ -99,6 +99,7 @@ const CloseCardScreen = () => {
                         numberOfLines={4}
                         placeholder={t('closeCard.reasonPlaceholder')}
                         value={message}
+                        maxLength={255}
                         onChangeText={setMessage}
                         inputStyle={{ height: ms(80), textAlignVertical: 'top' }}
                     />

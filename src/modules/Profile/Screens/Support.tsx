@@ -171,6 +171,7 @@ const Support = () => {
                 label={t('support.selectTopicDesc')}
                 multiline={true}
                 value={description}
+                maxLength={255}
                 onChangeText={setDescription}
                 readOnly={isSubmitting}
                 editable={!isSubmitting}
