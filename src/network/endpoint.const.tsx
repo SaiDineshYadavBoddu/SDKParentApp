@@ -24,4 +24,5 @@ export const API_ENDPOINTS = {
   GET_STATEMENTS: '/api-trans-stat/api/v1/transactions/statements',
   SEARCH_CARDS: '/api/v1/cards/mine/search',
   POST_CANCEL_REQUEST: '/api-approval/api/v1/requests/{requestId}/cancel',
+  POST_RETRY_REQUEST: '/api-approval/api/v1/requests/{requestId}/retry',
 } as const;

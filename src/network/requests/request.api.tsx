@@ -96,6 +96,14 @@ export const requestApi = backendApi.injectEndpoints({
         };
       },
     }),
+    retryRequest: builder.mutation<any, string | number>({
+      query: (requestId: string) => {
+        return {
+          url: API_ENDPOINTS.POST_RETRY_REQUEST.replace('{requestId}', requestId),
+          method: 'POST',
+        };
+      },
+    }),
   }),
 });
 
@@ -106,4 +114,5 @@ export const {
   useGetRequestByIdQuery,
   useLazyGetRequestByIdQuery,
   useCancelRequestMutation,
+  useRetryRequestMutation,
 } = requestApi;

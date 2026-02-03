@@ -13,7 +13,7 @@ import RequestTimeline, { TimelineEvent } from './RequestTimeline';
 import { useTranslation } from 'react-i18next';
 import { RequestItem } from '../../../network/requests/request.types';
 import { getStatusColors } from '../../../utils/requestUtils';
-import { useGetRequestByIdQuery } from '../../../network/requests/request.api';
+import { useGetRequestByIdQuery, useRetryRequestMutation } from '../../../network/requests/request.api';
 import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
 import { getGlobalRole } from '../../../context/AuthContext';
@@ -38,9 +38,10 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
 
-    const { data: fullRequestDetails, isLoading } = useGetRequestByIdQuery(request?.id || '', {
+    const { data: fullRequestDetails, isLoading, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
     });
+    const [retryRequest, { isLoading: isRetryLoading }] = useRetryRequestMutation();
 
     // Use fetched details if available, otherwise fallback to the item from the list
     const activeRequest = fullRequestDetails || request;
@@ -60,7 +61,6 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const cardData = searchResults?.content?.[0];
 
     if (!activeRequest && !isLoading) return null;
-
 
     const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
@@ -152,6 +152,16 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     };
 
     const timeline = getTimeline();
+
+    const handleRetryRequest = async () => {
+        if (!activeRequest?.id) return;
+        try {
+            await retryRequest(activeRequest.id).unwrap();
+            refetchRequest();
+        } catch (error) {
+            console.error('Failed to retry request', error);
+        }
+    };
 
     return (
         <>
@@ -249,18 +259,23 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         {/* Decision Details Accordion - only show if not PENDING */}
                         {activeRequest?.status !== 'PENDING_APPROVAL' && (
                             <Accordion title={t('requests.detailSheet.decisionTitle')}>
-                                <RequestTimeline events={timeline} />
+                                <RequestTimeline 
+                                    events={timeline} 
+                                    onRetry={handleRetryRequest}
+                                    isRetryLoading={isRetryLoading}
+                                />
                             </Accordion>
                         )}
                          {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
                         {activeRequest?.status === 'PENDING_APPROVAL' && (
-                                <CustomButton
-                                    title={t('requests.detailSheet.cancelRequest')}
-                                    onPress={onCancelRequest}
-                                    variant="outlined"
-                                    style={[styles.cancelButton, { borderColor: colors.error}]}
-                                    uppercase={false}
-                                />
+                            <CustomButton
+                                title={t('requests.detailSheet.cancelRequest')}
+                                onPress={onCancelRequest}
+                                variant="outlined"
+                                textColor={colors.error}
+                                style={[styles.cancelButton, { borderColor: colors.error }]}
+                                uppercase={false}
+                            />
                         )}
                     </ScrollView>
                 )}
