@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
   const isSigningIn = useRef(false);
 
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       // If we are leaving the app during a sign-in operation, turn on the loader 
@@ -91,12 +92,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (nextAppState === 'active' && isSigningIn.current) {
         setIsLoading(true);
       }
+
+      // If user moves app to background, we preserve the session
+      // to permit returning to it later. Accuracy is handled by SessionTimeoutContext.
+      if (nextAppState === 'background' && isAuthenticated) {
+        console.log('🚀 ~ App moved to background, session preserved.');
+      }
     });
 
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [isAuthenticated]); // Removed refreshToken dependency since silentLogout is gone
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -130,8 +137,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const result = await authorize({
         ...keycloakConfig,
         additionalParameters: {
-          prompt: 'login',
-        },
+          prompt: 'login select_account',
+          max_age: '0',
+        } as any,
+        iosPrefersEphemeralSession: true,
       } as AuthConfiguration);
       console.log('Login success:', result);
       setAccessToken(result.accessToken);
