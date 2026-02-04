@@ -138,9 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...keycloakConfig,
         additionalParameters: {
           prompt: 'login select_account',
-          max_age: '0',
         } as any,
-        iosPrefersEphemeralSession: true,
       } as AuthConfiguration);
       console.log('Login success:', result);
       setAccessToken(result.accessToken);
