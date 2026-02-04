@@ -122,10 +122,16 @@ const SetCardPin = () => {
                     description: 'setPin.errorSubtitle',
                     primaryButton: {
                       title: 'common.done',
-                      onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                        cardId: card.cardIdentifier,
+                      onPress: () => navigation.reset({
+                        index: 0,
+                        routes: [{
+                          name: 'BottomTabs',
+                          params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier,
+                          },
+                        }],
                       }),
                     },
                   }
@@ -153,10 +159,16 @@ const SetCardPin = () => {
                     description: 'setPin.successSubtitle',
                     primaryButton: {
                       title: 'common.done',
-                      onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                        cardId: card.cardIdentifier,
+                      onPress: () => navigation.reset({
+                        index: 0,
+                        routes: [{
+                          name: 'BottomTabs',
+                          params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier,
+                          },
+                        }],
                       }),
                     },
                   }

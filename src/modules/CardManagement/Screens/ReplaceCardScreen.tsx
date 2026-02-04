@@ -90,10 +90,16 @@ const ReplaceCardScreen = () => {
               description: 'replaceCard.successSubtitle',
               primaryButton: {
                 title: 'common.done',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: card.cardIdentifier },
-                  cardId: card.cardIdentifier,
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: card.cardIdentifier },
+                      cardId: card.cardIdentifier,
+                    },
+                  }],
                 }),
               },
             }
@@ -121,10 +127,16 @@ const ReplaceCardScreen = () => {
               description: 'replaceCard.errorSubtitle',
               primaryButton: {
                 title: 'common.tryAgain',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: card.cardIdentifier },
-                  cardId: card.cardIdentifier,
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: card.cardIdentifier },
+                      cardId: card.cardIdentifier,
+                    },
+                  }],
                 }),
               },
             }

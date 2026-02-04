@@ -205,10 +205,16 @@ export default function CardListScreen() {
               description: 'activateCard.successSubtitle',
               primaryButton: {
                 title: 'common.done',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: activeCard.cardIdentifier },
-                  cardId: activeCard.cardIdentifier,
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: activeCard.cardIdentifier },
+                      cardId: activeCard.cardIdentifier,
+                    },
+                  }],
                 }),
               },
             }
@@ -236,10 +242,16 @@ export default function CardListScreen() {
               description: 'activateCard.errorSubtitle',
               primaryButton: {
                 title: 'common.done',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: activeCard.cardIdentifier },
-                  cardId: activeCard.cardIdentifier,
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: activeCard.cardIdentifier },
+                      cardId: activeCard.cardIdentifier,
+                    },
+                  }],
                 }),
               },
             }
@@ -490,10 +502,16 @@ export default function CardListScreen() {
                       description: 'unblockCard.successSubtitle',
                       primaryButton: {
                         title: 'common.done',
-                        onPress: () => navigation.navigate('BottomTabs', {
-                          screen: 'My Cards',
-                          params: { cardId: activeCard.cardIdentifier },
-                          cardId: activeCard.cardIdentifier,
+                        onPress: () => navigation.reset({
+                          index: 0,
+                          routes: [{
+                            name: 'BottomTabs',
+                            params: {
+                              screen: 'My Cards',
+                              params: { cardId: activeCard.cardIdentifier },
+                              cardId: activeCard.cardIdentifier,
+                            },
+                          }],
                         }),
                       },
                     }
@@ -522,10 +540,16 @@ export default function CardListScreen() {
                       description: 'unblockCard.errorSubtitle',
                       primaryButton: {
                         title: 'common.tryAgain',
-                        onPress: () => navigation.navigate('BottomTabs', {
-                          screen: 'My Cards',
-                          params: { cardId: activeCard.cardIdentifier },
-                          cardId: activeCard.cardIdentifier,
+                        onPress: () => navigation.reset({
+                          index: 0,
+                          routes: [{
+                            name: 'BottomTabs',
+                            params: {
+                              screen: 'My Cards',
+                              params: { cardId: activeCard.cardIdentifier },
+                              cardId: activeCard.cardIdentifier,
+                            },
+                          }],
                         }),
                       },
                     }
