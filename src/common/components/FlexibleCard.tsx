@@ -62,12 +62,12 @@ export default function FlexibleCard({
         <View style={styles.centerColumn}>
           {top ? <View style={styles.fullRow}>{top}</View> : null}
 
-          {middle ? (
+          {middle && (
             <>
               <View style={{ height: Spacing.xs }} />
               <View style={styles.fullRow}>{middle}</View>
             </>
-          ) : null}
+          )}
         </View>
 
         {/* END SLOT */}
