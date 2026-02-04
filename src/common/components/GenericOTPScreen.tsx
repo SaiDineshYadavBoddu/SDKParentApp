@@ -54,21 +54,6 @@ export default function GenericOTPScreen() {
   const [timer, setTimer] = useState(route.params?.retryAfter || 0);
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // console.log('GenericOTPScreen Focused. Params retryAfter:', route.params?.retryAfter);
-  //     // console.log('Current Timer State:', timer);
-
-  //     if (route.params?.retryAfter !== undefined) {
-  //       // console.log('Resetting timer to:', route.params.retryAfter);
-  //       setTimer(route.params.retryAfter);
-  //     } else {
-  //       //  console.log('Resetting timer to 0 (params undefined)');
-  //        setTimer(0);
-  //     }
-  //   }, [route.params?.retryAfter])
-  // );
-
   useEffect(() => {
     if (Platform.OS === 'android') {
       RNOtpVerify.getOtp()
