@@ -23,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import NoInternetSVG from '../../../assets/svgs/NoInternetSVG';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { useGetUserMeQuery } from '../../../network/user/user.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
@@ -32,13 +33,14 @@ const ProfileScreen = () => {
   const { colors } = useTheme();
   const { signOut, changePassword, changeCompany } = useAuth();
   const { t } = useTranslation();
-  const { data: userDetails, isLoading, error, refetch, isFetching } = useGetUserDetailsQuery();
+  const { isLoading, error, refetch, isFetching } = useGetUserDetailsQuery();
+  
+  const { data: userMeData } = useGetUserMeQuery();
+  
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
-
-
-
+  
   if (isTimeoutError) {
     return (
       <View style={[styles.container, { backgroundColor: colors.screenBackground }]}>
@@ -51,7 +53,9 @@ const ProfileScreen = () => {
     );
   }
 
-  console.log(userDetails);
+  // Determine if Change Company should be shown
+  const userGroups = userMeData?.userGroups || [];
+  const showChangeCompany = userGroups.length > 1;
 
   const accountSettingsItems: ProfileItemProps[] = [
     {
@@ -68,7 +72,12 @@ const ProfileScreen = () => {
       Icon: ChangePasswordSVG,
       onPress: () => changePassword(),
     },
-  ];
+  ].filter(item => {
+    if (item.id === 'change-company') {
+      return showChangeCompany;
+    }
+    return true;
+  });
 
   const infoItems: ProfileItemProps[] = [
     {

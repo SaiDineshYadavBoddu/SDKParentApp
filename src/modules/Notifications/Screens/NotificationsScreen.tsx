@@ -170,9 +170,18 @@ const NotificationsScreen = () => {
                   handleMarkAsRead(item.id);
                 }
                 if (item.subjectId) {
-                  (navigation as any).navigate('BottomTabs', {
-                    screen: 'My Cards',
-                    params: { cardId: item.subjectId },
+                  (navigation as any).reset({
+                    index: 0,
+                    routes: [
+                      {
+                        name: 'BottomTabs',
+                        params: {
+                          screen: 'My Cards',
+                          params: { cardId: item.subjectId },
+                          cardId: item.subjectId,
+                        },
+                      },
+                    ],
                   });
                 }
               }}

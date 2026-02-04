@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
 
@@ -118,6 +119,19 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         clearTimers();
         await signOut();
     }, [clearTimers, signOut]);
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+            if (nextAppState === 'active' && isAuthenticated) {
+                console.log('🚀 ~ App returned to foreground, recalculating timers...');
+                startTimers();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, [isAuthenticated, startTimers]);
 
     useEffect(() => {
         if (isAuthenticated) {

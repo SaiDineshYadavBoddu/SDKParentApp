@@ -7,6 +7,8 @@ import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
 import { shouldBlurCard, isCardActive } from '../../utils/cardUtils';
+import EyeSVG from '../../assets/svgs/EyeSVG';
+import EyeOffSVG from '../../assets/svgs/EyeOffSVG';
 
 interface CardData {
   cardIdentifier: string;
@@ -106,12 +108,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             onPress={() => onToggleVisibility(item.cardIdentifier)}
             style={[styles.toggle, { zIndex: 20 }]}
           >
-            <CustomIcon
-              type="feather"
-              name={isDetailsVisible ? 'eye' : 'eye-off'}
-              size={ms(24)}
-              color="white"
-            />
+            {isDetailsVisible ? <EyeOffSVG /> : <EyeSVG />}
           </TouchableOpacity>
         )}
 
@@ -187,8 +184,8 @@ const styles = StyleSheet.create({
   },
   toggle: {
     position: 'absolute',
-    right: Spacing.xl,
-    top: Spacing.xl,
+    right: Spacing.xs,
+    top: Spacing.xs,
   },
   logo: {
     position: 'absolute',

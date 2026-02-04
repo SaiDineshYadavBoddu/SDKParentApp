@@ -28,8 +28,8 @@ const SetCardPin = () => {
   const { accessToken } = useAuth();
   // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { result, error, onSetPin, isLoading: isSettingPin } = useSetPin();
-  console.log('NI SDK result:', result);
-  console.log('NI SDK error:', error);
+  // console.log('NI SDK result:', result);
+  // console.log('NI SDK error:', error);
   const { startAuthFlow } = useSecondaryAuth();
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -122,10 +122,16 @@ const SetCardPin = () => {
                     description: 'setPin.errorSubtitle',
                     primaryButton: {
                       title: 'common.done',
-                      onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                        cardId: card.cardIdentifier,
+                      onPress: () => navigation.reset({
+                        index: 0,
+                        routes: [{
+                          name: 'BottomTabs',
+                          params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier,
+                          },
+                        }],
                       }),
                     },
                   }
@@ -153,10 +159,16 @@ const SetCardPin = () => {
                     description: 'setPin.successSubtitle',
                     primaryButton: {
                       title: 'common.done',
-                      onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                        cardId: card.cardIdentifier,
+                      onPress: () => navigation.reset({
+                        index: 0,
+                        routes: [{
+                          name: 'BottomTabs',
+                          params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier,
+                          },
+                        }],
                       }),
                     },
                   }

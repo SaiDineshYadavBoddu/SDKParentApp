@@ -75,6 +75,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     }
 
     const detailsFields = [
+        { label: 'actionType', value: activeRequest?.actions[0].actionType || '-' },
         { label: 'bankCode', value: actionData?.bankCode || '-' },
         { label: 'bankId', value: actionData?.bankId || '-' },
         { label: 'cardId', value: actionData?.cardId || '-' },
@@ -243,7 +244,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
 
                         {/* Basic Info Rows */}
                         <View style={styles.infoGroupWrapper}>
-                            {activeRequest && <RequestInfoGroup item={activeRequest} />}
+                            {activeRequest && <RequestInfoGroup item={activeRequest} dateUsage='detail'/>}
                         </View>
 
                         {/* Details Accordion */}
