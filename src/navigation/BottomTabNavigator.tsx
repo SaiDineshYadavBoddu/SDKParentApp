@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from '../theme/ThemeProvider';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 
 // Screens
 import CardListScreen from '../modules/CardList/Screens/CardListScreen';
@@ -28,8 +28,16 @@ const BottomTabNavigator = () => {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: '#666',
         tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarLabel: ({ color }) => (
+          <Text
+            allowFontScaling={false}
+            style={[styles.tabBarLabel, { color }]}
+          >
+            {route.name}
+          </Text>
+        ),
+
+        tabBarIcon: ({ color }) => {
           if (route.name === 'My Cards') {
             return <MyCardsSVG width={24} height={24} color={color} />;
           } else if (route.name === 'Requests') {
@@ -39,24 +47,24 @@ const BottomTabNavigator = () => {
           } else if (route.name === 'My Profile') {
             return <MyProfileSVG width={24} height={24} color={color} />;
           }
-
           return <View />;
         },
       })}
     >
       <Tab.Screen name="My Cards" component={CardListScreen} />
-      <Tab.Screen 
-        name="Transactions" 
-        component={TransactionsScreen} 
+
+      <Tab.Screen
+        name="Transactions"
+        component={TransactionsScreen}
         listeners={{
-          tabPress: (e) => {
+          tabPress: e => {
             e.preventDefault();
           },
         }}
       />
+
       <Tab.Screen name="Requests" component={RequestsScreen} />
       <Tab.Screen name="My Profile" component={ProfileScreen} />
-      
     </Tab.Navigator>
   );
 };

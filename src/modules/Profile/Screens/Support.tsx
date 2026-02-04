@@ -8,6 +8,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { Typography } from '../../../theme/typography';
@@ -40,7 +41,8 @@ const Support = () => {
   const [description, setDescription] = useState('');
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
 
-  const [createSupportRequest, { isLoading: isSubmitting }] = useCreateSupportRequestMutation();
+  const [createSupportRequest, { isLoading: isSubmitting }] =
+    useCreateSupportRequestMutation();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   const isFormValid = phoneNumber.length === 9 && !!selectedTopic && description.length > 0;
@@ -92,7 +94,7 @@ const Support = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View style={{ flex: 1 }} onPress={Keyboard.dismiss}>
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <CustomHeader
           title={t('profile.items.support.title')}
@@ -106,9 +108,12 @@ const Support = () => {
         >
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={[styles.content, { flexGrow: 1 }]}
+            contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            nestedScrollEnabled
+            scrollEventThrottle={16}
           >
             <View style={styles.headerContainer}>
               <SupportHeaderSVG />
@@ -143,7 +148,10 @@ const Support = () => {
                 readOnly={isSubmitting}
                 editable={!isSubmitting}
                 inputStyle={styles.inputContainer}
-                inputContainerStyle={[styles.inputContainerStyle, { borderColor: colors.outline }]}
+                inputContainerStyle={[
+                  styles.inputContainerStyle,
+                  { borderColor: colors.outline },
+                ]}
                 leftIcon={
                   <View style={styles.leftIconContainer}>
                     <UAESVG width={ms(24)} height={ms(18)} />
@@ -157,7 +165,9 @@ const Support = () => {
                 label={t('support.selectTopic')}
                 placeholder={t('common.select')}
                 selectedValue={
-                  selectedTopic ? t(`support.topics.${selectedTopic}`) : undefined
+                  selectedTopic
+                    ? t(`support.topics.${selectedTopic}`)
+                    : undefined
                 }
                 disabled={isSubmitting}
                 onPress={() => {
@@ -208,7 +218,8 @@ const Support = () => {
                 style={[
                   styles.card,
                   {
-                    borderColor: tempTopic === topic ? colors.primary : colors.outline,
+                    borderColor:
+                      tempTopic === topic ? colors.primary : colors.outline,
                     borderWidth: tempTopic === topic ? ms(1) : ms(0.5),
                   },
                 ]}
@@ -236,7 +247,7 @@ const Support = () => {
         </CustomBottomSheet>
         <CustomLoader loading={isSubmitting} />
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 
@@ -266,7 +277,7 @@ const createStyles = (colors: any) =>
       marginBottom: ms(24),
     },
     innerContainer: {
-      borderColor: colors.outline
+      borderColor: colors.outline,
     },
     card: {
       backgroundColor: colors.surface,

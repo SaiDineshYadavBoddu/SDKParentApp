@@ -16,9 +16,12 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import NotificationItem from '../Components/NotificationItem';
 import CustomErrorView from '../../../common/components/CustomErrorView';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
-import CustomLoader from '../../../common/components/CustomLoader';
 import RequestDetailBottomSheet from '../../Requests/Components/RequestDetailBottomSheet';
-import { useGetNotificationsMutation, useMarkAllAsReadMutation, useMarkAsReadMutation } from '../../../network/notification/notification.api';
+import {
+  useGetNotificationsMutation,
+  useMarkAllAsReadMutation,
+  useMarkAsReadMutation,
+} from '../../../network/notification/notification.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
 import { RequestItem } from '../../../network/requests/request.types';
 
@@ -32,7 +35,9 @@ const NotificationsScreen = () => {
   const [hasMore, setHasMore] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [isTimeoutError, setIsTimeoutError] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(
+    null,
+  );
 
   const [getNotifications, { isLoading }] = useGetNotificationsMutation();
   const [markAllAsRead] = useMarkAllAsReadMutation();
@@ -57,7 +62,7 @@ const NotificationsScreen = () => {
       if (pageNumber === 0) {
         setNotifications(response.content);
       } else {
-        setNotifications((prev) => [...prev, ...response.content]);
+        setNotifications(prev => [...prev, ...response.content]);
       }
 
       setHasMore(!response.last);
@@ -75,8 +80,8 @@ const NotificationsScreen = () => {
   const handleMarkAsRead = async (id: number) => {
     try {
       await markAsRead(id).unwrap();
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      setNotifications(prev =>
+        prev.map(n => (n.id === id ? { ...n, isRead: true } : n)),
       );
     } catch (error) {
       console.error('Failed to mark as read', error);
@@ -86,9 +91,7 @@ const NotificationsScreen = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead().unwrap();
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, isRead: true }))
-      );
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     } catch (error) {
       console.error('Failed to mark all as read', error);
     }
@@ -106,7 +109,7 @@ const NotificationsScreen = () => {
       Past: [],
     };
 
-    notifications.forEach((notification) => {
+    notifications.forEach(notification => {
       const date = new Date(notification.createdAt);
       if (date.toDateString() === today.toDateString()) {
         groups.Today.push(notification);
@@ -120,8 +123,8 @@ const NotificationsScreen = () => {
     });
 
     return Object.keys(groups)
-      .filter((key) => groups[key].length > 0)
-      .map((key) => ({
+      .filter(key => groups[key].length > 0)
+      .map(key => ({
         title: key,
         data: groups[key],
       }));
@@ -150,7 +153,7 @@ const NotificationsScreen = () => {
       ) : (
         <SectionList
           sections={groupedNotifications}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <NotificationItem
               item={item}
@@ -158,7 +161,9 @@ const NotificationsScreen = () => {
                 if (!item.isRead) {
                   handleMarkAsRead(item.id);
                 }
-                setSelectedRequest({ id: item.subjectId } as unknown as RequestItem);
+                setSelectedRequest({
+                  id: item.subjectId,
+                } as unknown as RequestItem);
               }}
               onViewCard={() => {
                 if (!item.isRead) {
@@ -189,7 +194,10 @@ const NotificationsScreen = () => {
               </CustomText>
               {title === 'Today' && (
                 <TouchableOpacity onPress={handleMarkAllAsRead}>
-                  <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary, fontWeight: '600' }}>
+                  <CustomText
+                    type={TextType.ScreenDisplaySmall}
+                    style={{ color: colors.primary, fontWeight: '600' }}
+                  >
                     {t('notifications.markAllAsRead')}
                   </CustomText>
                 </TouchableOpacity>
@@ -203,8 +211,14 @@ const NotificationsScreen = () => {
             isLoading ? (
               <ActivityIndicator style={{ margin: Spacing.m }} />
             ) : hasError && notifications.length > 0 ? (
-              <TouchableOpacity onPress={() => fetchNotifications(page + 1)} style={styles.retryFooter}>
-                <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.primary }}>
+              <TouchableOpacity
+                onPress={() => fetchNotifications(page + 1)}
+                style={styles.retryFooter}
+              >
+                <CustomText
+                  type={TextType.ScreenDisplaySmall}
+                  style={{ color: colors.primary }}
+                >
                   {t('notifications.errors.loadMoreFailed')}
                 </CustomText>
               </TouchableOpacity>
@@ -228,7 +242,6 @@ const NotificationsScreen = () => {
         onClose={() => setSelectedRequest(null)}
         request={selectedRequest}
       />
-      <CustomLoader loading={isLoading} />
     </View>
   );
 };
@@ -263,7 +276,7 @@ const styles = StyleSheet.create({
   retryFooter: {
     padding: Spacing.m,
     alignItems: 'center',
-  }
+  },
 });
 
 export default NotificationsScreen;

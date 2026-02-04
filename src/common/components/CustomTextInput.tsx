@@ -56,17 +56,20 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   const borderColor = error
     ? colors.error
     : isFocused
-      ? colors.primary
-      : colors.outline;
+    ? colors.primary
+    : colors.outline;
 
   return (
     <View style={[styles.mainContainer, containerStyle]}>
       {label && (
-        <CustomText
-          type={TextType.Label}
-        >
+        <CustomText type={TextType.Label}>
           {label}
-          {required && <CustomText type={TextType.Label} colorOverride={colors.error}> *</CustomText>}
+          {required && (
+            <CustomText type={TextType.Label} colorOverride={colors.error}>
+              {' '}
+              *
+            </CustomText>
+          )}
         </CustomText>
       )}
       <View
@@ -74,13 +77,16 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
           styles.inputContainer,
           {
             borderColor,
-            backgroundColor: rest.editable === false ? colors.screenBackground : colors.surface,
+            backgroundColor:
+              rest.editable === false
+                ? colors.screenBackground
+                : colors.surface,
             height: multiline ? undefined : ms(48),
             minHeight: ms(48),
             alignItems: multiline ? 'flex-start' : 'center',
             paddingVertical: multiline ? Spacing.s : 0,
           },
-          inputContainerStyle
+          inputContainerStyle,
         ]}
       >
         {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
@@ -91,11 +97,13 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
             Typography.bodyMedium,
             inputStyle,
           ]}
+          allowFontScaling={false}
           placeholderTextColor={colors.textColorDisabled}
           onFocus={handleFocus}
           onBlur={handleBlur}
           multiline={multiline}
           textAlignVertical={multiline ? 'top' : 'center'}
+          scrollEnabled={multiline ? true : undefined}
           {...rest}
         />
         {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}

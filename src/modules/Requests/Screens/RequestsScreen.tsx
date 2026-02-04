@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, StyleSheet, FlatList, Animated, ActivityIndicator, Keyboard, TouchableOpacity, TouchableWithoutFeedback, RefreshControl } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Animated,
+  ActivityIndicator,
+  Keyboard,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  RefreshControl
+} from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
@@ -23,7 +33,11 @@ import {
 } from '../../../utils/requestUtils';
 import RequestDetailBottomSheet from '../Components/RequestDetailBottomSheet';
 import { useTranslation } from 'react-i18next';
-import { useGetRequestsQuery, useGetRequestTypesQuery, useCancelRequestMutation } from '../../../network/requests/request.api';
+import {
+  useGetRequestsQuery,
+  useGetRequestTypesQuery,
+  useCancelRequestMutation,
+} from '../../../network/requests/request.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
@@ -161,17 +175,24 @@ const RequestsScreen = () => {
   const STATUS_OPTIONS = [
     { name: 'AUTO_APPROVED', displayName: t('requests.status.AUTO_APPROVED') },
     { name: 'APPROVED', displayName: t('requests.status.APPROVED') },
-    { name: 'PENDING_APPROVAL', displayName: t('requests.status.PENDING_APPROVAL') },
+    {
+      name: 'PENDING_APPROVAL',
+      displayName: t('requests.status.PENDING_APPROVAL'),
+    },
     { name: 'CANCELLED', displayName: t('requests.status.CANCELLED') },
     { name: 'REJECTED', displayName: t('requests.status.REJECTED') },
     { name: 'DONE', displayName: t('requests.status.DONE') },
     { name: 'FAILED', displayName: t('requests.status.FAILED') },
   ];
-  const [filterView, setFilterView] = useState<'main' | 'status' | 'type'>('main');
+  const [filterView, setFilterView] = useState<'main' | 'status' | 'type'>(
+    'main',
+  );
 
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedRequestType, setSelectedRequestType] = useState('');
-  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(
+    null,
+  );
   const [isDetailSheetVisible, setIsDetailSheetVisible] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
   const PAGE_SIZE = 6;
@@ -225,7 +246,9 @@ const RequestsScreen = () => {
     pageSize: PAGE_SIZE,
     sortProperty: 'DATE',
     sortDirection: 'DESC',
+    search: debouncedSearchQuery || undefined,
   });
+  // })
   
   const { data: requestTypes, refetch: refetchTypes } = useGetRequestTypesQuery();
 
@@ -347,7 +370,10 @@ const RequestsScreen = () => {
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
     const mainAction = item?.actions?.[0];
-    const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
+    const { backgroundColor, textColor } = getStatusColors(
+      mainAction?.actionType || 'default',
+      colors,
+    );
 
     return (
       <TouchableOpacity
@@ -360,12 +386,18 @@ const RequestsScreen = () => {
       >
         {/* Header Row */}
         <View style={styles.headerRow}>
-          <CustomText type={TextType.CardTitle} style={[styles.requestID, { color: colors.onSurface }]}>
+          <CustomText
+            type={TextType.CardTitle}
+            style={[styles.requestID, { color: colors.onSurface }]}
+          >
             {t('requests.idPrefix')} {item.id}
           </CustomText>
           <View style={[styles.badge, { backgroundColor }]}>
             <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
-            <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
+            <CustomText
+              type={TextType.CardSubtitle}
+              style={[styles.badgeText, { color: textColor }]}
+            >
               {mainAction?.displayName || t(`requests.status.${item.status}`)}
             </CustomText>
           </View>
@@ -382,7 +414,12 @@ const RequestsScreen = () => {
       <CustomHeader
         title={t('requests.title')}
         rightContent={
-          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
+          <TouchableOpacity
+            style={styles.rightButton}
+            onPress={() => {
+              navigation.navigate('Notifications');
+            }}
+          >
             <NotificationSVG width={ms(24)} height={ms(24)} />
           </TouchableOpacity>
         }
@@ -399,16 +436,25 @@ const RequestsScreen = () => {
                 <CustomTextInput
                   placeholder={t('requests.searchPlaceholder')}
                   value={searchQuery}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setSearchQuery(text);
                     setPageNumber(0);
                   }}
                   leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
                   containerStyle={styles.searchBar}
-                  inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
+                  inputContainerStyle={[
+                    styles.searchInputContainer,
+                    {
+                      borderColor: colors.outline,
+                      backgroundColor: colors.surface,
+                    },
+                  ]}
                 />
                 <TouchableOpacity
-                  style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
+                  style={[
+                    styles.filterButton,
+                    { backgroundColor: colors.filterButtonBg },
+                  ]}
                   onPress={() => {
                     Keyboard.dismiss();
                     setTimeout(() => {
@@ -420,17 +466,27 @@ const RequestsScreen = () => {
                 </TouchableOpacity>
               </View>
 
-              <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
+              <CustomText
+                type={TextType.CardSubtitle}
+                style={[
+                  styles.requestCountText,
+                  Typography.labelMedium,
+                  { color: colors.tertiaryText },
+                ]}
+              >
                 {data?.totalElements || 0} {t('requests.count')}
               </CustomText>
 
               {error && !isFetching ? (
-                <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+                <CustomErrorView
+                  onRetry={() => setPageNumber(0)}
+                  loading={isFetching}
+                />
               ) : (
                 <FlatList
                   data={data?.content || []}
                   renderItem={renderRequestItem}
-                  keyExtractor={(item) => item.id.toString()}
+                  keyExtractor={item => item.id.toString()}
                   showsVerticalScrollIndicator={false}
                   onScrollBeginDrag={() => { canLoadMore.current = true; }}
                   onEndReached={handleLoadMore}
@@ -449,7 +505,10 @@ const RequestsScreen = () => {
                   ListEmptyComponent={
                     !isLoading && !isFetching ? (
                       <View style={styles.emptyContainer}>
-                        <CustomText type={TextType.CardText} style={styles.emptyText}>
+                        <CustomText
+                          type={TextType.CardText}
+                          style={styles.emptyText}
+                        >
                           {t('requests.noRequests')}
                         </CustomText>
                       </View>
@@ -477,14 +536,16 @@ const RequestsScreen = () => {
           filterView === 'status'
             ? t('requests.filters.selectStatus')
             : filterView === 'type'
-              ? t('requests.filters.selectType')
-              : t('requests.filters.title')
+            ? t('requests.filters.selectType')
+            : t('requests.filters.title')
         }
       >
-        <Animated.View style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}>
+        <Animated.View
+          style={{ opacity: fadeAnim, transform: [{ translateX: slideAnim }] }}
+        >
           {filterView === 'status' ? (
             <View style={styles.selectionContent}>
-              {STATUS_OPTIONS.map((option) => (
+              {STATUS_OPTIONS.map(option => (
                 <TouchableOpacity
                   key={option.name}
                   activeOpacity={0.6}
@@ -492,9 +553,12 @@ const RequestsScreen = () => {
                   style={[
                     styles.selectionItem,
                     {
-                      borderColor: selectedStatus === option.name ? colors.primary : colors.outline,
-                      backgroundColor: colors.surface
-                    }
+                      borderColor:
+                        selectedStatus === option.name
+                          ? colors.primary
+                          : colors.outline,
+                      backgroundColor: colors.surface,
+                    },
                   ]}
                   onPress={() => {
                     setSelectedStatus(option.name);
@@ -505,7 +569,7 @@ const RequestsScreen = () => {
                     <CustomRadioButton
                       label={option.displayName}
                       selected={selectedStatus === option.name}
-                      onPress={() => { }}
+                      onPress={() => {}}
                       labelStyle={styles.selectionLabel}
                       containerStyle={{ marginVertical: 0 }}
                     />
@@ -516,36 +580,44 @@ const RequestsScreen = () => {
           ) : filterView === 'type' ? (
             <View style={styles.selectionContent}>
               {requestTypes && requestTypes.length > 0 ? (
-                requestTypes.map((option: { name: string; displayName: string }) => (
-                  <TouchableOpacity
-                    key={option.name}
-                    activeOpacity={0.6}
-                    delayPressIn={0}
-                    style={[
-                      styles.selectionItem,
-                      {
-                        borderColor: selectedRequestType === option.name ? colors.primary : colors.outline,
-                        backgroundColor: colors.surface
-                      }
-                    ]}
-                    onPress={() => {
-                      setSelectedRequestType(option.name);
-                      toggleFilterView('main');
-                    }}
-                  >
-                    <View pointerEvents="none">
-                      <CustomRadioButton
-                        label={option.displayName}
-                        selected={selectedRequestType === option.name}
-                        onPress={() => { }}
-                        labelStyle={styles.selectionLabel}
-                        containerStyle={{ marginVertical: 0 }}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                ))
+                requestTypes.map(
+                  (option: { name: string; displayName: string }) => (
+                    <TouchableOpacity
+                      key={option.name}
+                      activeOpacity={0.6}
+                      delayPressIn={0}
+                      style={[
+                        styles.selectionItem,
+                        {
+                          borderColor:
+                            selectedRequestType === option.name
+                              ? colors.primary
+                              : colors.outline,
+                          backgroundColor: colors.surface,
+                        },
+                      ]}
+                      onPress={() => {
+                        setSelectedRequestType(option.name);
+                        toggleFilterView('main');
+                      }}
+                    >
+                      <View pointerEvents="none">
+                        <CustomRadioButton
+                          label={option.displayName}
+                          selected={selectedRequestType === option.name}
+                          onPress={() => {}}
+                          labelStyle={styles.selectionLabel}
+                          containerStyle={{ marginVertical: 0 }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  ),
+                )
               ) : (
-                <CustomText type={TextType.CardText} style={{ textAlign: 'center', marginTop: Spacing.m }}>
+                <CustomText
+                  type={TextType.CardText}
+                  style={{ textAlign: 'center', marginTop: Spacing.m }}
+                >
                   {t('requests.filters.noTypesAvailable')}
                 </CustomText>
               )}
@@ -553,7 +625,10 @@ const RequestsScreen = () => {
           ) : (
             <View style={styles.filterContent}>
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                <CustomText
+                  type={TextType.Label}
+                  style={[styles.filterLabel, { color: colors.onBackground }]}
+                >
                   {t('requests.filters.dateRange')}
                 </CustomText>
                 <TouchableOpacity
@@ -561,7 +636,13 @@ const RequestsScreen = () => {
                   style={styles.rangeInputWrapper}
                 >
                   <CustomTextInput
-                    value={startDate && endDate ? `${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}` : t('datePicker.selectRange')}
+                    value={
+                      startDate && endDate
+                        ? `${formatDisplayDate(
+                            startDate,
+                          )} - ${formatDisplayDate(endDate)}`
+                        : t('datePicker.selectRange')
+                    }
                     editable={false}
                     pointerEvents="none"
                     rightIcon={<DatePickerSVG width={ms(20)} height={ms(20)} />}
@@ -591,33 +672,52 @@ const RequestsScreen = () => {
               </View>
 
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                <CustomText
+                  type={TextType.Label}
+                  style={[styles.filterLabel, { color: colors.onBackground }]}
+                >
                   {t('requests.filters.statusLabel')}
                 </CustomText>
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    STATUS_OPTIONS.find(s => s.name === selectedStatus)?.displayName ||
-                    (selectedStatus === '' ? t('requests.filters.selectStatus') : selectedStatus)
+                    STATUS_OPTIONS.find(s => s.name === selectedStatus)
+                      ?.displayName ||
+                    (selectedStatus === ''
+                      ? t('requests.filters.selectStatus')
+                      : selectedStatus)
                   }
                   onPress={() => toggleFilterView('status')}
-                  innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
+                  innerContainerStyle={[
+                    styles.filterInputContainer,
+                    { borderColor: colors.outline },
+                  ]}
                   containerStyle={{ marginBottom: 0 }}
                 />
               </View>
 
               <View style={styles.filterSection}>
-                <CustomText type={TextType.Label} style={[styles.filterLabel, { color: colors.onBackground }]}>
+                <CustomText
+                  type={TextType.Label}
+                  style={[styles.filterLabel, { color: colors.onBackground }]}
+                >
                   {t('requests.filters.typeLabel')}
                 </CustomText>
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    requestTypes?.find((t: any) => t.name === selectedRequestType)?.displayName ||
-                    (selectedRequestType === '' ? t('requests.filters.selectType') : selectedRequestType)
+                    requestTypes?.find(
+                      (t: any) => t.name === selectedRequestType,
+                    )?.displayName ||
+                    (selectedRequestType === ''
+                      ? t('requests.filters.selectType')
+                      : selectedRequestType)
                   }
                   onPress={() => toggleFilterView('type')}
-                  innerContainerStyle={[styles.filterInputContainer, { borderColor: colors.outline }]}
+                  innerContainerStyle={[
+                    styles.filterInputContainer,
+                    { borderColor: colors.outline },
+                  ]}
                   containerStyle={{ marginBottom: 0 }}
                 />
               </View>
@@ -675,7 +775,9 @@ const RequestsScreen = () => {
         request={selectedRequest}
         onCancelRequest={() => handleCancelRequest(String(selectedRequest?.id))}
       />
-      <CustomLoader loading={isLoading || (isFetching && pageNumber === 0) || isCancelling} />
+      <CustomLoader
+        loading={isLoading || (isFetching && pageNumber === 0) || isCancelling}
+      />
     </View>
   );
 };

@@ -334,7 +334,7 @@
       "tariffs": "Product tariffs",
       "card_service": "Card service request",
       "transaction": "Card transaction query",
-      "others": "Others"
+      "others": "Other"
     },
     "contactMe": "Contact Me",
     "requestSuccessTitle": "Support request #{{id}} submitted successfully",
@@ -364,7 +364,7 @@
   },
   "requests": {
     "title": "My Requests",
-    "searchPlaceholder": "Requester, Approved or ID",
+    "searchPlaceholder": "Requester, Approver or ID",
     "count": "Requests",
     "idPrefix": "Request",
     "createdAt": "Created at",
@@ -383,7 +383,7 @@
       "REJECTED": "Rejected",
       "AUTO_APPROVED": "Auto Approved",
       "CANCELLED": "Cancelled",
-      "PENDING_APPROVAL": "Pending",
+      "PENDING_APPROVAL": "Pending Approval",
       "DONE": "Completed",
       "FAILED": "Failed",
       "inProgress": "In progress",
