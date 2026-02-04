@@ -6,6 +6,7 @@ import SectionContainer, {
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { formatPhoneNumber } from '../../../utils/userUtils';
 
 export default function UserData() {
   const { colors } = useTheme();
@@ -28,7 +29,7 @@ export default function UserData() {
         {`${userDetails?.personalDetails?.firstName || ''} ${userDetails?.personalDetails?.lastName || ''}`.trim() || 'User'}
       </CustomText>
       <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
-        {userDetails?.contactDetails?.mobilePhone || ''}
+        {formatPhoneNumber(userDetails?.contactDetails?.mobilePhone)}
       </CustomText>
       <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
         {userDetails?.contactDetails?.email || ''}

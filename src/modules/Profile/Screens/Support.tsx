@@ -169,6 +169,7 @@ const Support = () => {
               />
               <CustomTextInput
                 label={t('support.selectTopicDesc')}
+                placeholder={t('support.describeRequestPlaceholder')}
                 multiline={true}
                 value={description}
                 maxLength={255}
