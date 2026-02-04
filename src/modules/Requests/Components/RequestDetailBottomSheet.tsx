@@ -39,7 +39,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
 
-    const { data: fullRequestDetails, isLoading, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
+    const { data: fullRequestDetails, isLoading, error, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
     });
     const [retryRequest, { isLoading: isRetryLoading }] = useRetryRequestMutation();
@@ -195,7 +195,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                 ) : error ? (
                     <View style={{ height: ms(400) }}>
                         <CustomErrorView
-                            onRetry={refetch}
+                            onRetry={refetchRequest}
                             loading={isLoading}
                         />
                     </View>

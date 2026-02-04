@@ -103,31 +103,65 @@ const SetCardPin = () => {
           console.log('NI SDK set PIN error:', error);
           console.log('NI SDK set PIN result:', result);
           if (error) {
-            navigation.navigate('GenericInfoScreen', {
-              icon: <FailureSVG />,
-              title: 'setPin.errorTitle',
-              description: 'setPin.errorSubtitle',
-              primaryButton: {
-                title: 'common.done',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: card.cardIdentifier },
-                }),
-              },
+            navigation.reset({
+              index: 1,
+              routes: [
+                {
+                  name: 'BottomTabs',
+                  params: {
+                    screen: 'My Cards',
+                    params: { cardId: card.cardIdentifier },
+                    cardId: card.cardIdentifier
+                  }
+                },
+                {
+                  name: 'GenericInfoScreen',
+                  params: {
+                    icon: <FailureSVG />,
+                    title: 'setPin.errorTitle',
+                    description: 'setPin.errorSubtitle',
+                    primaryButton: {
+                      title: 'common.done',
+                      onPress: () => navigation.navigate('BottomTabs', {
+                        screen: 'My Cards',
+                        params: { cardId: card.cardIdentifier },
+                        cardId: card.cardIdentifier,
+                      }),
+                    },
+                  }
+                }
+              ],
             });
             reject(error);
           } else {
-            navigation.navigate('GenericInfoScreen', {
-              icon: <SuccessSVG />,
-              title: 'setPin.successTitle',
-              description: 'setPin.successSubtitle',
-              primaryButton: {
-                title: 'common.done',
-                onPress: () => navigation.navigate('BottomTabs', {
-                  screen: 'My Cards',
-                  params: { cardId: card.cardIdentifier },
-                }),
-              },
+            navigation.reset({
+              index: 1,
+              routes: [
+                {
+                  name: 'BottomTabs',
+                  params: {
+                    screen: 'My Cards',
+                    params: { cardId: card.cardIdentifier },
+                    cardId: card.cardIdentifier
+                  }
+                },
+                {
+                  name: 'GenericInfoScreen',
+                  params: {
+                    icon: <SuccessSVG />,
+                    title: 'setPin.successTitle',
+                    description: 'setPin.successSubtitle',
+                    primaryButton: {
+                      title: 'common.done',
+                      onPress: () => navigation.navigate('BottomTabs', {
+                        screen: 'My Cards',
+                        params: { cardId: card.cardIdentifier },
+                        cardId: card.cardIdentifier,
+                      }),
+                    },
+                  }
+                }
+              ],
             });
             resolve();
           }

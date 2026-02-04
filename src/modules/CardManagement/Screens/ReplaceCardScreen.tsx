@@ -71,31 +71,65 @@ const ReplaceCardScreen = () => {
     if (!card?.cardIdentifier || !selectedReason) return;
     try {
       await replaceCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
-      navigation.navigate('GenericInfoScreen', {
-        icon: <SuccessSVG />,
-        title: 'replaceCard.successTitle',
-        description: 'replaceCard.successSubtitle',
-        primaryButton: {
-          title: 'common.done',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: card.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: card.cardIdentifier },
+              cardId: card.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <SuccessSVG />,
+              title: 'replaceCard.successTitle',
+              description: 'replaceCard.successSubtitle',
+              primaryButton: {
+                title: 'common.done',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: card.cardIdentifier },
+                  cardId: card.cardIdentifier,
+                }),
+              },
+            }
+          }
+        ],
       });
     } catch (error: any) {
       console.error('Failed to replace card', error);
-      navigation.navigate('GenericInfoScreen', {
-        icon: <FailureSVG />,
-        title: 'replaceCard.errorTitle',
-        description: 'replaceCard.errorSubtitle',
-        primaryButton: {
-          title: 'common.tryAgain',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: card.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: card.cardIdentifier },
+              cardId: card.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <FailureSVG />,
+              title: 'replaceCard.errorTitle',
+              description: 'replaceCard.errorSubtitle',
+              primaryButton: {
+                title: 'common.tryAgain',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: card.cardIdentifier },
+                  cardId: card.cardIdentifier,
+                }),
+              },
+            }
+          }
+        ],
       });
     }
   };

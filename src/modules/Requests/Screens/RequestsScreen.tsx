@@ -38,6 +38,130 @@ import { useNavigation } from '@react-navigation/native';
 
 // Redundant local helpers removed, now imported from RequestInfoGroup
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: ms(16),
+  },
+  rightButton: {
+    padding: ms(6),
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.s,
+    marginTop: Spacing.m,
+  },
+  searchBar: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  searchInputContainer: {
+    borderWidth: 1,
+    borderRadius: ms(8),
+  },
+  filterButton: {
+    padding: ms(10),
+    borderRadius: ms(8),
+  },
+  requestCountText: {
+    marginVertical: Spacing.m,
+  },
+  listContent: {
+    paddingBottom: ms(100),
+    gap: Spacing.m,
+  },
+  requestCard: {
+    borderRadius: ms(16),
+    padding: ms(16),
+    gap: Spacing.m,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  requestID: {
+    fontWeight: '700',
+    fontSize: ms(14),
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(4),
+    borderRadius: ms(12),
+    gap: ms(4),
+  },
+  badgeDot: {
+    width: ms(6),
+    height: ms(6),
+    borderRadius: ms(3),
+  },
+  badgeText: {
+    fontSize: ms(11),
+    fontWeight: '500',
+  },
+  filterContent: {
+    gap: Spacing.xl,
+    paddingBottom: Spacing.m,
+  },
+  footerContainer: {
+    paddingVertical: Spacing.m,
+    alignItems: 'center',
+  },
+  footerText: {
+    opacity: 0.6,
+  },
+  emptyContainer: {
+    flex: 1,
+    paddingTop: ms(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    opacity: 0.6,
+    textAlign: 'center',
+  },
+  filterSection: {
+    gap: Spacing.s,
+  },
+  filterLabel: {
+    fontWeight: '600',
+    marginBottom: 0,
+  },
+  filterInputContainer: {
+    height: ms(48),
+  },
+  filterActions: {
+    flexDirection: 'row',
+    gap: Spacing.m,
+    marginTop: Spacing.s,
+  },
+  resetButton: {
+    flex: 1,
+  },
+  applyButton: {
+    flex: 1,
+  },
+  selectionContent: {
+    gap: Spacing.m,
+    paddingBottom: Spacing.l,
+  },
+  selectionItem: {
+    borderRadius: ms(12),
+    padding: ms(12),
+    borderWidth: 1,
+  },
+  selectionLabel: {
+    fontSize: ms(16),
+    fontWeight: '500',
+  },
+  rangeInputWrapper: {
+    width: '100%',
+  },
+});
+
 const RequestsScreen = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -535,129 +659,5 @@ const RequestsScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: ms(16),
-  },
-  rightButton: {
-    padding: ms(6),
-  },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    marginTop: Spacing.m,
-  },
-  searchBar: {
-    flex: 1,
-    marginBottom: 0,
-  },
-  searchInputContainer: {
-    borderWidth: 1,
-    borderRadius: ms(8),
-  },
-  filterButton: {
-    padding: ms(10),
-    borderRadius: ms(8),
-  },
-  requestCountText: {
-    marginVertical: Spacing.m,
-  },
-  listContent: {
-    paddingBottom: ms(100),
-    gap: Spacing.m,
-  },
-  requestCard: {
-    borderRadius: ms(16),
-    padding: ms(16),
-    gap: Spacing.m,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  requestID: {
-    fontWeight: '700',
-    fontSize: ms(14),
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderRadius: ms(12),
-    gap: ms(4),
-  },
-  badgeDot: {
-    width: ms(6),
-    height: ms(6),
-    borderRadius: ms(3),
-  },
-  badgeText: {
-    fontSize: ms(11),
-    fontWeight: '500',
-  },
-  filterContent: {
-    gap: Spacing.xl,
-    paddingBottom: Spacing.m,
-  },
-  footerContainer: {
-    paddingVertical: Spacing.m,
-    alignItems: 'center',
-  },
-  footerText: {
-    opacity: 0.6,
-  },
-  emptyContainer: {
-    flex: 1,
-    paddingTop: ms(100),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    opacity: 0.6,
-    textAlign: 'center',
-  },
-  filterSection: {
-    gap: Spacing.s,
-  },
-  filterLabel: {
-    fontWeight: '600',
-    marginBottom: 0,
-  },
-  filterInputContainer: {
-    height: ms(48),
-  },
-  filterActions: {
-    flexDirection: 'row',
-    gap: Spacing.m,
-    marginTop: Spacing.s,
-  },
-  resetButton: {
-    flex: 1,
-  },
-  applyButton: {
-    flex: 1,
-  },
-  selectionContent: {
-    gap: Spacing.m,
-    paddingBottom: Spacing.l,
-  },
-  selectionItem: {
-    borderRadius: ms(12),
-    padding: ms(12),
-    borderWidth: 1,
-  },
-  selectionLabel: {
-    fontSize: ms(16),
-    fontWeight: '500',
-  },
-  rangeInputWrapper: {
-    width: '100%',
-  },
-});
 
 export default RequestsScreen;
