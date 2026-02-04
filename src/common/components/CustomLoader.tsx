@@ -52,7 +52,7 @@ const CapsuleIndicator = ({ colors }: { colors: any }) => {
             i / numCapsules,
             1
           ],
-          outputRange: [colors.surface, colors.surface, colors.primaryContainer, colors.surface],
+          outputRange: [colors.surface, colors.surface, colors.primary, colors.surface],
           extrapolate: 'clamp',
         });
 

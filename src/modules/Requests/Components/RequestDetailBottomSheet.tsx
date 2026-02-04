@@ -16,6 +16,7 @@ import { useGetRequestByIdQuery } from '../../../network/requests/request.api';
 import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
 import { getGlobalRole } from '../../../context/AuthContext';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
 
-    const { data: fullRequestDetails, isLoading } = useGetRequestByIdQuery(request?.id || '', {
+    const { data: fullRequestDetails, isLoading, error, refetch } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
     });
 
@@ -150,29 +151,40 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
 
     const timeline = getTimeline();
 
+    const renderHeader = () => (
+        <View style={styles.headerTitleRow}>
+            <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
+                {t('requests.idPrefix')} {activeRequest?.id || ''}
+            </CustomText>
+            {activeRequest && (
+                <View style={[styles.badge, { backgroundColor }]}>
+                    <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
+                    <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
+                        {mainAction?.displayName || (activeRequest?.status ? t(`requests.status.${activeRequest.status}`) : '')}
+                    </CustomText>
+                </View>
+            )}
+        </View>
+    );
+
     return (
         <>
             <CustomBottomSheet
                 visible={visible}
                 onClose={onClose}
                 maxHeight={SCREEN_HEIGHT * 0.85}
-                title={
-                    <View style={styles.headerTitleRow}>
-                        <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                            {t('requests.idPrefix')} {activeRequest?.id}
-                        </CustomText>
-                        <View style={[styles.badge, { backgroundColor }]}>
-                            <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
-                            <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
-                                {mainAction?.displayName || (activeRequest?.status ? t(`requests.status.${activeRequest.status}`) : '')}
-                            </CustomText>
-                        </View>
-                    </View>
-                }
+                title={renderHeader()}
             >
                 {isLoading ? (
                     <View style={styles.loadingWrapper}>
                         <ActivityIndicator size="large" color={colors.primary} />
+                    </View>
+                ) : error ? (
+                    <View style={{ height: ms(400) }}>
+                        <CustomErrorView
+                            onRetry={refetch}
+                            loading={isLoading}
+                        />
                     </View>
                 ) : (
                     <ScrollView
@@ -188,7 +200,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         {/* Description Quote Box */}
                         {mainAction?.description && (
                             <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
-                                <CustomText style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
+                                <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
                                 <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
                                     {mainAction.description}
                                 </CustomText>

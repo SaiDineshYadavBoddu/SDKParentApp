@@ -230,7 +230,7 @@ export default function CardListScreen() {
     return (
       <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
         <CustomHeader
-          title={t('requests.title')}
+          title={t('cardList.title')}
         />
         <RequestTimeoutScreen onRetry={refetch} />
         <CustomLoader loading={isFetching} />

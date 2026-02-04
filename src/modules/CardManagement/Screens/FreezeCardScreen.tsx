@@ -99,7 +99,8 @@ const FreezeCardScreen = () => {
                 <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
                 <CustomDropdown
-                    label={`${t('freezeCard.reasonLabel')}*`}
+                    label={t('freezeCard.reasonLabel')}
+                    required={true}
                     placeholder={t('common.select')}
                     selectedValue={selectedReason ? t(`freezeCard.reasons.${selectedReason}`) : undefined}
                     onPress={() => {
@@ -117,7 +118,7 @@ const FreezeCardScreen = () => {
                 )}
             </ScrollView>
 
-            <View style={[styles.bottomButtonContainer, { borderTopColor: colors.outline }]}>
+            <View style={styles.bottomButtonContainer}>
                 <CustomButton
                     title={t('common.submit')}
                     onPress={handleSubmit}
@@ -196,7 +197,6 @@ const styles = StyleSheet.create({
     },
     bottomButtonContainer: {
         padding: Spacing.m,
-        borderTopWidth: 1,
     },
     bottomSheetContent: {
         width: '100%',

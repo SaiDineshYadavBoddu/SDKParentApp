@@ -138,17 +138,7 @@ const RequestsScreen = () => {
 
 
 
-  if (isTimeoutError) {
-    return (
-      <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
-        <CustomHeader
-          title={t('requests.title')}
-        />
-        <RequestTimeoutScreen onRetry={refetch} />
-        <CustomLoader loading={isFetching} />
-      </View>
-    );
-  }
+
 
   useEffect(() => {
     if (isFilterSheetVisible) {
@@ -212,7 +202,7 @@ const RequestsScreen = () => {
   // Local renderIcon removed, now imported from RequestInfoGroup
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
-    const mainAction = item.actions[0];
+    const mainAction = item?.actions?.[0];
     const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
     return (
@@ -256,61 +246,67 @@ const RequestsScreen = () => {
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
-          {/* Search Row */}
-          <View style={styles.searchRow}>
-            <CustomTextInput
-              placeholder={t('requests.searchPlaceholder')}
-              value={searchQuery}
-              onChangeText={(text) => {
-                setSearchQuery(text);
-                setPageNumber(0);
-              }}
-              leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
-              containerStyle={styles.searchBar}
-              inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
-            />
-            <TouchableOpacity
-              style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
-              onPress={() => {
-                Keyboard.dismiss();
-                // Small delay to allow keyboard to start dismissing
-                setTimeout(() => {
-                  setIsFilterSheetVisible(true);
-                }, 100);
-              }}
-            >
-              <FilterSVG width={ms(24)} height={ms(24)} />
-            </TouchableOpacity>
-          </View>
-
-          <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
-            {data?.totalElements || 0} {t('requests.count')}
-          </CustomText>
-
-          {error && !isFetching ? (
-            <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+          {isTimeoutError ? (
+            <RequestTimeoutScreen onRetry={refetch} />
           ) : (
-            <FlatList
-              data={data?.content || []}
-              renderItem={renderRequestItem}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              onEndReached={handleLoadMore}
-              onEndReachedThreshold={0.1}
-              keyboardDismissMode="on-drag"
-              keyboardShouldPersistTaps="handled"
-              ListFooterComponent={renderFooter}
-              ListEmptyComponent={
-                !isLoading && !isFetching ? (
-                  <View style={styles.emptyContainer}>
-                    <CustomText type={TextType.CardText} style={styles.emptyText}>
-                      {t('requests.noRequests')}
-                    </CustomText>
-                  </View>
-                ) : null
-              }
-              contentContainerStyle={styles.listContent}
-            />
+            <>
+              {/* Search Row */}
+              <View style={styles.searchRow}>
+                <CustomTextInput
+                  placeholder={t('requests.searchPlaceholder')}
+                  value={searchQuery}
+                  onChangeText={(text) => {
+                    setSearchQuery(text);
+                    setPageNumber(0);
+                  }}
+                  leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
+                  containerStyle={styles.searchBar}
+                  inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
+                />
+                <TouchableOpacity
+                  style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    // Small delay to allow keyboard to start dismissing
+                    setTimeout(() => {
+                      setIsFilterSheetVisible(true);
+                    }, 100);
+                  }}
+                >
+                  <FilterSVG width={ms(24)} height={ms(24)} />
+                </TouchableOpacity>
+              </View>
+
+              <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
+                {data?.totalElements || 0} {t('requests.count')}
+              </CustomText>
+
+              {error && !isFetching ? (
+                <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+              ) : (
+                <FlatList
+                  data={data?.content || []}
+                  renderItem={renderRequestItem}
+                  keyExtractor={(item) => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  onEndReached={handleLoadMore}
+                  onEndReachedThreshold={0.1}
+                  keyboardDismissMode="on-drag"
+                  keyboardShouldPersistTaps="handled"
+                  ListFooterComponent={renderFooter}
+                  ListEmptyComponent={
+                    !isLoading && !isFetching ? (
+                      <View style={styles.emptyContainer}>
+                        <CustomText type={TextType.CardText} style={styles.emptyText}>
+                          {t('requests.noRequests')}
+                        </CustomText>
+                      </View>
+                    ) : null
+                  }
+                  contentContainerStyle={styles.listContent}
+                />
+              )}
+            </>
           )}
         </View>
       </TouchableWithoutFeedback>
@@ -641,7 +637,6 @@ const styles = StyleSheet.create({
     borderRadius: ms(12),
     padding: ms(12),
     borderWidth: 1,
-    borderBottomWidth: 1,
   },
   selectionLabel: {
     fontSize: ms(16),

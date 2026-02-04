@@ -21,6 +21,7 @@ interface CustomDropdownProps {
     error?: string;
     innerContainerStyle?: StyleProp<ViewStyle>;
     disabled?: boolean;
+    required?: boolean;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -32,6 +33,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     error,
     innerContainerStyle,
     disabled = false,
+    required = false,
 }) => {
     const { colors } = useTheme();
 
@@ -42,6 +44,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     type={TextType.Label}
                 >
                     {label}
+                    {required && <CustomText type={TextType.Label} colorOverride={colors.error}> *</CustomText>}
                 </CustomText>
             )}
             <TouchableOpacity

@@ -123,7 +123,8 @@ const ReplaceCardScreen = () => {
         <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
 
         <CustomDropdown
-          label={`${t('replaceCard.selectReasonForReplacement')}*`}
+          label={t('replaceCard.selectReasonForReplacement')}
+          required={true}
           placeholder={t('common.select')}
           selectedValue={
             selectedReason
@@ -245,7 +246,6 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     padding: Spacing.m,
-    borderTopWidth: 1,
   },
   bottomSheetContent: {
     width: '100%',

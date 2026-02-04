@@ -23,6 +23,7 @@ interface CustomTextInputProps extends TextInputProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   multiline?: boolean;
+  required?: boolean;
 }
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
@@ -36,6 +37,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   onFocus,
   onBlur,
   multiline,
+  required = false,
   ...rest
 }) => {
   const { colors } = useTheme();
@@ -64,6 +66,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
           type={TextType.Label}
         >
           {label}
+          {required && <CustomText type={TextType.Label} colorOverride={colors.error}> *</CustomText>}
         </CustomText>
       )}
       <View

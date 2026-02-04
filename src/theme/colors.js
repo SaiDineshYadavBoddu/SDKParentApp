@@ -61,63 +61,63 @@ export const lightColors = {
 };
 
 export const darkColors = {
-  primary: '#9FCAFF',
-  onPrimary: '#003259',
+  primary: '#0069B1',
+  onPrimary: '#FFFFFF',
 
-  primaryContainer: '#004A7E',
-  onPrimaryContainer: '#D2E4FF',
+  primaryContainer: '#D2E4FF',
+  onPrimaryContainer: '#001D37',
 
-  background: '#1A1C1E',
-  onBackground: '#E2E2E6',
+  background: '#FFFFFF',
+  onBackground: '#000000',
 
-  backgroundVariant: '#394b57ff',
-  onBackgroundVariant: '#ffffff',
+  backgroundVariant: '#E6F0F7',
+  onBackgroundVariant: '#000000',
 
-  surface: '#43474E',
-  onSurface: '#C3C6CF',
+  surface: '#FFFFFF',
+  onSurface: '#1A1C1E',
 
-  error: '#FFB4AB',
-  onError: '#690005',
+  error: '#BA1A1A',
+  onError: '#FFFFFF',
 
-  errorContainer: '#93000A',
-  onErrorContainer: '#FFB4AB',
+  errorContainer: '#FFDAD6',
+  onErrorContainer: '#410002',
 
-  textColor: "#FFFFFF",
+  textColor: "#000000",
   textColorDisabled: "#B3B3B3",
-  warningContainer: "#4A3B00", // Darker yellow/brown for dark mode
+  warningContainer: "#FEF8E6",
 
-  outline: '#44474F',
-  secondaryText: '#C4C6CF',
-  tertiaryText: '#8E9199',
-  screenBackground: '#111318',
-  secondaryScreenBackground: '#15171B',
+  outline: '#E0E0E0',
+  secondaryText: '#707070',
+  tertiaryText: '#9E9E9E',
+  screenBackground: '#F5F7F9',
+  secondaryScreenBackground: '#F5F9FC',
 
-  // Status/Badge colors (Dark mode versions)
-  statusInProgress: '#D2E4FF',
-  onStatusInProgress: '#004A7E',
+  // Status/Badge colors
+  statusInProgress: '#2E84BF',
+  onStatusInProgress: '#E3F2FD',
 
-  statusResolved: '#B4F2BE',
-  onStatusResolved: '#00522B',
+  statusResolved: '#2FBF71',
+  onStatusResolved: '#E8F5E9',
 
-  statusActivation: '#E9DDFF',
-  onStatusActivation: '#4A325F',
+  statusActivation: '#C09BD8',
+  onStatusActivation: '#F0E7F6',
 
-  statusUnblocking: '#FFDE9C',
-  onStatusUnblocking: '#584400',
+  statusUnblocking: '#C97A20',
+  onStatusUnblocking: '#FFF1B8',
 
-  statusBlocked: '#FFB4AB',
-  onStatusBlocked: '#690005',
+  statusBlocked: '#BA1A1A',
+  onStatusBlocked: '#FFDAD6',
 
-  statusReplacement: '#9FCAFF',
-  onStatusReplacement: '#003259',
+  statusReplacement: '#0069B1',
+  onStatusReplacement: '#D2E4FF',
 
-  statusClosure: '#C4C6CF',
-  onStatusClosure: '#43474E',
+  statusClosure: '#616161',
+  onStatusClosure: '#E0E0E0',
 
-  filterButtonBg: '#1D242B',
+  filterButtonBg: '#E3F2FD',
 
   // Inverse colors (Toast/Snackbar)
-  inverseSurface: '#E6E1E5',
-  inverseOnSurface: '#313033',
-  inversePrimary: '#0069B1',
+  inverseSurface: '#070707',
+  inverseOnSurface: '#FFFFFF',
+  inversePrimary: '#FFFFFF',
 };
