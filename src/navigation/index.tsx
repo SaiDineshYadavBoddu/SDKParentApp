@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import { StyleSheet, View, BackHandler } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AuthStack from './AuthStack';
@@ -12,17 +15,30 @@ import { ms } from 'react-native-size-matters';
 import NoInternetToast from '../common/components/NoInternetToast';
 import { SessionTimeoutProvider } from '../context/SessionTimeoutContext';
 import { navigateToNoInternetScreen } from '../utils/navigationUtils';
-import { initializeNavigationRef, getCurrentRouteName, goBack } from '../utils/navigationRefUtils';
+import {
+  initializeNavigationRef,
+  getCurrentRouteName,
+  goBack,
+} from '../utils/navigationRefUtils';
 import ScreenWrapper from '../common/components/ScreenWrapper';
 import { useTheme } from '../theme/ThemeProvider';
 import CustomWarning from '../common/components/CustomWarning';
-import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
+import AccessRestrictedScreen from '../modules/Authentication/screens/AccessRestrictedScreen.tsx';
 import { Spacing } from '../theme/spacing';
 import CustomLoader from '../common/components/CustomLoader';
 import ConfirmationBottomSheet from '../common/components/ConfirmationBottomSheet';
 
 const NavigationContent = () => {
-  const { isAuthenticated, checkIsInternetConnected, isConnected, sessionExpired, setSessionExpired, isCardholder, signOut, isLoading } = useAuth();
+  const {
+    isAuthenticated,
+    checkIsInternetConnected,
+    isConnected,
+    sessionExpired,
+    setSessionExpired,
+    isCardholder,
+    signOut,
+    isLoading,
+  } = useAuth();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -42,7 +58,11 @@ const NavigationContent = () => {
 
     if (isConnected === false && !hasLaunchCheckPassed) {
       navigateToNoInternetScreen();
-    } else if (isConnected === true && (getCurrentRouteName() === 'GenericInfoScreen' || getCurrentRouteName() === 'AuthInfoScreen')) {
+    } else if (
+      isConnected === true &&
+      (getCurrentRouteName() === 'GenericInfoScreen' ||
+        getCurrentRouteName() === 'AuthInfoScreen')
+    ) {
       goBack();
     }
   }, [isConnected, hasLaunchCheckPassed, navigationRef]);
@@ -64,7 +84,10 @@ const NavigationContent = () => {
       return false;
     };
 
-    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress,
+    );
 
     return () => subscription.remove();
   }, [navigationRef, isAuthenticated]);
@@ -82,7 +105,12 @@ const NavigationContent = () => {
     if (isLoading) {
       // Return null or a simple View during loading to prevent stacks from mounting/flashing
       return (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: colors.background },
+          ]}
+        />
       );
     }
     if (isAuthenticated) {
@@ -97,9 +125,7 @@ const NavigationContent = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <NavigationContainer ref={navigationRef}>
-        <ScreenWrapper edges={['bottom']}>
-          {renderMainContent()}
-        </ScreenWrapper>
+        <ScreenWrapper edges={['bottom']}>{renderMainContent()}</ScreenWrapper>
       </NavigationContainer>
       {hasLaunchCheckPassed && isConnected === false && (
         <View style={[styles.toastOverlay, { paddingBottom: insets.bottom }]}>
@@ -108,16 +134,14 @@ const NavigationContent = () => {
       )}
       {sessionExpired && (
         <View style={styles.sessionExpiredToast}>
-          <CustomWarning
-            message="Session expired, signing out"
-          />
+          <CustomWarning message="Session expired, signing out" />
         </View>
       )}
       <CustomLoader
         loading={isLoading}
         overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
       />
-      
+
       <ConfirmationBottomSheet
         visible={showExitConfirm}
         onClose={() => setShowExitConfirm(false)}
