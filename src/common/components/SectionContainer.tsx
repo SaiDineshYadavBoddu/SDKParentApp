@@ -68,7 +68,7 @@ export default function SectionContainer({
         end={item.end}
         body={item.body}
         onPress={item.onPress}
-        style={item.style}
+        style={[item.style, {shadowOpacity : 0}]}
         disabled={item.disabled}
       />
     );
