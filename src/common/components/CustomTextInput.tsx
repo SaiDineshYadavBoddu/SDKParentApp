@@ -103,6 +103,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
           onBlur={handleBlur}
           multiline={multiline}
           textAlignVertical={multiline ? 'top' : 'center'}
+          scrollEnabled={multiline ? true : undefined}
           {...rest}
         />
         {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
