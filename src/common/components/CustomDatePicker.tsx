@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import CustomBottomSheet from './CustomBottomSheet';
 import { Calendar } from 'react-native-calendars';
 import { ms } from 'react-native-size-matters';
@@ -7,6 +7,8 @@ import { useTheme } from '../../theme/ThemeProvider';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
 import { useTranslation } from 'react-i18next';
+import ChevronLeftSVG from '../../assets/svgs/ChevronLeftSVG';
+import CheveronDownSVG from '../../assets/svgs/CheveronDownSVG';
 
 interface CustomDatePickerProps {
     visible: boolean;
@@ -31,13 +33,67 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const { t } = useTranslation();
     const [selectedStartDate, setSelectedStartDate] = useState(initialStartDate);
     const [selectedEndDate, setSelectedEndDate] = useState(initialEndDate);
+    const [currentMonth, setCurrentMonth] = useState(initialStartDate || new Date().toISOString().split('T')[0]);
+    const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
 
     useEffect(() => {
         if (visible) {
             setSelectedStartDate(initialStartDate);
             setSelectedEndDate(initialEndDate);
+            setCurrentMonth(initialStartDate || new Date().toISOString().split('T')[0]);
         }
     }, [visible, initialStartDate, initialEndDate]);
+
+    const changeMonth = (increment: number) => {
+        const date = new Date(currentMonth);
+        date.setMonth(date.getMonth() + increment);
+        setCurrentMonth(date.toISOString().split('T')[0]);
+    };
+
+    const changeYear = (year: number) => {
+        const date = new Date(currentMonth);
+        date.setFullYear(year);
+        setCurrentMonth(date.toISOString().split('T')[0]);
+        setIsYearPickerVisible(false);
+    };
+
+    const getYears = () => {
+        const currentYear = new Date().getFullYear();
+        const minYear = minDate ? new Date(minDate).getFullYear() : currentYear - 50;
+        const maxYear = maxDate ? new Date(maxDate).getFullYear() : currentYear + 20;
+        const years = [];
+        for (let i = minYear; i <= maxYear; i++) {
+            years.push(i);
+        }
+        return years.reverse();
+    };
+
+    const renderCustomHeader = () => {
+        const date = new Date(currentMonth);
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+
+        return (
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => changeMonth(-1)} style={styles.arrowButton}>
+                    <ChevronLeftSVG width={ms(24)} height={ms(24)} stroke={colors.onBackground}/>
+                </TouchableOpacity>
+                
+                <TouchableOpacity onPress={() => setIsYearPickerVisible(!isYearPickerVisible)} style={styles.yearSelector}>
+                    <CustomText type={TextType.CardTitle} style={{ marginRight: ms(8), color: colors.onBackground }}>
+                        {month} {year}
+                    </CustomText>
+                    <CheveronDownSVG width={ms(16)} height={ms(16)} stroke={colors.onBackground} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => changeMonth(1)} style={styles.arrowButton}>
+                    <View style={{ transform: [{ rotate: '180deg' }] }}>
+                        <ChevronLeftSVG width={ms(24)} height={ms(24)} stroke={colors.onBackground}/>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     const onDayPress = (day: any) => {
         if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
@@ -45,8 +101,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             setSelectedEndDate('');
         } else if (!selectedEndDate) {
             if (day.dateString < selectedStartDate) {
+                setSelectedEndDate(selectedStartDate);
                 setSelectedStartDate(day.dateString);
-                setSelectedEndDate('');
             } else {
                 setSelectedEndDate(day.dateString);
             }
@@ -110,44 +166,65 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     return (
         <CustomBottomSheet visible={visible} onClose={onClose}>
             <View style={[styles.container, { backgroundColor: colors.background }]}>
-                <Calendar
-                    onDayPress={onDayPress}
-                    markingType={'period'}
-                    minDate={minDate}
-                    maxDate={maxDate}
-                    markedDates={markedDates}
-                    theme={{
-                        calendarBackground: colors.background,
-                        textSectionTitleColor: colors.secondaryText,
-                        selectedDayBackgroundColor: colors.primary,
-                        selectedDayTextColor: '#ffffff',
-                        todayTextColor: colors.primary,
-                        dayTextColor: colors.onBackground,
-                        textDisabledColor: '#d9e1e8',
-                        dotColor: colors.primary,
-                        selectedDotColor: '#ffffff',
-                        arrowColor: colors.onBackground,
-                        monthTextColor: colors.onBackground,
-                        indicatorColor: colors.primary,
-                        textDayFontWeight: '400',
-                        textMonthFontWeight: '600',
-                        textDayHeaderFontWeight: '400',
-                        textDayFontSize: ms(14),
-                        textMonthFontSize: ms(16),
-                        textDayHeaderFontSize: ms(13),
-                        ['stylesheet.calendar.header' as any]: {
-                            header: {
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                paddingLeft: 10,
-                                paddingRight: 10,
-                                marginTop: 6,
-                                alignItems: 'center',
-                                marginBottom: 10
-                            }
-                        }
-                    }}
-                />
+                {renderCustomHeader()}
+
+                {isYearPickerVisible ? (
+                    <View style={[styles.yearPickerContainer, { backgroundColor: colors.background }]}>
+                         <CustomText type={TextType.ScreenHeadlineSmall} style={{textAlign:'center', paddingVertical: ms(10)}}>
+                            Select Year
+                         </CustomText>
+                        <FlatList
+                            data={getYears()}
+                            keyExtractor={(item) => item.toString()}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity 
+                                    style={[
+                                        styles.yearItem, 
+                                        { backgroundColor: new Date(currentMonth).getFullYear() === item ? colors.primaryContainer : 'transparent' }
+                                    ]}
+                                    onPress={() => changeYear(item)}
+                                >
+                                    <CustomText 
+                                        type={TextType.CardTitle} 
+                                        style={{ 
+                                            color: new Date(currentMonth).getFullYear() === item ? colors.onPrimaryContainer : colors.onBackground 
+                                        }}
+                                    >
+                                        {item}
+                                    </CustomText>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                ) : (
+                    <Calendar
+                        current={currentMonth}
+                        key={currentMonth}
+                        onDayPress={onDayPress}
+                        onMonthChange={(month: any) => setCurrentMonth(month.dateString)}
+                        markingType={'period'}
+                        minDate={minDate}
+                        maxDate={maxDate}
+                        markedDates={markedDates}
+                        hideArrows={true}
+                        renderHeader={() => null}
+                        theme={{
+                            calendarBackground: colors.background,
+                            textSectionTitleColor: colors.secondaryText,
+                            selectedDayBackgroundColor: colors.primary,
+                            selectedDayTextColor: '#ffffff',
+                            todayTextColor: colors.primary,
+                            dayTextColor: colors.onBackground,
+                            textDisabledColor: '#d9e1e8',
+                            dotColor: colors.primary,
+                            selectedDotColor: '#ffffff',
+                            arrowColor: colors.onBackground,
+                            monthTextColor: colors.onBackground,
+                            indicatorColor: colors.primary,
+                        }}
+                    />
+                )}
 
                 <View style={styles.footer}>
                      <View style={styles.rangeInfo}>
@@ -170,14 +247,46 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
 const styles = StyleSheet.create({
     container: {
         paddingBottom: ms(16),
+        height: ms(450),
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: ms(16),
+        paddingVertical: ms(10),
+    },
+    arrowButton: {
+        padding: ms(8),
+    },
+    yearSelector: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: ms(8),
+        borderRadius: ms(8),
+    },
+    yearPickerContainer: {
+        height: 300,
+        justifyContent: 'center',
+    },
+    yearItem: {
+        paddingVertical: ms(12),
+        paddingHorizontal: ms(32),
+        marginVertical: ms(4),
+        alignItems: 'center',
+        borderRadius: ms(8),
+        alignSelf: 'center',
+        width: '60%',
     },
     footer: {
-        marginTop: ms(16),
+        marginTop: 'auto',
         paddingHorizontal: ms(16),
     },
     rangeInfo: {
         marginBottom: ms(16),
         alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: ms(20),
     },
     applyButton: {
         width: '100%',

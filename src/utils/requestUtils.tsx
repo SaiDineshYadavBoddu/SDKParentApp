@@ -64,7 +64,7 @@ export const getProgressStatusColor = (status: string, colors: any) => {
 export const getStatusColors = (type: string, colors: any) => {
     switch (type) {
         case 'ACTIVATE':
-            return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
+             return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
         case 'UNBLOCK':
             return { backgroundColor: colors.onStatusUnblocking, textColor: colors.statusUnblocking };
         case 'BLOCK':
@@ -73,6 +73,8 @@ export const getStatusColors = (type: string, colors: any) => {
             return { backgroundColor: colors.onStatusReplacement, textColor: colors.statusReplacement };
         case 'CLOSE':
             return { backgroundColor: colors.onStatusClosure, textColor: colors.statusClosure };
+        case 'SUPPORT':
+             return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation }; // Mapping to the blueish color
         default:
             return { backgroundColor: colors.outline, textColor: colors.secondaryText };
     }

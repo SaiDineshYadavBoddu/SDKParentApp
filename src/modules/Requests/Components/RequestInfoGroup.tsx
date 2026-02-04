@@ -10,11 +10,45 @@ import { getProgressStatusIcon, getProgressStatusColor, renderIcon } from '../..
 
 interface RequestInfoGroupProps {
     item: RequestItem;
+    dateUsage?: 'list' | 'detail';
 }
 
-const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
+const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item, dateUsage = 'list' }) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        
+        if (dateUsage === 'detail') {
+             // Detail format: DD.MM.YYYY HH:MM:SS
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+        } else {
+            // List format: Today, Yesterday, or DD.MM.YYYY
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            
+            const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            if (checkDate.getTime() === today.getTime()) {
+                return 'Today'; // Should ideally use t('common.today')
+            } else if (checkDate.getTime() === yesterday.getTime()) {
+                return 'Yesterday'; // Should ideally use t('common.yesterday')
+            } else {
+                return `${day}.${month}.${year}`;
+            }
+        }
+    };
 
     const getStatusToDisplay = () => {
         if (item.status === 'CANCELLED' || item.status === 'REJECTED') {
@@ -62,7 +96,7 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item }) => {
                         <View style={styles.rightColumn}>
                             {renderIcon('calendar')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
-                                {new Date(item.createdAt).toLocaleDateString()}
+                                {formatDate(item.createdAt)}
                             </CustomText>
                         </View>
             </View>
