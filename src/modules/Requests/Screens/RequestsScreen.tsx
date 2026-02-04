@@ -38,6 +38,130 @@ import { useNavigation } from '@react-navigation/native';
 
 // Redundant local helpers removed, now imported from RequestInfoGroup
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: ms(16),
+  },
+  rightButton: {
+    padding: ms(6),
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.s,
+    marginTop: Spacing.m,
+  },
+  searchBar: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  searchInputContainer: {
+    borderWidth: 1,
+    borderRadius: ms(8),
+  },
+  filterButton: {
+    padding: ms(10),
+    borderRadius: ms(8),
+  },
+  requestCountText: {
+    marginVertical: Spacing.m,
+  },
+  listContent: {
+    paddingBottom: ms(100),
+    gap: Spacing.m,
+  },
+  requestCard: {
+    borderRadius: ms(16),
+    padding: ms(16),
+    gap: Spacing.m,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  requestID: {
+    fontWeight: '700',
+    fontSize: ms(14),
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: ms(8),
+    paddingVertical: ms(4),
+    borderRadius: ms(12),
+    gap: ms(4),
+  },
+  badgeDot: {
+    width: ms(6),
+    height: ms(6),
+    borderRadius: ms(3),
+  },
+  badgeText: {
+    fontSize: ms(11),
+    fontWeight: '500',
+  },
+  filterContent: {
+    gap: Spacing.xl,
+    paddingBottom: Spacing.m,
+  },
+  footerContainer: {
+    paddingVertical: Spacing.m,
+    alignItems: 'center',
+  },
+  footerText: {
+    opacity: 0.6,
+  },
+  emptyContainer: {
+    flex: 1,
+    paddingTop: ms(100),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    opacity: 0.6,
+    textAlign: 'center',
+  },
+  filterSection: {
+    gap: Spacing.s,
+  },
+  filterLabel: {
+    fontWeight: '600',
+    marginBottom: 0,
+  },
+  filterInputContainer: {
+    height: ms(48),
+  },
+  filterActions: {
+    flexDirection: 'row',
+    gap: Spacing.m,
+    marginTop: Spacing.s,
+  },
+  resetButton: {
+    flex: 1,
+  },
+  applyButton: {
+    flex: 1,
+  },
+  selectionContent: {
+    gap: Spacing.m,
+    paddingBottom: Spacing.l,
+  },
+  selectionItem: {
+    borderRadius: ms(12),
+    padding: ms(12),
+    borderWidth: 1,
+  },
+  selectionLabel: {
+    fontSize: ms(16),
+    fontWeight: '500',
+  },
+  rangeInputWrapper: {
+    width: '100%',
+  },
+});
+
 const RequestsScreen = () => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -138,17 +262,7 @@ const RequestsScreen = () => {
 
 
 
-  if (isTimeoutError) {
-    return (
-      <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
-        <CustomHeader
-          title={t('requests.title')}
-        />
-        <RequestTimeoutScreen onRetry={refetch} />
-        <CustomLoader loading={isFetching} />
-      </View>
-    );
-  }
+
 
   useEffect(() => {
     if (isFilterSheetVisible) {
@@ -224,7 +338,7 @@ const RequestsScreen = () => {
   };
 
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
-    const mainAction = item.actions[0];
+    const mainAction = item?.actions?.[0];
     const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
     return (
@@ -268,61 +382,67 @@ const RequestsScreen = () => {
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
-          {/* Search Row */}
-          <View style={styles.searchRow}>
-            <CustomTextInput
-              placeholder={t('requests.searchPlaceholder')}
-              value={searchQuery}
-              onChangeText={(text) => {
-                setSearchQuery(text);
-                setPageNumber(0);
-              }}
-              leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
-              containerStyle={styles.searchBar}
-              inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
-            />
-            <TouchableOpacity
-              style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
-              onPress={() => {
-                Keyboard.dismiss();
-                // Small delay to allow keyboard to start dismissing
-                setTimeout(() => {
-                  setIsFilterSheetVisible(true);
-                }, 100);
-              }}
-            >
-              <FilterSVG width={ms(24)} height={ms(24)} />
-            </TouchableOpacity>
-          </View>
-
-          <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
-            {data?.totalElements || 0} {t('requests.count')}
-          </CustomText>
-
-          {error && !isFetching ? (
-            <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+          {isTimeoutError ? (
+            <RequestTimeoutScreen onRetry={refetch} />
           ) : (
-            <FlatList
-              data={data?.content || []}
-              renderItem={renderRequestItem}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              onEndReached={handleLoadMore}
-              onEndReachedThreshold={0.1}
-              keyboardDismissMode="on-drag"
-              keyboardShouldPersistTaps="handled"
-              ListFooterComponent={renderFooter}
-              ListEmptyComponent={
-                !isLoading && !isFetching ? (
-                  <View style={styles.emptyContainer}>
-                    <CustomText type={TextType.CardText} style={styles.emptyText}>
-                      {t('requests.noRequests')}
-                    </CustomText>
-                  </View>
-                ) : null
-              }
-              contentContainerStyle={styles.listContent}
-            />
+            <>
+              {/* Search Row */}
+              <View style={styles.searchRow}>
+                <CustomTextInput
+                  placeholder={t('requests.searchPlaceholder')}
+                  value={searchQuery}
+                  onChangeText={(text) => {
+                    setSearchQuery(text);
+                    setPageNumber(0);
+                  }}
+                  leftIcon={<SearchSVG width={ms(20)} height={ms(20)} />}
+                  containerStyle={styles.searchBar}
+                  inputContainerStyle={[styles.searchInputContainer, { borderColor: colors.outline, backgroundColor: colors.surface }]}
+                />
+                <TouchableOpacity
+                  style={[styles.filterButton, { backgroundColor: colors.filterButtonBg }]}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    // Small delay to allow keyboard to start dismissing
+                    setTimeout(() => {
+                      setIsFilterSheetVisible(true);
+                    }, 100);
+                  }}
+                >
+                  <FilterSVG width={ms(24)} height={ms(24)} />
+                </TouchableOpacity>
+              </View>
+
+              <CustomText type={TextType.CardSubtitle} style={[styles.requestCountText, Typography.labelMedium, { color: colors.tertiaryText }]}>
+                {data?.totalElements || 0} {t('requests.count')}
+              </CustomText>
+
+              {error && !isFetching ? (
+                <CustomErrorView onRetry={() => setPageNumber(0)} loading={isFetching} />
+              ) : (
+                <FlatList
+                  data={data?.content || []}
+                  renderItem={renderRequestItem}
+                  keyExtractor={(item) => item.id.toString()}
+                  showsVerticalScrollIndicator={false}
+                  onEndReached={handleLoadMore}
+                  onEndReachedThreshold={0.1}
+                  keyboardDismissMode="on-drag"
+                  keyboardShouldPersistTaps="handled"
+                  ListFooterComponent={renderFooter}
+                  ListEmptyComponent={
+                    !isLoading && !isFetching ? (
+                      <View style={styles.emptyContainer}>
+                        <CustomText type={TextType.CardText} style={styles.emptyText}>
+                          {t('requests.noRequests')}
+                        </CustomText>
+                      </View>
+                    ) : null
+                  }
+                  contentContainerStyle={styles.listContent}
+                />
+              )}
+            </>
           )}
         </View>
       </TouchableWithoutFeedback>
@@ -539,130 +659,5 @@ const RequestsScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: ms(16),
-  },
-  rightButton: {
-    padding: ms(6),
-  },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.s,
-    marginTop: Spacing.m,
-  },
-  searchBar: {
-    flex: 1,
-    marginBottom: 0,
-  },
-  searchInputContainer: {
-    borderWidth: 1,
-    borderRadius: ms(8),
-  },
-  filterButton: {
-    padding: ms(10),
-    borderRadius: ms(8),
-  },
-  requestCountText: {
-    marginVertical: Spacing.m,
-  },
-  listContent: {
-    paddingBottom: ms(100),
-    gap: Spacing.m,
-  },
-  requestCard: {
-    borderRadius: ms(16),
-    padding: ms(16),
-    gap: Spacing.m,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  requestID: {
-    fontWeight: '700',
-    fontSize: ms(14),
-  },
-  badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: ms(8),
-    paddingVertical: ms(4),
-    borderRadius: ms(12),
-    gap: ms(4),
-  },
-  badgeDot: {
-    width: ms(6),
-    height: ms(6),
-    borderRadius: ms(3),
-  },
-  badgeText: {
-    fontSize: ms(11),
-    fontWeight: '500',
-  },
-  filterContent: {
-    gap: Spacing.xl,
-    paddingBottom: Spacing.m,
-  },
-  footerContainer: {
-    paddingVertical: Spacing.m,
-    alignItems: 'center',
-  },
-  footerText: {
-    opacity: 0.6,
-  },
-  emptyContainer: {
-    flex: 1,
-    paddingTop: ms(100),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    opacity: 0.6,
-    textAlign: 'center',
-  },
-  filterSection: {
-    gap: Spacing.s,
-  },
-  filterLabel: {
-    fontWeight: '600',
-    marginBottom: 0,
-  },
-  filterInputContainer: {
-    height: ms(48),
-  },
-  filterActions: {
-    flexDirection: 'row',
-    gap: Spacing.m,
-    marginTop: Spacing.s,
-  },
-  resetButton: {
-    flex: 1,
-  },
-  applyButton: {
-    flex: 1,
-  },
-  selectionContent: {
-    gap: Spacing.m,
-    paddingBottom: Spacing.l,
-  },
-  selectionItem: {
-    borderRadius: ms(12),
-    padding: ms(12),
-    borderWidth: 1,
-    borderBottomWidth: 1,
-  },
-  selectionLabel: {
-    fontSize: ms(16),
-    fontWeight: '500',
-  },
-  rangeInputWrapper: {
-    width: '100%',
-  },
-});
 
 export default RequestsScreen;

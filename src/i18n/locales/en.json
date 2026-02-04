@@ -394,6 +394,7 @@
       "dispute": "Dispute"
     },
     "detailSheet": {
+      "errorTitle": "Request Details",
       "detailsTitle": "Details",
       "decisionTitle": "Decision Details",
       "autoApproved": "Auto approved {{date}}",

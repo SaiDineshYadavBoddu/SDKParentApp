@@ -64,7 +64,7 @@ export default function CardListScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const route = useRoute<any>();
-  const [activeCardId, setActiveCardId] = React.useState<string | null>(null);
+  const [activeCardId, setActiveCardId] = React.useState<string | null>(route.params?.cardId || null);
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
   const [showUnblockConfirm, setShowUnblockConfirm] = React.useState(false);
@@ -97,8 +97,8 @@ export default function CardListScreen() {
 
   // Handle initial focus and navigation params
   React.useEffect(() => {
+    const paramCardId = route.params?.cardId;
     if (cards.length > 0) {
-      const paramCardId = route.params?.cardId;
       if (paramCardId) {
         const targetId = String(paramCardId);
 
@@ -124,7 +124,7 @@ export default function CardListScreen() {
         setActiveCardId(cards[0].cardIdentifier);
       }
     }
-  }, [route.params?.cardId, cards, activeCardId]);
+  }, [route.params?.cardId, cards.length, activeCardId]);
 
   // Separate effect to handle the initialization lock to prevent it from being stuck
   // due to dependency-triggered re-renders clearing the timer.
@@ -186,31 +186,65 @@ export default function CardListScreen() {
     try {
       await activateCard({ cardId: activeCard.cardIdentifier, actionToken }).unwrap();
       refetch();
-      navigation.navigate('GenericInfoScreen', {
-        icon: <SuccessSVG />,
-        title: 'activateCard.successTitle',
-        description: 'activateCard.successSubtitle',
-        primaryButton: {
-          title: 'common.done',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: activeCard.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: activeCard.cardIdentifier },
+              cardId: activeCard.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <SuccessSVG />,
+              title: 'activateCard.successTitle',
+              description: 'activateCard.successSubtitle',
+              primaryButton: {
+                title: 'common.done',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: activeCard.cardIdentifier },
+                  cardId: activeCard.cardIdentifier,
+                }),
+              },
+            }
+          }
+        ],
       });
     } catch (err: any) {
       console.error('Failed to activate card:', err);
-      navigation.navigate('GenericInfoScreen', {
-        icon: <FailureSVG />,
-        title: 'activateCard.errorTitle',
-        description: 'activateCard.errorSubtitle',
-        primaryButton: {
-          title: 'common.done',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: activeCard.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: activeCard.cardIdentifier },
+              cardId: activeCard.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <FailureSVG />,
+              title: 'activateCard.errorTitle',
+              description: 'activateCard.errorSubtitle',
+              primaryButton: {
+                title: 'common.done',
+                onPress: () => navigation.navigate('BottomTabs', {
+                  screen: 'My Cards',
+                  params: { cardId: activeCard.cardIdentifier },
+                  cardId: activeCard.cardIdentifier,
+                }),
+              },
+            }
+          }
+        ],
       });
     }
   };
@@ -230,7 +264,7 @@ export default function CardListScreen() {
     return (
       <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
         <CustomHeader
-          title={t('requests.title')}
+          title={t('cardList.title')}
         />
         <RequestTimeoutScreen onRetry={refetch} />
         <CustomLoader loading={isFetching} />
@@ -437,26 +471,66 @@ export default function CardListScreen() {
               await unblockCard({ cardId: activeCard.cardIdentifier }).unwrap();
               setShowUnblockConfirm(false);
               refetch();
-              navigation.navigate('GenericInfoScreen', {
-                icon: <SuccessSVG />,
-                title: 'unblockCard.successTitle',
-                description: 'unblockCard.successSubtitle',
-                primaryButton: {
-                  title: 'common.done',
-                  onPress: () => navigation.navigate('My Cards', { cardId: activeCard.cardIdentifier }),
-                },
+              navigation.reset({
+                index: 1,
+                routes: [
+                  {
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: activeCard.cardIdentifier },
+                      cardId: activeCard.cardIdentifier
+                    }
+                  },
+                  {
+                    name: 'GenericInfoScreen',
+                    params: {
+                      icon: <SuccessSVG />,
+                      title: 'unblockCard.successTitle',
+                      description: 'unblockCard.successSubtitle',
+                      primaryButton: {
+                        title: 'common.done',
+                        onPress: () => navigation.navigate('BottomTabs', {
+                          screen: 'My Cards',
+                          params: { cardId: activeCard.cardIdentifier },
+                          cardId: activeCard.cardIdentifier,
+                        }),
+                      },
+                    }
+                  }
+                ],
               });
             } catch (err: any) {
               console.error('Failed to unblock card:', err);
               setShowUnblockConfirm(false);
-              navigation.navigate('GenericInfoScreen', {
-                icon: <FailureSVG />,
-                title: 'unblockCard.errorTitle',
-                description: 'unblockCard.errorSubtitle',
-                primaryButton: {
-                  title: 'common.tryAgain',
-                  onPress: () => navigation.goBack(),
-                },
+              navigation.reset({
+                index: 1,
+                routes: [
+                  {
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: activeCard.cardIdentifier },
+                      cardId: activeCard.cardIdentifier
+                    }
+                  },
+                  {
+                    name: 'GenericInfoScreen',
+                    params: {
+                      icon: <FailureSVG />,
+                      title: 'unblockCard.errorTitle',
+                      description: 'unblockCard.errorSubtitle',
+                      primaryButton: {
+                        title: 'common.tryAgain',
+                        onPress: () => navigation.navigate('BottomTabs', {
+                          screen: 'My Cards',
+                          params: { cardId: activeCard.cardIdentifier },
+                          cardId: activeCard.cardIdentifier,
+                        }),
+                      },
+                    }
+                  }
+                ],
               });
             }
           }
