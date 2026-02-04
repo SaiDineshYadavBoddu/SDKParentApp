@@ -44,31 +44,77 @@ const FreezeCardScreen = () => {
         if (!card?.cardIdentifier || !selectedReason) return;
         try {
             await blockCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
-            navigation.navigate('GenericInfoScreen', {
-                icon: <SuccessSVG />,
-                title: 'freezeCard.successTitle',
-                description: isPermanent ? 'freezeCard.successSubtitlePerm' : 'freezeCard.successSubtitleTemp',
-                primaryButton: {
-                    title: 'common.done',
-                    onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                    }),
-                },
+            navigation.reset({
+                index: 1,
+                routes: [
+                    {
+                        name: 'BottomTabs',
+                        params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier
+                        }
+                    },
+                    {
+                        name: 'GenericInfoScreen',
+                        params: {
+                            icon: <SuccessSVG />,
+                            title: 'freezeCard.successTitle',
+                            description: isPermanent ? 'freezeCard.successSubtitlePerm' : 'freezeCard.successSubtitleTemp',
+                            primaryButton: {
+                                title: 'common.done',
+                                onPress: () => navigation.reset({
+                                    index: 0,
+                                    routes: [{
+                                        name: 'BottomTabs',
+                                        params: {
+                                            screen: 'My Cards',
+                                            params: { cardId: card.cardIdentifier },
+                                            cardId: card.cardIdentifier,
+                                        },
+                                    }],
+                                }),
+                            },
+                        }
+                    }
+                ],
             });
         } catch (error: any) {
             console.error('Failed to block card', error);
-            navigation.navigate('GenericInfoScreen', {
-                icon: <FailureSVG />,
-                title: 'freezeCard.errorTitle',
-                description: 'freezeCard.errorSubtitle',
-                primaryButton: {
-                    title: 'common.done',
-                    onPress: () => navigation.navigate('BottomTabs', {
-                        screen: 'My Cards',
-                        params: { cardId: card.cardIdentifier },
-                    }),
-                },
+            navigation.reset({
+                index: 1,
+                routes: [
+                    {
+                        name: 'BottomTabs',
+                        params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier
+                        }
+                    },
+                    {
+                        name: 'GenericInfoScreen',
+                        params: {
+                            icon: <FailureSVG />,
+                            title: 'freezeCard.errorTitle',
+                            description: 'freezeCard.errorSubtitle',
+                            primaryButton: {
+                                title: 'common.done',
+                                onPress: () => navigation.reset({
+                                    index: 0,
+                                    routes: [{
+                                        name: 'BottomTabs',
+                                        params: {
+                                            screen: 'My Cards',
+                                            params: { cardId: card.cardIdentifier },
+                                            cardId: card.cardIdentifier,
+                                        },
+                                    }],
+                                }),
+                            },
+                        }
+                    }
+                ],
             });
         }
     };
@@ -100,6 +146,7 @@ const FreezeCardScreen = () => {
 
                 <CustomDropdown
                     label={t('freezeCard.reasonLabel')}
+                    required={true}
                     placeholder={t('common.select')}
                     selectedValue={selectedReason ? t(`freezeCard.reasons.${selectedReason}`) : undefined}
                     onPress={() => {
@@ -117,12 +164,12 @@ const FreezeCardScreen = () => {
                 )}
             </ScrollView>
 
-            <View style={[styles.bottomButtonContainer, { borderTopColor: colors.outline }]}>
+            <View style={styles.bottomButtonContainer}>
                 <CustomButton
                     title={t('common.submit')}
                     onPress={handleSubmit}
                     disabled={!selectedReason}
-                    style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
+                    style={{ width: '100%' }}
                 />
             </View>
 
@@ -131,7 +178,10 @@ const FreezeCardScreen = () => {
                 onClose={() => setBottomSheetVisible(false)}
                 title={t('freezeCard.title')}
             >
-                <View style={styles.bottomSheetContent}>
+                <ScrollView
+                    contentContainerStyle={styles.bottomSheetContent}
+                    showsVerticalScrollIndicator={false}
+                >
                     {FREEZE_CARD_REASONS.map((reason) => (
                         <CustomRadioButton
                             key={reason}
@@ -161,7 +211,7 @@ const FreezeCardScreen = () => {
                         disabled={!tempReason}
                         style={styles.confirmButton}
                     />
-                </View>
+                </ScrollView>
             </CustomBottomSheet>
         </View>
     );
@@ -193,7 +243,6 @@ const styles = StyleSheet.create({
     },
     bottomButtonContainer: {
         padding: Spacing.m,
-        borderTopWidth: 1,
     },
     bottomSheetContent: {
         width: '100%',

@@ -6,15 +6,17 @@
  * @returns Formatted string like "**** 1234"
  */
 export const formatMaskedCardNumber = (cardNumber?: string): string => {
-    if (!cardNumber) return '**** ****';
+    if (!cardNumber) return '**** **** **** ****';
 
     // Remove any existing spaces or special characters
     const cleanNumber = cardNumber.replace(/[\s-]/g, '');
 
-    // Get the last 4 digits
+    if (cleanNumber.length < 12) return cleanNumber;
+
+    const firstFour = cleanNumber.slice(0, 4);
     const lastFour = cleanNumber.slice(-4);
 
-    return `**** ${lastFour}`;
+    return `${firstFour} **** **** ${lastFour}`;
 };
 
 // Card status check utilities

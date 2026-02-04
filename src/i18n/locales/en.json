@@ -70,7 +70,10 @@
       "Stolen": "Card is stolen",
       "Damaged": "Card damaged",
       "Fraud": "Fraud on the card"
-    }
+    },
+    "confirmTitle": "Confirm Card Replacement",
+    "confirmMessage": "Once the replacement is confirmed, the card will be blocked due to the selected reason.",
+    "sendRequest": "Send request"
   },
   "onboarding": {
     "step1": {
@@ -107,7 +110,7 @@
     "subtitle": "Are you sure you want to close this card?",
     "warning": "After request approval the closure process will be initiated. Card actions will be unavailable",
     "reasonPlaceholder": "Optional",
-    "successTitle": "Card Closed successfully",
+    "successTitle": "Card closure request sent for approval",
     "successSubtitle": "",
     "errorTitle": "Card closure request failed",
     "errorSubtitle": "Please try again"
@@ -391,6 +394,7 @@
       "dispute": "Dispute"
     },
     "detailSheet": {
+      "errorTitle": "Request Details",
       "detailsTitle": "Details",
       "decisionTitle": "Decision Details",
       "autoApproved": "Auto approved {{date}}",
@@ -400,7 +404,8 @@
       "processingFailed": "Processing failed",
       "processed": "Processed successfully",
       "retry": "Retry",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelRequest": "Cancel Request"
     },
     "noRequests": "No requests available"
   },

@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Animated, Dimensions } from 'react-native
 import { ms } from 'react-native-size-matters';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomText, { TextType } from '../../../common/components/CustomText';
+import CustomButton from '../../../common/components/CustomButton';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
 import PaymentCard from '../../../common/components/PaymentCard';
@@ -12,10 +13,11 @@ import RequestTimeline, { TimelineEvent } from './RequestTimeline';
 import { useTranslation } from 'react-i18next';
 import { RequestItem } from '../../../network/requests/request.types';
 import { getStatusColors } from '../../../utils/requestUtils';
-import { useGetRequestByIdQuery } from '../../../network/requests/request.api';
+import { useGetRequestByIdQuery, useRetryRequestMutation } from '../../../network/requests/request.api';
 import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
 import { getGlobalRole } from '../../../context/AuthContext';
+import CustomErrorView from '../../../common/components/CustomErrorView';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -23,21 +25,24 @@ interface RequestDetailBottomSheetProps {
     visible: boolean;
     onClose: () => void;
     request: RequestItem | null;
+    onCancelRequest?: () => void;
 }
 
 const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     visible,
     onClose,
     request,
+    onCancelRequest,
 }) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useRef(new Animated.Value(0)).current;
 
-    const { data: fullRequestDetails, isLoading } = useGetRequestByIdQuery(request?.id || '', {
+    const { data: fullRequestDetails, isLoading, error, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
     });
+    const [retryRequest, { isLoading: isRetryLoading }] = useRetryRequestMutation();
 
     // Use fetched details if available, otherwise fallback to the item from the list
     const activeRequest = fullRequestDetails || request;
@@ -57,7 +62,6 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const cardData = searchResults?.content?.[0];
 
     if (!activeRequest && !isLoading) return null;
-
 
     const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
 
@@ -150,29 +154,50 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
 
     const timeline = getTimeline();
 
+    const renderHeader = () => (
+        <View style={styles.headerTitleRow}>
+            <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
+                {t('requests.idPrefix')} {activeRequest?.id || ''}
+            </CustomText>
+            {activeRequest && (
+                <View style={[styles.badge, { backgroundColor }]}>
+                    <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
+                    <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
+                        {mainAction?.displayName || (activeRequest?.status ? t(`requests.status.${activeRequest.status}`) : '')}
+                    </CustomText>
+                </View>
+            )}
+        </View>
+    );
+
+    const handleRetryRequest = async () => {
+        if (!activeRequest?.id) return;
+        try {
+            await retryRequest(activeRequest.id).unwrap();
+            refetchRequest();
+        } catch (error) {
+            console.error('Failed to retry request', error);
+        }
+    };
+
     return (
         <>
             <CustomBottomSheet
                 visible={visible}
                 onClose={onClose}
                 maxHeight={SCREEN_HEIGHT * 0.85}
-                title={
-                    <View style={styles.headerTitleRow}>
-                        <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                            {t('requests.idPrefix')} {activeRequest?.id}
-                        </CustomText>
-                        <View style={[styles.badge, { backgroundColor }]}>
-                            <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
-                            <CustomText type={TextType.CardSubtitle} style={[styles.badgeText, { color: textColor }]}>
-                                {mainAction?.displayName || (activeRequest?.status ? t(`requests.status.${activeRequest.status}`) : '')}
-                            </CustomText>
-                        </View>
-                    </View>
-                }
+                title={renderHeader()}
             >
                 {isLoading ? (
                     <View style={styles.loadingWrapper}>
                         <ActivityIndicator size="large" color={colors.primary} />
+                    </View>
+                ) : error ? (
+                    <View style={{ height: ms(400) }}>
+                        <CustomErrorView
+                            onRetry={refetchRequest}
+                            loading={isLoading}
+                        />
                     </View>
                 ) : (
                     <ScrollView
@@ -188,7 +213,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         {/* Description Quote Box */}
                         {mainAction?.description && (
                             <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
-                                <CustomText style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
+                                <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
                                 <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
                                     {mainAction.description}
                                 </CustomText>
@@ -246,8 +271,23 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         {/* Decision Details Accordion - only show if not PENDING */}
                         {activeRequest?.status !== 'PENDING_APPROVAL' && (
                             <Accordion title={t('requests.detailSheet.decisionTitle')}>
-                                <RequestTimeline events={timeline} />
+                                <RequestTimeline
+                                    events={timeline}
+                                    onRetry={handleRetryRequest}
+                                    isRetryLoading={isRetryLoading}
+                                />
                             </Accordion>
+                        )}
+                        {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
+                        {activeRequest?.status === 'PENDING_APPROVAL' && (
+                            <CustomButton
+                                title={t('requests.detailSheet.cancelRequest')}
+                                onPress={onCancelRequest}
+                                variant="outlined"
+                                textColor={colors.error}
+                                style={[styles.cancelButton, { borderColor: colors.error }]}
+                                uppercase={false}
+                            />
                         )}
                     </ScrollView>
                 )}
@@ -345,6 +385,9 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.m,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    cancelButton: {
+        marginTop: Spacing.xl
     },
 });
 

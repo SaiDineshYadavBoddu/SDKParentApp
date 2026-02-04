@@ -8,6 +8,7 @@ import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
+import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import CustomButton from '../../../common/components/CustomButton';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
@@ -31,8 +32,9 @@ const ReplaceCardScreen = () => {
   const route = useRoute<any>();
   const { card } = route.params || {};
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
-  const [selectedReason, setSelectedReason] = useState<string | undefined>(REPLACE_CARD_REASONS[0]);
-  const [tempReason, setTempReason] = useState<string | undefined>("");
+  const [selectedReason, setSelectedReason] = useState<string | undefined>(undefined);
+  const [tempReason, setTempReason] = useState<string | undefined>(undefined);
+  const [isConfirmSheetVisible, setConfirmSheetVisible] = useState(false);
 
   const { data: tariffData, isLoading: isTariffLoading, error, refetch, isFetching } = useGetCardTariffsQuery(card?.cardIdentifier, {
     skip: !card?.cardIdentifier,
@@ -69,31 +71,77 @@ const ReplaceCardScreen = () => {
     if (!card?.cardIdentifier || !selectedReason) return;
     try {
       await replaceCard({ cardId: card.cardIdentifier, reason: selectedReason }).unwrap();
-      navigation.navigate('GenericInfoScreen', {
-        icon: <SuccessSVG />,
-        title: 'replaceCard.successTitle',
-        description: 'replaceCard.successSubtitle',
-        primaryButton: {
-          title: 'common.done',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: card.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: card.cardIdentifier },
+              cardId: card.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <SuccessSVG />,
+              title: 'replaceCard.successTitle',
+              description: 'replaceCard.successSubtitle',
+              primaryButton: {
+                title: 'common.done',
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: card.cardIdentifier },
+                      cardId: card.cardIdentifier,
+                    },
+                  }],
+                }),
+              },
+            }
+          }
+        ],
       });
     } catch (error: any) {
       console.error('Failed to replace card', error);
-      navigation.navigate('GenericInfoScreen', {
-        icon: <FailureSVG />,
-        title: 'replaceCard.errorTitle',
-        description: 'replaceCard.errorSubtitle',
-        primaryButton: {
-          title: 'common.tryAgain',
-          onPress: () => navigation.navigate('BottomTabs', {
-            screen: 'My Cards',
-            params: { cardId: card.cardIdentifier },
-          }),
-        },
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'BottomTabs',
+            params: {
+              screen: 'My Cards',
+              params: { cardId: card.cardIdentifier },
+              cardId: card.cardIdentifier
+            }
+          },
+          {
+            name: 'GenericInfoScreen',
+            params: {
+              icon: <FailureSVG />,
+              title: 'replaceCard.errorTitle',
+              description: 'replaceCard.errorSubtitle',
+              primaryButton: {
+                title: 'common.tryAgain',
+                onPress: () => navigation.reset({
+                  index: 0,
+                  routes: [{
+                    name: 'BottomTabs',
+                    params: {
+                      screen: 'My Cards',
+                      params: { cardId: card.cardIdentifier },
+                      cardId: card.cardIdentifier,
+                    },
+                  }],
+                }),
+              },
+            }
+          }
+        ],
       });
     }
   };
@@ -122,6 +170,7 @@ const ReplaceCardScreen = () => {
 
         <CustomDropdown
           label={t('replaceCard.selectReasonForReplacement')}
+          required={true}
           placeholder={t('common.select')}
           selectedValue={
             selectedReason
@@ -147,9 +196,9 @@ const ReplaceCardScreen = () => {
       <View style={[styles.bottomButtonContainer, { borderTopColor: colors.outline }]}>
         <CustomButton
           title={t('common.submit')}
-          onPress={handleSubmit}
+          onPress={() => setConfirmSheetVisible(true)}
           disabled={!selectedReason}
-          style={{ backgroundColor: selectedReason ? colors.primary : colors.outline }}
+          style={{ width: '100%' }}
         />
       </View>
 
@@ -158,7 +207,10 @@ const ReplaceCardScreen = () => {
         onClose={() => setBottomSheetVisible(false)}
         title={t('replaceCard.selectReason')}
       >
-        <View style={styles.bottomSheetContent}>
+        <ScrollView
+          contentContainerStyle={styles.bottomSheetContent}
+          showsVerticalScrollIndicator={false}
+        >
           {REPLACE_CARD_REASONS.map((reason) => (
             <CustomRadioButton
               key={reason}
@@ -189,8 +241,24 @@ const ReplaceCardScreen = () => {
             disabled={!tempReason}
             style={styles.confirmButton}
           />
-        </View>
+        </ScrollView>
       </CustomBottomSheet>
+
+      <ConfirmationBottomSheet
+        visible={isConfirmSheetVisible}
+        onClose={() => setConfirmSheetVisible(false)}
+        title={t('replaceCard.confirmTitle')}
+        message={t('replaceCard.confirmMessage')}
+        confirmText={t('replaceCard.sendRequest')}
+        cancelText={t('common.cancel')}
+        onConfirm={() => {
+          setConfirmSheetVisible(false);
+          handleSubmit();
+        }}
+        onCancel={() => setConfirmSheetVisible(false)}
+        confirmButtonColor={colors.primary}
+        isLoading={isReplaceLoading}
+      />
       <CustomLoader loading={isTariffLoading || isReplaceLoading} />
     </View>
   );
@@ -220,14 +288,10 @@ const styles = StyleSheet.create({
   dropdown: {
     marginBottom: ms(24),
   },
-  // Removed infoBox, bottomSheetInfoBox, infoIcon as they are replaced by CustomWarning styles
   infoText: {
-    flex: 1,
-    lineHeight: ms(18),
   },
   bottomButtonContainer: {
     padding: Spacing.m,
-    borderTopWidth: 1,
   },
   bottomSheetContent: {
     width: '100%',

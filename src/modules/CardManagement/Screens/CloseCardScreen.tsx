@@ -34,29 +34,78 @@ const CloseCardScreen = () => {
             const body = message ? { comment: message } : {};
             const result = await closeCard({ cardId: card.cardIdentifier, body }).unwrap();
             if (result?.status === 'PENDING_APPROVAL') {
-                navigation.navigate('GenericInfoScreen', {
-                    icon: <SuccessSVG />,
-                    title: 'closeCard.successTitle',
-                    description: 'closeCard.successSubtitle',
-                    primaryButton: {
-                        title: 'common.done',
-                        onPress: () => navigation.navigate('BottomTabs', {
-                            screen: 'My Cards',
-                            params: { cardId: card.cardIdentifier },
-                        }),
-                    },
+                navigation.reset({
+                    index: 1,
+                    routes: [
+                        {
+                            name: 'BottomTabs',
+                            params: {
+                                screen: 'My Cards',
+                                params: { cardId: card.cardIdentifier },
+                                cardId: card.cardIdentifier // Redundant top-level param
+                            }
+                        },
+                        {
+                            name: 'GenericInfoScreen',
+                            params: {
+                                icon: <SuccessSVG />,
+                                title: 'closeCard.successTitle',
+                                description: 'closeCard.successSubtitle',
+                                primaryButton: {
+                                    title: 'common.done',
+                                    onPress: () => navigation.reset({
+                                        index: 0,
+                                        routes: [{
+                                            name: 'BottomTabs',
+                                            params: {
+                                                screen: 'My Cards',
+                                                params: { cardId: card.cardIdentifier },
+                                                cardId: card.cardIdentifier,
+                                            },
+                                        }],
+                                    }),
+                                },
+                            }
+                        }
+                    ],
                 });
             }
         } catch (error: any) {
             console.error('Failed to close card', error);
-            navigation.navigate('GenericInfoScreen', {
-                icon: <FailureSVG />,
-                title: 'closeCard.errorTitle',
-                description: 'closeCard.errorSubtitle',
-                primaryButton: {
-                    title: 'common.done',
-                    onPress: () => navigation.goBack(),
-                },
+            navigation.reset({
+                index: 1,
+                routes: [
+                    {
+                        name: 'BottomTabs',
+                        params: {
+                            screen: 'My Cards',
+                            params: { cardId: card.cardIdentifier },
+                            cardId: card.cardIdentifier
+                        }
+                    },
+                    {
+                        name: 'GenericInfoScreen',
+                        params: {
+                            icon: <FailureSVG />,
+                            title: 'closeCard.errorTitle',
+                            description: 'closeCard.errorSubtitle',
+                            primaryButton: {
+                                title: 'common.done',
+                                onPress: () => navigation.reset({
+                                    index: 0,
+                                    routes: [{
+                                        name: 'BottomTabs',
+                                        params: {
+                                            screen: 'My Cards',
+                                            params: { cardId: card.cardIdentifier },
+                                            cardId: card.cardIdentifier,
+                                        },
+                                    }],
+                                }),
+                            },
+                        }
+                    }
+                ],
             });
         }
     };
@@ -99,6 +148,7 @@ const CloseCardScreen = () => {
                         numberOfLines={4}
                         placeholder={t('closeCard.reasonPlaceholder')}
                         value={message}
+                        maxLength={255}
                         onChangeText={setMessage}
                         inputStyle={{ height: ms(80), textAlignVertical: 'top' }}
                     />
@@ -107,7 +157,7 @@ const CloseCardScreen = () => {
 
             <View style={styles.footer}>
                 <CustomButton
-                    title={t('common.continue')}
+                    title={t('common.submit')}
                     onPress={handleCloseCard}
                     style={{ width: '100%' }}
                     uppercase={false}

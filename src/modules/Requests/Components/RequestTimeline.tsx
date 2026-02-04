@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from '../../../common/components/CustomText';
+import CustomButton from '../../../common/components/CustomButton';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
 import CustomIcon from '../../../common/components/CustomIcon';
@@ -15,16 +16,17 @@ export type TimelineEvent = {
 
 interface RequestTimelineProps {
     events: TimelineEvent[];
+    onRetry?: () => void;
+    isRetryLoading?: boolean;
 }
 
-const RequestTimeline: React.FC<RequestTimelineProps> = ({ events }) => {
+const RequestTimeline: React.FC<RequestTimelineProps> = ({ events, onRetry, isRetryLoading = false }) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
 
     return (
         <View style={styles.container}>
             {events.map((event, index) => {
-                const nextEvent = events[index + 1];
                 const showLine = index < events.length - 1;
                 const lineColor = event.status === 'success' 
                     ? colors.statusResolved 
@@ -68,9 +70,15 @@ const RequestTimeline: React.FC<RequestTimelineProps> = ({ events }) => {
                                     {event.title}
                                 </CustomText>
                                 {event.status === 'error' && event.description && (
-                                     <CustomText type={TextType.Label} style={[styles.retryText, { color: colors.error }]}>
-                                        {t('requests.detailSheet.retry')}
-                                     </CustomText>
+                                    <CustomButton
+                                        title={t('requests.detailSheet.retry')}
+                                        onPress={onRetry}
+                                        variant="text"
+                                        textColor={colors.error}
+                                        style={[styles.retryButton]}
+                                        uppercase={false}
+                                        loading={isRetryLoading}
+                                    />
                                 )}
                             </View>
                             {event.description && (
@@ -139,9 +147,10 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         paddingRight: Spacing.s,
     },
-    retryText: {
-        fontSize: ms(12),
-        fontWeight: '600',
+    retryButton: {
+        paddingHorizontal: Spacing.xs,
+        paddingVertical: Spacing.xs,
+        height: ms(26),
     },
     descriptionCard: {
         marginTop: Spacing.s,
