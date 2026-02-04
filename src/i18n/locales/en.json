@@ -404,7 +404,8 @@
       "processingFailed": "Processing failed",
       "processed": "Processed successfully",
       "retry": "Retry",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelRequest": "Cancel Request"
     },
     "noRequests": "No requests available"
   },

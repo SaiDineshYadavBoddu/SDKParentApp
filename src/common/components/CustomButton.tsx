@@ -3,7 +3,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-  View,
   StyleProp,
   ViewStyle,
   GestureResponderEvent,
@@ -23,6 +22,7 @@ interface Props {
   loading?: boolean;
   uppercase?: boolean;
   style?: StyleProp<ViewStyle>;
+  textColor?: string;
 }
 
 export default function CustomButton({
@@ -33,6 +33,7 @@ export default function CustomButton({
   loading = false,
   uppercase = true,
   style,
+  textColor: customTextColor,
 }: Props) {
   const { colors } = useTheme();
   const isDisabled = disabled || loading;
@@ -47,11 +48,13 @@ export default function CustomButton({
 
   const borderWidth = variant === 'outlined' ? ms(1) : 0;
 
-  const textColor = isDisabled
+  const defaultTextColor = isDisabled
     ? (variant === 'primary' ? colors.onPrimary : colors.textColorDisabled)
     : variant === 'primary'
       ? colors.onPrimary
       : colors.primary;
+
+  const textColor = customTextColor || defaultTextColor;
 
   const textType =
     variant === 'primary' ? TextType.Button : TextType.OutlinedButton;
