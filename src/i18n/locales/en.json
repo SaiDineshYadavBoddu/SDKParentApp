@@ -405,6 +405,7 @@
       "rejectedBy": "Rejected by {{name}} {{date}}",
       "canceledBy": "Canceled by {{name}} {{date}}",
       "processingFailed": "Processing failed",
+      "processing": "Processing",
       "processed": "Processed successfully",
       "retry": "Retry",
       "completed": "Completed",

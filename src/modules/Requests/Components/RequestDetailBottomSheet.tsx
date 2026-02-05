@@ -136,7 +136,12 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         }
 
         // 2. Processing Step
-        if (isFailed) {
+        if (isRetryLoading) {
+            events.push({
+                title: t('requests.detailSheet.processing'),
+                status: 'processing',
+            });
+        } else if (isFailed) {
             events.push({
                 title: t('requests.detailSheet.processingFailed'),
                 status: 'error',
@@ -152,7 +157,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         // 3. Completion Step
         events.push({
             title: t('requests.detailSheet.completed'),
-            status: isDone ? 'success' : isFailed ? 'error' : 'pending',
+            status: isDone ? 'success' : (isFailed && !isRetryLoading) ? 'error' : 'pending',
         });
 
         return events;
