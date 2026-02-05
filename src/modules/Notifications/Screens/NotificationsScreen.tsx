@@ -5,6 +5,7 @@ import {
   SectionList,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +26,6 @@ import {
 import { useCancelRequestMutation } from '../../../network/requests/request.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
 import { RequestItem } from '../../../network/requests/request.types';
-import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 
 const NotificationsScreen = () => {
   const { colors } = useTheme();
@@ -144,20 +144,21 @@ const NotificationsScreen = () => {
   const handleCancelRequest = async (requestId: string) => {
     try {
       await cancelRequest(requestId).unwrap();
-      setSelectedRequest(null);
       setShowCancelRequestError(false);
-      (navigation as any).navigate('GenericInfoScreen', {
-          title: 'requests.cancelSuccessTitle',
-          description: 'requests.cancelSuccessDescription',
-          primaryButton: {
-              title: 'common.done',
-              onPress: async () => {
-                  (navigation as any).goBack();
-                  fetchNotifications(0); 
+      
+      Alert.alert(
+          t('common.success'),
+          t('requests.cancelSuccessDescription'),
+          [
+              {
+                  text: t('common.done'),
+                  onPress: () => {
+                       setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+                       fetchNotifications(0); 
+                  }
               }
-          },
-          icon: <SuccessSVG />
-      });
+          ]
+      );
     } catch (error) {
        console.error('Failed to cancel request in Notifications', error);
        setShowCancelRequestError(true);

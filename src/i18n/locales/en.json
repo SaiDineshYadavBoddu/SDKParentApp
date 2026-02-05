@@ -15,7 +15,8 @@
     "ok": "Ok",
     "noDataAvailable": "No data available",
     "alert": "Alert",
-    "close": "Close"
+    "close": "Close",
+    "success": "Success"
   },
   "exitApp": {
     "title": "Exit App",

@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: Spacing.s,
-        width: '65%',
+        width: '60%',
     },
     rightColumn: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: Spacing.s,
-        width: '35%',
+        width: '40%',
     },
     detailText: {
         fontSize: ms(13),

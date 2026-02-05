@@ -34,7 +34,7 @@ export default function GenericOTPScreen() {
     headerTitle = '',
     title = 'otp.title',
     subtitle = 'otp.subtitle',
-    target = '+91-XXXX-XXX23', // Default or from params
+    target = '+971-XXXX-XXX23', // Default or from params
     onVerify,
     onResend,
     onBackPress,

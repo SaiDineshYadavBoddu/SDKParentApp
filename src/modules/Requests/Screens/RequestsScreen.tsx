@@ -8,7 +8,8 @@ import {
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  RefreshControl
+  RefreshControl,
+  Alert
 } from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
@@ -285,6 +286,18 @@ const RequestsScreen = () => {
   useFocusEffect(
     useCallback(() => {
         canLoadMore.current = false;
+        
+        // Reset all states
+        setSearchQuery('');
+        setDebouncedSearchQuery('');
+        resetFilters();
+        setAppliedFilters({
+            status: '',
+            type: '',
+            startDate: '',
+            endDate: '',
+        });
+
         refetchTypes();
         
         setPageNumber(prev => {
@@ -362,22 +375,21 @@ const RequestsScreen = () => {
   const handleCancelRequest = async (requestId: string) => {
     try {
       await cancelRequest(requestId).unwrap();
-      setIsDetailSheetVisible(false);
-      setSelectedRequest(null);
       setShowCancelRequestError(false);
-      navigation.navigate('GenericInfoScreen', {
-          title: 'requests.cancelSuccessTitle',
-          description: 'requests.cancelSuccessDescription',
-          primaryButton: {
-              title: 'common.done',
-              onPress: async () => {
-                  navigation.navigate('Requests');
-                  refetchRequests();
-              }
-          },
-          icon: <SuccessSVG />
-      });
       
+      Alert.alert(
+          t('common.success'),
+          t('requests.cancelSuccessDescription'),
+          [
+              {
+                  text: t('common.done'),
+                  onPress: () => {
+                       setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+                       refetchRequests();
+                  }
+              }
+          ]
+      );
     } catch (error: any) {
       console.error('Failed to cancel request', error); 
       setShowCancelRequestError(true);

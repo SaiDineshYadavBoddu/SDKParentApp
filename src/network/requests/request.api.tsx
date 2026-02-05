@@ -80,6 +80,7 @@ export const requestApi = backendApi.injectEndpoints({
       forceRefetch({ currentArg, previousArg }) {
         return currentArg !== previousArg;
       },
+      providesTags: ['Request'],
     }),
     getRequestTypes: builder.query<any, void>({
       query: () => {
@@ -96,6 +97,7 @@ export const requestApi = backendApi.injectEndpoints({
           method: 'GET',
         };
       },
+      providesTags: (result, error, arg) => [{ type: 'Request', id: arg }],
     }),
     cancelRequest: builder.mutation<any, string | number>({
       query: (requestId: string) => {
@@ -104,6 +106,7 @@ export const requestApi = backendApi.injectEndpoints({
           method: 'POST',
         };
       },
+      invalidatesTags: (result, error, arg) => [{ type: 'Request', id: arg }, 'Request'],
     }),
     retryRequest: builder.mutation<any, string | number>({
       query: (requestId: string) => {
@@ -112,6 +115,7 @@ export const requestApi = backendApi.injectEndpoints({
           method: 'POST',
         };
       },
+      invalidatesTags: (result, error, arg) => [{ type: 'Request', id: arg }, 'Request'],
     }),
   }),
 });

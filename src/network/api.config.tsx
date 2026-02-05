@@ -72,6 +72,6 @@ export const backendApi = createApi({
   // },
   baseQuery: baseQueryWithReauth,
   // refetchOnMountOrArgChange: true,
-  tagTypes: ['store_details'],
+  tagTypes: ['store_details', 'Request'],
   endpoints: () => ({}),
 });
