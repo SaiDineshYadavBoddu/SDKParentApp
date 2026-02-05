@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 export type TimelineEvent = {
     title: string;
     description?: string;
-    status: 'success' | 'error' | 'pending';
+    status: 'success' | 'error' | 'pending' | 'processing';
 };
 
 interface RequestTimelineProps {
@@ -28,8 +28,8 @@ const RequestTimeline: React.FC<RequestTimelineProps> = ({ events, onRetry, isRe
         <View style={styles.container}>
             {events.map((event, index) => {
                 const showLine = index < events.length - 1;
-                const lineColor = event.status === 'success' 
-                    ? colors.statusResolved 
+                const lineColor = event.status === 'success'
+                    ? colors.statusResolved
                     : colors.outline;
 
                 return (
@@ -44,8 +44,18 @@ const RequestTimeline: React.FC<RequestTimelineProps> = ({ events, onRetry, isRe
                                     <View style={[styles.circle, { backgroundColor: colors.error }]}>
                                         <CustomIcon name="close" size={ms(10)} color={colors.onPrimary} type="mci" />
                                     </View>
+                                ) : event.status === 'processing' ? (
+                                    <View style={[styles.circle, { backgroundColor: colors.primary }]}>
+                                        <CustomText type={TextType.Label} style={{ color: colors.onPrimary, fontSize: ms(10), fontWeight: 'bold' }}>
+                                            {index + 1}
+                                        </CustomText>
+                                    </View>
                                 ) : (
-                                    <View style={[styles.circle, { backgroundColor: colors.outline }]} />
+                                    <View style={[styles.circle, { backgroundColor: colors.outline }]}>
+                                        <CustomText type={TextType.Label} style={{ color: colors.onPrimary, fontSize: ms(10), fontWeight: 'bold' }}>
+                                            {index + 1}
+                                        </CustomText>
+                                    </View>
                                 )}
                             </View>
                             {showLine && (
@@ -63,7 +73,7 @@ const RequestTimeline: React.FC<RequestTimelineProps> = ({ events, onRetry, isRe
                                     type={TextType.Label}
                                     style={[
                                         styles.eventTitle,
-                                        { color: event.status === 'pending' ? colors.secondaryText : colors.onBackground },
+                                        { color: (event.status === 'pending' || event.status === 'processing') ? colors.secondaryText : colors.onBackground },
                                     ]}
                                     numberOfLines={2}
                                 >
