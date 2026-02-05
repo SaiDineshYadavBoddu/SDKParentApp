@@ -20,7 +20,7 @@ import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
 import BlockCardSVG from '../../../assets/svgs/CloseCardSVG';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import PaymentCard from '../../../common/components/PaymentCard';
-import { Animated } from 'react-native';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { canSetPin, canCloseCard, canViewLimits, canViewRestrictions, isCardBlocked } from '../../../utils/cardUtils';
 import CustomHeader from '../../../common/components/CustomHeader';
 
@@ -33,7 +33,7 @@ const ManageCardScreen = () => {
   const route = useRoute<any>();
   const { card } = route.params || {};
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
-  const scrollX = React.useRef(new Animated.Value(0)).current;
+  const scrollX = useSharedValue(0);
 
   const CARD_WIDTH = SCREEN_WIDTH - Spacing.l * 2;
   const CARD_MARGIN = 0;
