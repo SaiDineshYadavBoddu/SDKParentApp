@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Animated, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { ms } from 'react-native-size-matters';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -26,7 +27,7 @@ interface RequestDetailBottomSheetProps {
     onClose: () => void;
     request: RequestItem | null;
     onCancelRequest?: () => void;
-    isCancelling?: boolean; 
+    isCancelling?: boolean;
     showCancelRequestError?: boolean;
 }
 
@@ -41,7 +42,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const { colors } = useTheme();
     const { t } = useTranslation();
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
-    const scrollX = useRef(new Animated.Value(0)).current;
+    const scrollX = useSharedValue(0);
 
     const { data: fullRequestDetails, isLoading, error, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
@@ -205,101 +206,100 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         />
                     </View>
                 ) : (
-                    showCancelRequestError ? <View style={{ height: ms(400) }}><CustomErrorView onRetry={onCancelRequest || (() => {})} loading={isCancelling} /></View>
-                    :
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={styles.scrollContent}
-                    >
-                        {mainAction?.details && (
-                            <CustomText type={TextType.CardTitle} style={styles.actionDetails}>
-                                {mainAction.details}
-                            </CustomText>
-                        )}
-
-                        {/* Description Quote Box */}
-                        {mainAction?.description && (
-                            <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
-                                <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
-                                <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
-                                    {mainAction.description}
+                    showCancelRequestError ? <View style={{ height: ms(400) }}><CustomErrorView onRetry={onCancelRequest || (() => { })} loading={isCancelling} /></View>
+                        :
+                        <ScrollView
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={styles.scrollContent}
+                        >
+                            {mainAction?.details && (
+                                <CustomText type={TextType.CardTitle} style={styles.actionDetails}>
+                                    {mainAction.details}
                                 </CustomText>
+                            )}
+
+                            {/* Description Quote Box */}
+                            {mainAction?.description && (
+                                <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
+                                    <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
+                                    <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
+                                        {mainAction.description}
+                                    </CustomText>
+                                </View>
+                            )}
+
+                            {/* Card Section */}
+                            {isCardSubject && (
+                                <View style={styles.cardContainer}>
+                                    {isCardFetching ? (
+                                        <ActivityIndicator size="small" color={colors.primary} />
+                                    ) : cardData ? (
+                                        <PaymentCard
+                                            item={cardData}
+                                            index={0}
+                                            scrollX={scrollX}
+                                            snapInterval={ms(300)}
+                                            cardWidth={ms(320)}
+                                            cardMargin={0}
+                                            isDetailsVisible={isCardDetailVisible}
+                                            onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
+                                        />
+                                    ) : null}
+                                </View>
+                            )}
+
+                            {/* Basic Info Rows */}
+                            <View style={styles.infoGroupWrapper}>
+                                {activeRequest && <RequestInfoGroup item={activeRequest} dateUsage='detail' />}
                             </View>
-                        )}
 
-                        {/* Card Section */}
-                        {isCardSubject && (
-                            <View style={styles.cardContainer}>
-                                {isCardFetching ? (
-                                    <ActivityIndicator size="small" color={colors.primary} />
-                                ) : cardData ? (
-                                    <PaymentCard
-                                        item={cardData}
-                                        index={0}
-                                        scrollX={scrollX}
-                                        snapInterval={ms(300)}
-                                        cardWidth={ms(320)}
-                                        cardMargin={0}
-                                        isDetailsVisible={isCardDetailVisible}
-                                        onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
-                                        disableBlur
-                                    />
-                                ) : null}
-                            </View>
-                        )}
-
-                        {/* Basic Info Rows */}
-                        <View style={styles.infoGroupWrapper}>
-                            {activeRequest && <RequestInfoGroup item={activeRequest} dateUsage='detail'/>}
-                        </View>
-
-                        {/* Details Accordion */}
-                        <Accordion title={t('requests.detailSheet.detailsTitle')}>
-                            <View style={styles.detailsGrid}>
-                                {detailsFields.map((item, index) => (
-                                    <View key={index} style={styles.gridItem}>
-                                        <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]}>
-                                            {item.label}:
-                                        </CustomText>
-                                        <ScrollView
-                                            horizontal
-                                            showsHorizontalScrollIndicator={false}
-                                            style={styles.gridValueScroll}
-                                        >
-                                            <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]}>
-                                                {item.value}
+                            {/* Details Accordion */}
+                            <Accordion title={t('requests.detailSheet.detailsTitle')}>
+                                <View style={styles.detailsGrid}>
+                                    {detailsFields.map((item, index) => (
+                                        <View key={index} style={styles.gridItem}>
+                                            <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]}>
+                                                {item.label}:
                                             </CustomText>
-                                        </ScrollView>
-                                    </View>
-                                ))}
-                            </View>
-                        </Accordion>
-
-                        {/* Decision Details Accordion - only show if not PENDING */}
-                        {activeRequest?.status !== 'PENDING_APPROVAL' && (
-                            <Accordion title={t('requests.detailSheet.decisionTitle')}>
-                                <RequestTimeline
-                                    events={timeline}
-                                    onRetry={handleRetryRequest}
-                                    isRetryLoading={isRetryLoading}
-                                />
+                                            <ScrollView
+                                                horizontal
+                                                showsHorizontalScrollIndicator={false}
+                                                style={styles.gridValueScroll}
+                                            >
+                                                <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]}>
+                                                    {item.value}
+                                                </CustomText>
+                                            </ScrollView>
+                                        </View>
+                                    ))}
+                                </View>
                             </Accordion>
-                        )}
-                        {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
-                        {activeRequest?.status === 'PENDING_APPROVAL' && (
-                            <View>
-                                <CustomButton
-                                    title={t('requests.detailSheet.cancelRequest')}
-                                    onPress={onCancelRequest}
-                                    variant="outlined"
-                                    textColor={colors.error}
-                                    style={[styles.cancelButton, { borderColor: colors.error }]}
-                                    uppercase={false}
-                                />
-                            </View>
-                        )}
-                        
-                    </ScrollView>
+
+                            {/* Decision Details Accordion - only show if not PENDING */}
+                            {activeRequest?.status !== 'PENDING_APPROVAL' && (
+                                <Accordion title={t('requests.detailSheet.decisionTitle')}>
+                                    <RequestTimeline
+                                        events={timeline}
+                                        onRetry={handleRetryRequest}
+                                        isRetryLoading={isRetryLoading}
+                                    />
+                                </Accordion>
+                            )}
+                            {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
+                            {activeRequest?.status === 'PENDING_APPROVAL' && (
+                                <View>
+                                    <CustomButton
+                                        title={t('requests.detailSheet.cancelRequest')}
+                                        onPress={onCancelRequest}
+                                        variant="outlined"
+                                        textColor={colors.error}
+                                        style={[styles.cancelButton, { borderColor: colors.error }]}
+                                        uppercase={false}
+                                    />
+                                </View>
+                            )}
+
+                        </ScrollView>
                 )}
             </CustomBottomSheet>
         </>
