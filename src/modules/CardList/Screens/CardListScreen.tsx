@@ -68,8 +68,21 @@ export default function CardListScreen() {
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
   const [showUnblockConfirm, setShowUnblockConfirm] = React.useState(false);
-  const [showActivationDisabledAlert, setShowActivationDisabledAlert] = React.useState(false);
   const [isManualRefresh, setIsManualRefresh] = React.useState(false);
+  const [alertConfig, setAlertConfig] = React.useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    icon?: React.ReactNode;
+    onConfirm: () => void;
+  }>({
+    visible: false,
+    title: '',
+    message: '',
+    confirmText: '',
+    onConfirm: () => { },
+  });
 
   const { data, isLoading, refetch, isError, isFetching, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
@@ -101,6 +114,14 @@ export default function CardListScreen() {
     if (cards.length > 0) {
       if (paramCardId) {
         const targetId = String(paramCardId);
+        console.log('🔍 CardList Matching Debug:', {
+          targetId,
+          cardsInList: cards.map((c: any) => ({
+            id: c.id,
+            cardIdentifier: c.cardIdentifier,
+            maskedPan: c.maskedPan
+          }))
+        });
 
         // Always try to set active card ID from params if it's there
         if (String(activeCardId) !== targetId) {
@@ -109,14 +130,32 @@ export default function CardListScreen() {
         }
 
         // Only clear the param once we've successfully found it in the list
-        const foundIndex = cards.findIndex((c: any) =>
-          String(c.cardIdentifier) === targetId ||
-          String(c.maskedPan) === targetId ||
-          String(c.id) === targetId
-        );
+        const foundIndex = cards.findIndex((c: any) => {
+          const match = String(c.cardIdentifier) === targetId ||
+            String(c.maskedPan) === targetId ||
+            String(c.id) === targetId;
+
+          if (match) console.log('✅ Found Match at index:', cards.indexOf(c));
+          return match;
+        });
 
         if (foundIndex !== -1) {
           // Clear param to avoid fighting with manual swipes later
+          navigation.setParams({ cardId: undefined });
+        } else {
+          // If not found, show error and clear param
+          console.log('❌ No match found for targetId:', targetId);
+          // Small delay to ensure navigation transition is complete
+          setTimeout(() => {
+            setAlertConfig({
+              visible: true,
+              title: t('cardList.cardNotFoundTitle'),
+              message: t('cardList.cardNotFoundMessage'),
+              confirmText: t('common.ok'),
+              icon: <FailureSVG width={ms(64)} height={ms(64)} />,
+              onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+            });
+          }, 200);
           navigation.setParams({ cardId: undefined });
         }
       } else if (!activeCardId) {
@@ -436,7 +475,13 @@ export default function CardListScreen() {
                           if (isActivateEnabled) {
                             startSensitiveAction();
                           } else {
-                            setShowActivationDisabledAlert(true);
+                            setAlertConfig({
+                              visible: true,
+                              title: t('common.alert'),
+                              message: "This card can be activated after production. Please try later",
+                              confirmText: t('common.close'),
+                              onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+                            });
                           }
                         }
                       }}
@@ -467,7 +512,7 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={isLoading || (isFetching && !isManualRefresh)} />
+      <CustomLoader loading={(isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm} />
 
       <ConfirmationBottomSheet
         visible={showUnblockConfirm}
@@ -562,12 +607,13 @@ export default function CardListScreen() {
       />
 
       <ConfirmationBottomSheet
-        visible={showActivationDisabledAlert}
-        onClose={() => setShowActivationDisabledAlert(false)}
-        title={t('common.alert')}
-        message="This card can be activated after production. Please try later"
-        confirmText={t('common.close')}
-        onConfirm={() => setShowActivationDisabledAlert(false)}
+        visible={alertConfig.visible}
+        onClose={() => setAlertConfig(prev => ({ ...prev, visible: false }))}
+        onConfirm={alertConfig.onConfirm}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        confirmText={alertConfig.confirmText}
+        icon={alertConfig.icon}
       />
     </View >
   );

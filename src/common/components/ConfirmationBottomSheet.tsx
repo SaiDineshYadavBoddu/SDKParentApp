@@ -18,6 +18,7 @@ interface ConfirmationBottomSheetProps {
   onCancel?: () => void;
   confirmButtonColor?: string;
   isLoading?: boolean;
+  icon?: React.ReactNode;
 }
 
 const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = ({
@@ -31,6 +32,7 @@ const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = ({
   onCancel,
   confirmButtonColor,
   isLoading = false,
+  icon,
 }) => {
   const { colors } = useTheme();
 
@@ -52,6 +54,7 @@ const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = ({
       title={title}
     >
       <View style={styles.container}>
+        {icon && <View style={styles.iconContainer}>{icon}</View>}
         <CustomText
           type={TextType.CardText}
           style={[styles.message, { color: colors.secondaryText }]}
@@ -100,6 +103,10 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: Spacing.m,
   },
 });
 

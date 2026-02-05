@@ -44,7 +44,9 @@
     "pendingActivation": "Pending activation",
     "cardPendingActivation": "Card pending activation",
     "activationInstruction": "Please make sure the card is physically recieved to activate it",
-    "activateCard": "Activate Card"
+    "activateCard": "Activate Card",
+    "cardNotFoundTitle": "Card Not Found",
+    "cardNotFoundMessage": "The card you are looking for could not be found in your list."
   },
   "activateCard": {
     "successTitle": "Card activated successfully",

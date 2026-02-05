@@ -166,10 +166,12 @@ const NotificationsScreen = () => {
                 } as unknown as RequestItem);
               }}
               onViewCard={() => {
+                console.log('🚀 ~ Notification Item Clicked:', item);
                 if (!item.isRead) {
                   handleMarkAsRead(item.id);
                 }
                 if (item.subjectId) {
+                  console.log('🚀 ~ Navigating to My Cards with cardId:', item.subjectId);
                   (navigation as any).reset({
                     index: 0,
                     routes: [
