@@ -19,19 +19,25 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
   const { colors } = useTheme();
 
   const getRelativeTime = (dateString: string) => {
-    const now = new Date();
+    if (!dateString) return '-';
     const date = new Date(dateString);
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    
+    const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-    if (diffInSeconds < 60) return t('notifications.relativeTime.justNow');
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `${diffInMinutes}m`;
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h`;
-
-    // Otherwise show date like "15 Sep"
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-    return date.toLocaleDateString('en-GB', options);
+    if (checkDate.getTime() === today.getTime()) {
+        return 'Today';
+    } else if (checkDate.getTime() === yesterday.getTime()) {
+        return 'Yesterday';
+    } else {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}.${month}.${year}`;
+    }
   };
 
   const getBadgeColors = (type: string) => {

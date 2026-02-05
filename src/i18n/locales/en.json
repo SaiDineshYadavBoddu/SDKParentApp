@@ -384,7 +384,6 @@
       "AUTO_APPROVED": "Auto Approved",
       "CANCELLED": "Cancelled",
       "PENDING_APPROVAL": "Pending Approval",
-      "DONE": "Completed",
       "FAILED": "Failed",
       "inProgress": "In progress",
       "resolved": "Resolved"
@@ -409,7 +408,9 @@
       "completed": "Completed",
       "cancelRequest": "Cancel Request"
     },
-    "noRequests": "No requests available"
+    "noRequests": "No requests available",
+    "cancelSuccessTitle": "Request Cancelled",
+    "cancelSuccessDescription": "Your request has been cancelled successfully."
   },
   "datePicker": {
     "selectRange": "Start Date - End Date",

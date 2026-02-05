@@ -43,6 +43,7 @@ import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScree
 
 import { RequestItem } from '../../../network/requests/request.types';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 
 const styles = StyleSheet.create({
   container: {
@@ -181,7 +182,6 @@ const RequestsScreen = () => {
     },
     { name: 'CANCELLED', displayName: t('requests.status.CANCELLED') },
     { name: 'REJECTED', displayName: t('requests.status.REJECTED') },
-    { name: 'DONE', displayName: t('requests.status.DONE') },
     { name: 'FAILED', displayName: t('requests.status.FAILED') },
   ];
   const [filterView, setFilterView] = useState<'main' | 'status' | 'type'>(
@@ -207,6 +207,8 @@ const RequestsScreen = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  const [showCancelRequestError, setShowCancelRequestError] = useState(false);
 
   const formatDisplayDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -362,9 +364,23 @@ const RequestsScreen = () => {
       await cancelRequest(requestId).unwrap();
       setIsDetailSheetVisible(false);
       setSelectedRequest(null);
-      refetchRequests();
+      setShowCancelRequestError(false);
+      navigation.navigate('GenericInfoScreen', {
+          title: 'requests.cancelSuccessTitle',
+          description: 'requests.cancelSuccessDescription',
+          primaryButton: {
+              title: 'common.done',
+              onPress: async () => {
+                  navigation.navigate('Requests');
+                  refetchRequests();
+              }
+          },
+          icon: <SuccessSVG />
+      });
+      
     } catch (error: any) {
-      console.error('Failed to cancel request', error);
+      console.error('Failed to cancel request', error); 
+      setShowCancelRequestError(true);
     }
   };
 
@@ -771,9 +787,12 @@ const RequestsScreen = () => {
         onClose={() => {
           setIsDetailSheetVisible(false);
           setSelectedRequest(null);
+          setShowCancelRequestError(false);
         }}
         request={selectedRequest}
         onCancelRequest={() => handleCancelRequest(String(selectedRequest?.id))}
+        isCancelling={isCancelling}
+        showCancelRequestError={showCancelRequestError}
       />
       <CustomLoader
         loading={isLoading || (isFetching && pageNumber === 0) || isCancelling}

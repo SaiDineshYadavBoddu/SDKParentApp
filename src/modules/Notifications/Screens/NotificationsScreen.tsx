@@ -22,8 +22,10 @@ import {
   useMarkAllAsReadMutation,
   useMarkAsReadMutation,
 } from '../../../network/notification/notification.api';
+import { useCancelRequestMutation } from '../../../network/requests/request.api';
 import { NotificationItem as NotificationType } from '../../../network/notification/notification.types';
 import { RequestItem } from '../../../network/requests/request.types';
+import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 
 const NotificationsScreen = () => {
   const { colors } = useTheme();
@@ -42,6 +44,9 @@ const NotificationsScreen = () => {
   const [getNotifications, { isLoading }] = useGetNotificationsMutation();
   const [markAllAsRead] = useMarkAllAsReadMutation();
   const [markAsRead] = useMarkAsReadMutation();
+  const [cancelRequest, { isLoading: isCancelling }] = useCancelRequestMutation();
+
+  const [showCancelRequestError, setShowCancelRequestError] = useState(false);
 
   useEffect(() => {
     fetchNotifications(0);
@@ -133,6 +138,29 @@ const NotificationsScreen = () => {
   const handleLoadMore = () => {
     if (!isLoading && hasMore && !hasError) {
       fetchNotifications(page + 1);
+    }
+  };
+
+  const handleCancelRequest = async (requestId: string) => {
+    try {
+      await cancelRequest(requestId).unwrap();
+      setSelectedRequest(null);
+      setShowCancelRequestError(false);
+      (navigation as any).navigate('GenericInfoScreen', {
+          title: 'requests.cancelSuccessTitle',
+          description: 'requests.cancelSuccessDescription',
+          primaryButton: {
+              title: 'common.done',
+              onPress: async () => {
+                  (navigation as any).goBack();
+                  fetchNotifications(0); 
+              }
+          },
+          icon: <SuccessSVG />
+      });
+    } catch (error) {
+       console.error('Failed to cancel request in Notifications', error);
+       setShowCancelRequestError(true);
     }
   };
 
@@ -239,8 +267,14 @@ const NotificationsScreen = () => {
 
       <RequestDetailBottomSheet
         visible={!!selectedRequest}
-        onClose={() => setSelectedRequest(null)}
+        onClose={() => {
+          setSelectedRequest(null); 
+          setShowCancelRequestError(false);
+        }}
         request={selectedRequest}
+        onCancelRequest={() => selectedRequest && handleCancelRequest(String(selectedRequest.id))}
+        isCancelling={isCancelling}
+        showCancelRequestError={showCancelRequestError}
       />
     </View>
   );

@@ -63,18 +63,22 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item, dateUsage = '
     const statusToDisplay = getStatusToDisplay();
     const statusColor = getProgressStatusColor(statusToDisplay, colors);
 
+    const isDetail = dateUsage === 'detail';
+    const leftColumnStyle = [styles.leftColumn, isDetail ? { width: '55%' } : {}] as any;
+    const rightColumnStyle = [styles.rightColumn, isDetail ? { width: '45%' } : {}] as any;
+
     return (
         <View style={styles.detailsContainer}>
             {/* Requester Row */}
             <View style={styles.detailRow}>
-                <View style={styles.leftColumn}>
+                <View style={leftColumnStyle}>
                     {renderIcon('clock')}
                     <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
                         {item.requester}
                     </CustomText>
                 </View>
 
-                <View style={styles.rightColumn}>
+                <View style={rightColumnStyle}>
                     {getProgressStatusIcon(statusToDisplay, colors)}
                     <CustomText
                         type={TextType.ScreenDisplaySmall}
@@ -87,13 +91,13 @@ const RequestInfoGroup: React.FC<RequestInfoGroupProps> = ({ item, dateUsage = '
 
             {/* Approver or Creation Row */}
             <View style={styles.detailRow}>
-                        <View style={styles.leftColumn}>
+                        <View style={leftColumnStyle}>
                             {renderIcon('check')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
                                 {item.approver}
                             </CustomText>
                         </View>
-                        <View style={styles.rightColumn}>
+                        <View style={rightColumnStyle}>
                             {renderIcon('calendar')}
                             <CustomText type={TextType.ScreenDisplaySmall} style={[styles.detailText, { color: colors.secondaryText }]}>
                                 {formatDate(item.createdAt)}

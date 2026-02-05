@@ -24,8 +24,8 @@ export const notificationApi = backendApi.injectEndpoints({
     }),
     markAllAsRead: builder.mutation<void, void>({
       query: () => ({
-        url: `${API_ENDPOINTS.GET_NOTIFICATIONS}/mark-as-read`,
-        method: 'PUT',
+        url: `${API_ENDPOINTS.GET_NOTIFICATIONS}/mark-all-as-read`,
+        method: 'POST',
       }),
     }),
   }),
