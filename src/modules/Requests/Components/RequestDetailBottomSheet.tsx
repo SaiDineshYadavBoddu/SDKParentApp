@@ -26,6 +26,8 @@ interface RequestDetailBottomSheetProps {
     onClose: () => void;
     request: RequestItem | null;
     onCancelRequest?: () => void;
+    isCancelling?: boolean; 
+    showCancelRequestError?: boolean;
 }
 
 const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
@@ -33,6 +35,8 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     onClose,
     request,
     onCancelRequest,
+    isCancelling,
+    showCancelRequestError
 }) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
@@ -68,14 +72,14 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     let actionData: any = {};
     if (mainAction?.payload?.actionBody) {
         try {
-            actionData = JSON.parse(mainAction.payload.actionBody);
+            actionData = JSON.parse(mainAction.payload.actionBody) || {};
         } catch (e) {
             console.error('Failed to parse actionBody', e);
         }
     }
 
     const detailsFields = [
-        { label: 'actionType', value: activeRequest?.actions[0].actionType || '-' },
+        { label: 'actionType', value: mainAction?.actionType || '-' },
         { label: 'bankCode', value: actionData?.bankCode || '-' },
         { label: 'bankId', value: actionData?.bankId || '-' },
         { label: 'cardId', value: actionData?.cardId || '-' },
@@ -201,6 +205,8 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         />
                     </View>
                 ) : (
+                    showCancelRequestError ? <View style={{ height: ms(400) }}><CustomErrorView onRetry={onCancelRequest || (() => {})} loading={isCancelling} /></View>
+                    :
                     <ScrollView
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContent}
@@ -281,15 +287,18 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                         )}
                         {/* Cancel Request Button - Only show for PENDING_APPROVAL status */}
                         {activeRequest?.status === 'PENDING_APPROVAL' && (
-                            <CustomButton
-                                title={t('requests.detailSheet.cancelRequest')}
-                                onPress={onCancelRequest}
-                                variant="outlined"
-                                textColor={colors.error}
-                                style={[styles.cancelButton, { borderColor: colors.error }]}
-                                uppercase={false}
-                            />
+                            <View>
+                                <CustomButton
+                                    title={t('requests.detailSheet.cancelRequest')}
+                                    onPress={onCancelRequest}
+                                    variant="outlined"
+                                    textColor={colors.error}
+                                    style={[styles.cancelButton, { borderColor: colors.error }]}
+                                    uppercase={false}
+                                />
+                            </View>
                         )}
+                        
                     </ScrollView>
                 )}
             </CustomBottomSheet>

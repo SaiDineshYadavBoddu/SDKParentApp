@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from './CustomText';
-import CustomIcon from './CustomIcon';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
-import { shouldBlurCard, isCardActive } from '../../utils/cardUtils';
 import EyeSVG from '../../assets/svgs/EyeSVG';
 import EyeOffSVG from '../../assets/svgs/EyeOffSVG';
 
@@ -25,14 +24,13 @@ interface CardData {
 interface PaymentCardProps {
   item: CardData;
   index: number;
-  scrollX: Animated.Value;
+  scrollX: any; // Reanimated SharedValue
   snapInterval: number;
   cardWidth: number;
   cardMargin: number;
   isDetailsVisible: boolean;
   onToggleVisibility: (id: string) => void;
   showEyeIcon?: boolean;
-  disableBlur?: boolean;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -45,31 +43,35 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   isDetailsVisible,
   onToggleVisibility,
   showEyeIcon = false,
-  disableBlur = false,
 }) => {
   const { colors } = useTheme();
-  const inputRange = [
-    (index - 1) * snapInterval,
-    index * snapInterval,
-    (index + 1) * snapInterval,
-  ];
+  const scaledTranslate = ms(40);
 
-  const scale = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.8, 1, 0.8],
-    extrapolate: 'clamp',
-  });
+  const animatedStyle = useAnimatedStyle(() => {
+    const baseOffset = index * snapInterval;
+    const inputRange = [
+      baseOffset - snapInterval,
+      baseOffset,
+      baseOffset + snapInterval,
+    ];
 
-  const translateX = scrollX.interpolate({
-    inputRange,
-    outputRange: [-ms(40), 0, ms(40)],
-    extrapolate: 'clamp',
-  });
+    const scale = interpolate(
+      scrollX.value,
+      inputRange,
+      [0.8, 1, 0.8],
+      Extrapolation.CLAMP
+    );
 
-  const zIndex = scrollX.interpolate({
-    inputRange,
-    outputRange: [0, 1, 0],
-    extrapolate: 'clamp',
+    const translateX = interpolate(
+      scrollX.value,
+      inputRange,
+      [-scaledTranslate, 0, scaledTranslate],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      transform: [{ scale }, { translateX }],
+    };
   });
 
   return (
@@ -86,10 +88,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
       <Animated.View
         style={[
           styles.card,
-          {
-            transform: [{ scale }, { translateX }],
-            zIndex,
-          },
+          animatedStyle,
         ]}
       >
         <CustomImage

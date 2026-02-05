@@ -1,14 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Modal,
   View,
   StyleSheet,
-  Animated,
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS
+} from 'react-native-reanimated';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Spacing } from '../../theme/spacing';
@@ -35,41 +40,32 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const [showModal, setShowModal] = React.useState(visible);
-  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+
+  const translateY = useSharedValue(SCREEN_HEIGHT);
+  const backdropOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       setShowModal(true);
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateY, {
-          toValue: 0,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      translateY.value = withTiming(0, { duration: 300 });
+      backdropOpacity.value = withTiming(1, { duration: 300 });
     } else {
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateY, {
-          toValue: SCREEN_HEIGHT,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setShowModal(false);
+      translateY.value = withTiming(SCREEN_HEIGHT, { duration: 250 });
+      backdropOpacity.value = withTiming(0, { duration: 250 }, (finished) => {
+        if (finished) {
+          runOnJS(setShowModal)(false);
+        }
       });
     }
-  }, [visible, translateY, opacity]);
+  }, [visible]);
+
+  const animatedSheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  const animatedBackdropStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
 
   const handleClose = () => {
     onClose();
@@ -89,9 +85,9 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
             style={[
               styles.backdrop,
               {
-                opacity,
                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
               },
+              animatedBackdropStyle,
             ]}
           />
         </TouchableWithoutFeedback>
@@ -100,10 +96,10 @@ const CustomBottomSheet: React.FC<CustomBottomSheetProps> = ({
             styles.sheet,
             {
               backgroundColor: colors.background,
-              transform: [{ translateY }],
               maxHeight,
               paddingBottom: Math.max(insets.bottom, Spacing.l),
             },
+            animatedSheetStyle,
           ]}
         >
           <View style={[styles.header, { borderBottomColor: colors.outline }]}>

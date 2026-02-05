@@ -23,10 +23,10 @@ import {
 import ScreenWrapper from '../common/components/ScreenWrapper';
 import { useTheme } from '../theme/ThemeProvider';
 import CustomWarning from '../common/components/CustomWarning';
-import AccessRestrictedScreen from '../modules/Authentication/screens/AccessRestrictedScreen.tsx';
 import { Spacing } from '../theme/spacing';
 import CustomLoader from '../common/components/CustomLoader';
 import ConfirmationBottomSheet from '../common/components/ConfirmationBottomSheet';
+import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 
 const NavigationContent = () => {
   const {
