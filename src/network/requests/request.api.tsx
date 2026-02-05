@@ -62,9 +62,18 @@ export const requestApi = backendApi.injectEndpoints({
         if (arg && (arg as any).pageNumber === 0) {
           return newResponse;
         }
+        
+        // Safety check for currentCache.content
+        const existingContent = currentCache?.content || [];
+        // Create a Set of existing IDs for O(1) lookup
+        const existingIds = new Set(existingContent.map(item => item.id));
+        
+        // Filter out incoming items that already exist
+        const uniqueNewContent = newResponse.content.filter(item => !existingIds.has(item.id));
+
         return {
           ...newResponse,
-          content: [...(currentCache?.content || []), ...newResponse.content],
+          content: [...existingContent, ...uniqueNewContent],
         };
       },
       // Force cache update on any change

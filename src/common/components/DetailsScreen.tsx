@@ -12,9 +12,10 @@ import { Typography } from '../../theme/typography';
 export interface DetailItem {
   id: string;
   label: string;
-  value: string;
+  value?: string | null;
   actionLabel?: string;
   onActionPress?: () => void;
+  rightContent?: React.ReactNode;
 }
 
 export interface DetailsSection {
@@ -26,9 +27,10 @@ interface Props {
   title: string;
   sections: DetailsSection[];
   onBackPress?: () => void;
+  children?: React.ReactNode;
 }
 
-export default function DetailsScreen({ title, sections, onBackPress }: Props) {
+export default function DetailsScreen({ title, sections, onBackPress, children }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -48,7 +50,7 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
     </CustomText>
   );
 
-  const renderValue = (value: string) => (
+  const renderValue = (value?: string | null) => (
     <CustomText
       type={TextType.CardText}
       style={{ color: value ? colors.secondaryText : colors.textColor }}
@@ -76,14 +78,17 @@ export default function DetailsScreen({ title, sections, onBackPress }: Props) {
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {children}
         {sections.map((section, index) => {
           const sectionItems: SectionItem[] = section.items.map(item => ({
             id: item.id,
             top: renderLabel(item.label),
-            middle: renderValue(item.value),
-            end: item.actionLabel
-              ? renderAction(item.actionLabel, item.onActionPress)
-              : undefined,
+            middle: item.value !== null ? renderValue(item.value) : undefined,
+            end: item.rightContent ? (
+              item.rightContent
+            ) : item.actionLabel ? (
+              renderAction(item.actionLabel, item.onActionPress)
+            ) : undefined,
             style: styles.innerCard,
           }));
 

@@ -1,19 +1,18 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-function ChevronDownSVG(props: any) {
+function ChevronDownSVG({ width = 24, height = 24, stroke = '#4A4A4A' }: { width?: number, height?: number, stroke?: string }) {
   return (
     <Svg
-      width={24}
-      height={24}
-      viewBox="0 0 24 24"
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
+      stroke={stroke}
     >
       <Path
         d="M5.5 8.25L11 13.75L16.5 8.25"
-        stroke="#4A4A4A"
+        stroke={stroke}
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"

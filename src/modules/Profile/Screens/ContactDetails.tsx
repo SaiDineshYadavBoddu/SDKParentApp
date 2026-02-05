@@ -6,6 +6,7 @@ import DetailsScreen, {
 import { useTranslation } from 'react-i18next';
 
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { formatPhoneNumber } from '../../../utils/userUtils';
 
 export default function ContactDetails() {
   const navigation = useNavigation();
@@ -34,7 +35,7 @@ export default function ContactDetails() {
         {
           id: '4',
           label: t('profile.details.contact.fields.mobile'),
-          value: contact?.mobilePhone || '-',
+          value: formatPhoneNumber(contact?.mobilePhone) || '-',
         },
         {
           id: '5',

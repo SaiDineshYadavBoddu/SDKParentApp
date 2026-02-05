@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  RefreshControl
 } from 'react-native';
 import CustomHeader from '../../../common/components/CustomHeader';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
@@ -29,12 +30,8 @@ import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import RequestInfoGroup from '../Components/RequestInfoGroup';
 import {
   getStatusColors,
-  getProgressStatusColor,
-  getProgressStatusIcon,
-  renderIcon,
 } from '../../../utils/requestUtils';
 import RequestDetailBottomSheet from '../Components/RequestDetailBottomSheet';
-import { TimelineEvent } from '../Components/RequestTimeline';
 import { useTranslation } from 'react-i18next';
 import {
   useGetRequestsQuery,
@@ -44,13 +41,8 @@ import {
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
-import {
-  RequestAction,
-  RequestItem,
-} from '../../../network/requests/request.types';
-import { useNavigation } from '@react-navigation/native';
-
-// Redundant local helpers removed, now imported from RequestInfoGroup
+import { RequestItem } from '../../../network/requests/request.types';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -123,9 +115,6 @@ const styles = StyleSheet.create({
   footerContainer: {
     paddingVertical: Spacing.m,
     alignItems: 'center',
-  },
-  footerText: {
-    opacity: 0.6,
   },
   emptyContainer: {
     flex: 1,
@@ -215,18 +204,6 @@ const RequestsScreen = () => {
     endDate: '',
   });
 
-  // Dynamic Date Range (Last 30 Days)
-  const getInitialDates = () => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 30);
-    return {
-      start: start.toISOString().split('T')[0],
-      end: end.toISOString().split('T')[0],
-    };
-  };
-
-  const initialDates = getInitialDates();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -245,14 +222,7 @@ const RequestsScreen = () => {
     setSelectedRequestType('');
     setStartDate('');
     setEndDate('');
-    setAppliedFilters({
-      status: '',
-      type: '',
-      startDate: '',
-      endDate: '',
-    });
     setFilterView('main');
-    setPageNumber(0);
     fadeAnim.setValue(1);
     slideAnim.setValue(0);
   };
@@ -267,7 +237,7 @@ const RequestsScreen = () => {
     };
   }, [searchQuery]);
 
-  const { data, isLoading, isFetching, error, refetch } = useGetRequestsQuery({
+  const { data, isLoading, isFetching, error, refetch: refetchRequests } = useGetRequestsQuery({
     status: appliedFilters.status || undefined,
     actionType: appliedFilters.type || undefined,
     startDate: appliedFilters.startDate || undefined,
@@ -278,6 +248,52 @@ const RequestsScreen = () => {
     sortDirection: 'DESC',
     search: debouncedSearchQuery || undefined,
   });
+  // })
+  
+  const { data: requestTypes, refetch: refetchTypes } = useGetRequestTypesQuery();
+
+  const [isManualRefresh, setIsManualRefresh] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setIsManualRefresh(true);
+    canLoadMore.current = false; 
+    const typesPromise = refetchTypes();
+
+    if (pageNumber === 0) {
+        try {
+            await refetchRequests();
+        } catch (error) {
+            console.error('Refetch requests failed', error);
+        }
+    } else {
+        setPageNumber(0);
+    }
+    
+    try {
+        await typesPromise;
+    } catch (error) {
+         console.error('Refetch types failed', error);
+    }
+    
+    setIsManualRefresh(false);
+  }, [pageNumber, refetchRequests, refetchTypes]);
+
+  const canLoadMore = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+        canLoadMore.current = false;
+        refetchTypes();
+        
+        setPageNumber(prev => {
+            if (prev === 0) {
+                 setTimeout(() => refetchRequests(), 0);
+                 return 0;
+            }
+            return 0;
+        });
+    }, [refetchRequests, refetchTypes])
+  );
 
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
@@ -292,6 +308,7 @@ const RequestsScreen = () => {
   }, [isFilterSheetVisible]);
 
   const handleLoadMore = () => {
+    if (!canLoadMore.current) return;
     if (!isFetching && !isLoading && !error && data && !data.last) {
       setPageNumber(prev => prev + 1);
     }
@@ -305,13 +322,10 @@ const RequestsScreen = () => {
         </View>
       );
     }
-
     return null;
   };
 
-  const { data: requestTypes } = useGetRequestTypesQuery();
-  const [cancelRequest, { isLoading: isCancelling }] =
-    useCancelRequestMutation();
+  const [cancelRequest, { isLoading: isCancelling }] = useCancelRequestMutation();
 
   const toggleFilterView = (view: 'main' | 'status' | 'type') => {
     Animated.parallel([
@@ -342,14 +356,13 @@ const RequestsScreen = () => {
       ]).start();
     });
   };
-  // Local renderIcon removed, now imported from RequestInfoGroup
 
   const handleCancelRequest = async (requestId: string) => {
     try {
       await cancelRequest(requestId).unwrap();
       setIsDetailSheetVisible(false);
       setSelectedRequest(null);
-      refetch();
+      refetchRequests();
     } catch (error: any) {
       console.error('Failed to cancel request', error);
     }
@@ -415,7 +428,7 @@ const RequestsScreen = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           {isTimeoutError ? (
-            <RequestTimeoutScreen onRetry={refetch} />
+            <RequestTimeoutScreen onRetry={refetchRequests} />
           ) : (
             <>
               {/* Search Row */}
@@ -444,7 +457,6 @@ const RequestsScreen = () => {
                   ]}
                   onPress={() => {
                     Keyboard.dismiss();
-                    // Small delay to allow keyboard to start dismissing
                     setTimeout(() => {
                       setIsFilterSheetVisible(true);
                     }, 100);
@@ -476,11 +488,20 @@ const RequestsScreen = () => {
                   renderItem={renderRequestItem}
                   keyExtractor={item => item.id.toString()}
                   showsVerticalScrollIndicator={false}
+                  onScrollBeginDrag={() => { canLoadMore.current = true; }}
                   onEndReached={handleLoadMore}
                   onEndReachedThreshold={0.1}
                   keyboardDismissMode="on-drag"
                   keyboardShouldPersistTaps="handled"
                   ListFooterComponent={renderFooter}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={isManualRefresh}
+                      onRefresh={onRefresh}
+                      colors={[colors.primary]}
+                      tintColor={colors.primary}
+                    />
+                  }
                   ListEmptyComponent={
                     !isLoading && !isFetching ? (
                       <View style={styles.emptyContainer}>
@@ -508,7 +529,6 @@ const RequestsScreen = () => {
             toggleFilterView('main');
           } else {
             setIsFilterSheetVisible(false);
-            // Reset values after a small delay to not show changes during closing animation
             setTimeout(resetFilters, 300);
           }
         }}
@@ -630,8 +650,8 @@ const RequestsScreen = () => {
                       styles.filterInputContainer,
                       {
                         borderColor: colors.outline,
-                        backgroundColor: colors.surface, // Force surface background even if editable is false
-                      },
+                        backgroundColor: colors.surface
+                      }
                     ]}
                     inputStyle={Typography.bodySmall}
                   />
@@ -706,8 +726,13 @@ const RequestsScreen = () => {
                 <CustomButton
                   title={t('common.reset')}
                   variant="outlined"
+                  disabled={
+                    selectedStatus === '' &&
+                    selectedRequestType === '' &&
+                    startDate === '' &&
+                    endDate === ''
+                  }
                   onPress={() => {
-                    // setIsFilterSheetVisible(false);
                     setTimeout(resetFilters, 300);
                   }}
                   style={[styles.resetButton, { borderColor: colors.primary }]}

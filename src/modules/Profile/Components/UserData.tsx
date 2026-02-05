@@ -6,6 +6,7 @@ import SectionContainer, {
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
+import { formatPhoneNumber } from '../../../utils/userUtils';
 
 export default function UserData() {
   const { colors } = useTheme();

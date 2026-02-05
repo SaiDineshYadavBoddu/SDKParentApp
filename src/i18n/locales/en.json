@@ -274,7 +274,7 @@
         "companySubtitle": "Leading payment solutions",
         "headOffice": {
           "title": "Head office",
-          "address": "PO Box 123456\nDubai, United Arab Emirates",
+          "address": "Network International\nPO Box 123456\nDubai, United Arab Emirates",
           "viewMaps": "View on Google Maps"
         },
         "operatingHours": {
@@ -326,6 +326,8 @@
     "contactNumber": "Contact Number",
     "selectTopic": "Select Topic",
     "selectTopicDesc": "Describe your request",
+    "selectTopicPlaceholder": "Select a topic",
+    "describeRequestPlaceholder": "Enter your description",
     "topics": {
       "general": "General query",
       "portal": "Self-service portal support",
