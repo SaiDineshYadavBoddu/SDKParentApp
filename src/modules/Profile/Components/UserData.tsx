@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import SectionContainer, {
   SectionItem,
@@ -24,15 +24,41 @@ export default function UserData() {
 
   const renderUserInfo = () => (
     <View style={styles.infoContainer}>
-      <CustomText type={TextType.CardTitle} style={styles.name}>
-        {`${userDetails?.personalDetails?.firstName || ''} ${userDetails?.personalDetails?.lastName || ''}`.trim() || 'User'}
-      </CustomText>
-      <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
-        {userDetails?.contactDetails?.mobilePhone || ''}
-      </CustomText>
-      <CustomText type={TextType.CardText} style={[styles.details, { color: colors.secondaryText }]}>
-        {userDetails?.contactDetails?.email || ''}
-      </CustomText>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.gridValueScroll}
+      >
+        <CustomText type={TextType.CardTitle} style={styles.name}>
+          {`${userDetails?.personalDetails?.firstName || ''} ${
+            userDetails?.personalDetails?.lastName || ''
+          }`.trim() || 'User'}
+        </CustomText>
+      </ScrollView>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.gridValueScroll}
+      >
+        <CustomText
+          type={TextType.CardText}
+          style={[styles.details, { color: colors.secondaryText }]}
+        >
+          {userDetails?.contactDetails?.mobilePhone || ''}
+        </CustomText>
+      </ScrollView>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.gridValueScroll}
+      >
+        <CustomText
+          type={TextType.CardText}
+          style={[styles.details, { color: colors.secondaryText }]}
+        >
+          {userDetails?.contactDetails?.email || ''}
+        </CustomText>
+      </ScrollView>
     </View>
   );
 
@@ -81,6 +107,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: ms(8),
     gap: ms(4),
+  },
+  gridValueScroll: {
+    maxWidth: '100%',
   },
   name: {},
   details: {},
