@@ -27,7 +27,7 @@ import { useSecondaryAuth } from "../../../hooks/useSecondaryAuth";
 import CurrencySVG from "../../../assets/svgs/CurrencySVG";
 import CustomLoader from "../../../common/components/CustomLoader";
 import RequestTimeoutScreen from "../../../common/components/RequestTimeoutScreen";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import CardCarousel from "../../../common/components/CardCarousel";
 import { formatAmount } from "../../../utils/amountUtils";
 import { useRoute } from "@react-navigation/native";
@@ -64,6 +64,7 @@ export default function CardListScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const route = useRoute<any>();
+  const isFocused = useIsFocused();
   const [activeCardId, setActiveCardId] = React.useState<string | null>(route.params?.cardId || null);
   const isInitializing = React.useRef(true);
   const [isUnblockSuccess, setIsUnblockSuccess] = React.useState(false);
@@ -224,7 +225,6 @@ export default function CardListScreen() {
   const handleActivationSuccess = async (actionToken: string) => {
     try {
       await activateCard({ cardId: activeCard.cardIdentifier, actionToken }).unwrap();
-      refetch();
       navigation.reset({
         index: 1,
         routes: [
@@ -349,55 +349,57 @@ export default function CardListScreen() {
           <CustomErrorView onRetry={refetch} loading={isFetching} />
         ) : (
           <>
-            <View style={styles.balanceContainer}>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}
-              >
-                <CurrencySVG
-                  width={ms(18)}
-                  height={ms(22)}
-                />
-                {(() => {
-                  const { integer, decimal } = formatAmount(activeCard?.balance ?? 0);
-                  return (
-                    <Text>
-                      <CustomText type={TextType.ScreenHeadlineLarge}>
-                        {integer}
-                      </CustomText>
-                      <CustomText type={TextType.ScreenHeadlineSmall}>
-                        {decimal}
-                      </CustomText>
-                    </Text>
-                  );
-                })()}
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: Spacing.xs,
-                  paddingTop: Spacing.m,
-                }}
-              >
-                <CustomText type={TextType.ScreenDisplaySmall}>
-                  {t('cardList.availableBalance')}
-                </CustomText>
-                <InfoSVG />
-              </View>
-
-              <View style={styles.statusIndicator}>
+            {activeCard && !isLoading && (
+              <View style={styles.balanceContainer}>
                 <View
-                  style={[
-                    styles.statusDot,
-                    { backgroundColor: activeCard?.cardStatus === 'Active' ? colors.statusResolved : colors.secondaryText }
-                  ]}
-                />
-                <CustomText type={TextType.ScreenDisplaySmall} style={[styles.statusText, { color: colors.secondaryText }]}>
-                  {activeCard?.cardStatus}
-                </CustomText>
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}
+                >
+                  <CurrencySVG
+                    width={ms(18)}
+                    height={ms(22)}
+                  />
+                  {(() => {
+                    const { integer, decimal } = formatAmount(activeCard.balance ?? 0);
+                    return (
+                      <Text>
+                        <CustomText type={TextType.ScreenHeadlineLarge}>
+                          {integer}
+                        </CustomText>
+                        <CustomText type={TextType.ScreenHeadlineSmall}>
+                          {decimal}
+                        </CustomText>
+                      </Text>
+                    );
+                  })()}
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: Spacing.xs,
+                    paddingTop: Spacing.m,
+                  }}
+                >
+                  <CustomText type={TextType.ScreenDisplaySmall}>
+                    {t('cardList.availableBalance')}
+                  </CustomText>
+                  <InfoSVG />
+                </View>
+
+                <View style={styles.statusIndicator}>
+                  <View
+                    style={[
+                      styles.statusDot,
+                      { backgroundColor: activeCard.cardStatus === 'Active' ? colors.statusResolved : colors.secondaryText }
+                    ]}
+                  />
+                  <CustomText type={TextType.ScreenDisplaySmall} style={[styles.statusText, { color: colors.secondaryText }]}>
+                    {activeCard.cardStatus}
+                  </CustomText>
+                </View>
               </View>
-            </View>
+            )}
 
             <CardCarousel
               data={cards}
@@ -413,91 +415,95 @@ export default function CardListScreen() {
               showEyeIcon={true}
             />
 
-            {/* Action buttons - always show but disable based on status */}
-            <View style={styles.actionsRow}>
-              <ActionButton
-                title={t('cardList.manage')}
-                icon={<ManageCardSVG />}
-                disabled={!showManageCard}
-                onPress={() => {
-                  if (activeCard) {
-                    navigation.navigate('ManageCard', { card: activeCard })
-                  }
-                }}
-              />
+            {activeCard && !isLoading && (
+              <>
+                {/* Action buttons - always show but disable based on status */}
+                <View style={styles.actionsRow}>
+                  <ActionButton
+                    title={t('cardList.manage')}
+                    icon={<ManageCardSVG />}
+                    disabled={!showManageCard}
+                    onPress={() => {
+                      if (activeCard) {
+                        navigation.navigate('ManageCard', { card: activeCard })
+                      }
+                    }}
+                  />
 
-              <ActionButton
-                title={t('cardList.replace')}
-                icon={<ReplaceCardSVG />}
-                disabled={!showReplaceCard}
-                onPress={() => {
-                  if (activeCard) {
-                    navigation.navigate('ReplaceCard', { card: activeCard })
-                  }
-                }}
-              />
+                  <ActionButton
+                    title={t('cardList.replace')}
+                    icon={<ReplaceCardSVG />}
+                    disabled={!showReplaceCard}
+                    onPress={() => {
+                      if (activeCard) {
+                        navigation.navigate('ReplaceCard', { card: activeCard })
+                      }
+                    }}
+                  />
 
-              <ActionButton
-                title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
-                icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
-                disabled={!showBlockButton}
-                onPress={() => {
-                  if (activeCard) {
-                    if (canUnblock) {
-                      setShowUnblockConfirm(true);
-                    } else if (canBlock) {
-                      navigation.navigate('FreezeCard', { card: activeCard })
-                    }
-                  }
-                }}
-              />
-            </View>
-
-            {isPendingActivation && (
-              <View style={[styles.activationCard, { backgroundColor: colors.surface }]}>
-                <CustomText type={TextType.SectionTitle} style={styles.activationTitle}>
-                  {t('cardList.cardPendingActivation')}
-                </CustomText>
-                <CustomText type={TextType.CardText} style={[styles.activationDescription, { color: colors.secondaryText }]}>
-                  {t('cardList.activationInstruction')}
-                </CustomText>
-                {(() => {
-                  const isActivateEnabled = hasResourceAction(activeCard, 'card-mine', 'activate');
-                  return (
-                    <TouchableOpacity
-                      style={[
-                        styles.activateButton,
-                        { backgroundColor: colors.primary },
-                        (isActivating || !isActivateEnabled) && { opacity: 0.5 }
-                      ]}
-                      onPress={async () => {
-                        if (activeCard) {
-                          if (isActivateEnabled) {
-                            startSensitiveAction();
-                          } else {
-                            setAlertConfig({
-                              visible: true,
-                              title: t('common.alert'),
-                              message: "This card can be activated after production. Please try later",
-                              confirmText: t('common.close'),
-                              onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false })),
-                            });
-                          }
+                  <ActionButton
+                    title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
+                    icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
+                    disabled={!showBlockButton}
+                    onPress={() => {
+                      if (activeCard) {
+                        if (canUnblock) {
+                          setShowUnblockConfirm(true);
+                        } else if (canBlock) {
+                          navigation.navigate('FreezeCard', { card: activeCard })
                         }
-                      }}
-                      disabled={isActivating}
-                    >
-                      <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
-                        {t('cardList.activateCard')}
-                      </CustomText>
-                    </TouchableOpacity>
-                  );
-                })()}
-              </View>
+                      }
+                    }}
+                  />
+                </View>
+
+                {isPendingActivation && (
+                  <View style={[styles.activationCard, { backgroundColor: colors.surface }]}>
+                    <CustomText type={TextType.SectionTitle} style={styles.activationTitle}>
+                      {t('cardList.cardPendingActivation')}
+                    </CustomText>
+                    <CustomText type={TextType.CardText} style={[styles.activationDescription, { color: colors.secondaryText }]}>
+                      {t('cardList.activationInstruction')}
+                    </CustomText>
+                    {(() => {
+                      const isActivateEnabled = hasResourceAction(activeCard, 'card-mine', 'activate');
+                      return (
+                        <TouchableOpacity
+                          style={[
+                            styles.activateButton,
+                            { backgroundColor: colors.primary },
+                            (isActivating || !isActivateEnabled) && { opacity: 0.5 }
+                          ]}
+                          onPress={async () => {
+                            if (activeCard) {
+                              if (isActivateEnabled) {
+                                startSensitiveAction();
+                              } else {
+                                setAlertConfig({
+                                  visible: true,
+                                  title: t('common.alert'),
+                                  message: "This card can be activated after production. Please try later",
+                                  confirmText: t('common.close'),
+                                  onConfirm: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+                                });
+                              }
+                            }
+                          }}
+                          disabled={isActivating}
+                        >
+                          <CustomText type={TextType.Button} style={[styles.activateButtonText, { color: colors.onPrimary }]}>
+                            {t('cardList.activateCard')}
+                          </CustomText>
+                        </TouchableOpacity>
+                      );
+                    })()}
+                  </View>
+                )}
+              </>
             )}
 
             {/* Transactions - show for all except pending activation */}
-            {showTransactions && (
+            {activeCard && !isLoading && showTransactions && (
               <View style={styles.transactionContainer}>
                 <SectionContainer
                   title={t('cardList.recentTransactions')}
@@ -512,7 +518,7 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={(isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm} />
+      <CustomLoader loading={isFocused && (isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm && !isActivating} />
 
       <ConfirmationBottomSheet
         visible={showUnblockConfirm}
