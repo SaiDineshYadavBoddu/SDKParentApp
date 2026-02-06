@@ -25,28 +25,41 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-    
+
     const checkDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
     if (checkDate.getTime() === today.getTime()) {
-        return 'Today';
+      return 'Today';
     } else if (checkDate.getTime() === yesterday.getTime()) {
-        return 'Yesterday';
+      return 'Yesterday';
     } else {
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}.${month}.${year}`;
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
     }
   };
 
   const getBadgeColors = (type: string) => {
     switch (type) {
+      case 'SUPPORT':
       case 'SUPPORT_REQUEST':
         return {
-          bg: colors.warningContainer,
-          dot: colors.statusUnblocking,
-          text: colors.statusUnblocking,
+          bg: colors.onStatusSupport,
+          dot: colors.statusSupport,
+          text: colors.statusSupport,
+        };
+      case 'NEW_CARD':
+        return {
+          bg: colors.onStatusNewCard,
+          dot: colors.statusNewCard,
+          text: colors.statusNewCard,
+        };
+      case 'DISPUTE':
+        return {
+          bg: colors.onStatusNewCard,
+          dot: colors.statusNewCard,
+          text: colors.statusNewCard,
         };
       case 'ACTIVATE':
         return {
@@ -71,6 +84,18 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
           bg: colors.onStatusClosure,
           dot: colors.statusClosure,
           text: colors.statusClosure,
+        };
+      case 'CANCELLED':
+        return {
+          bg: colors.onStatusCancelled,
+          dot: colors.statusCancelled,
+          text: colors.statusCancelled,
+        };
+      case 'FAILED':
+        return {
+          bg: colors.onStatusFailed,
+          dot: colors.statusFailed,
+          text: colors.statusFailed,
         };
       default:
         // Generic fallback for other types

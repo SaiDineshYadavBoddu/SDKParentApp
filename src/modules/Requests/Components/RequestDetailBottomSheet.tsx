@@ -68,7 +68,12 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
 
     if (!activeRequest && !isLoading) return null;
 
-    const { backgroundColor, textColor } = getStatusColors(mainAction?.actionType || 'default', colors);
+    const { backgroundColor, textColor } = getStatusColors(
+        activeRequest?.status === 'CANCELLED' || activeRequest?.status === 'REJECTED' || activeRequest?.status === 'FAILED'
+            ? activeRequest.status
+            : mainAction?.actionType || 'default',
+        colors
+    );
 
     let actionData: any = {};
     if (mainAction?.payload?.actionBody) {

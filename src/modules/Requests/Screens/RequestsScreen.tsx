@@ -252,32 +252,32 @@ const RequestsScreen = () => {
     search: debouncedSearchQuery || undefined,
   });
   // })
-  
+
   const { data: requestTypes, refetch: refetchTypes } = useGetRequestTypesQuery();
 
   const [isManualRefresh, setIsManualRefresh] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setIsManualRefresh(true);
-    canLoadMore.current = false; 
+    canLoadMore.current = false;
     const typesPromise = refetchTypes();
 
     if (pageNumber === 0) {
-        try {
-            await refetchRequests();
-        } catch (error) {
-            console.error('Refetch requests failed', error);
-        }
+      try {
+        await refetchRequests();
+      } catch (error) {
+        console.error('Refetch requests failed', error);
+      }
     } else {
-        setPageNumber(0);
+      setPageNumber(0);
     }
-    
+
     try {
-        await typesPromise;
+      await typesPromise;
     } catch (error) {
-         console.error('Refetch types failed', error);
+      console.error('Refetch types failed', error);
     }
-    
+
     setIsManualRefresh(false);
   }, [pageNumber, refetchRequests, refetchTypes]);
 
@@ -285,28 +285,28 @@ const RequestsScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-        canLoadMore.current = false;
-        
-        // Reset all states
-        setSearchQuery('');
-        setDebouncedSearchQuery('');
-        resetFilters();
-        setAppliedFilters({
-            status: '',
-            type: '',
-            startDate: '',
-            endDate: '',
-        });
+      canLoadMore.current = false;
 
-        refetchTypes();
-        
-        setPageNumber(prev => {
-            if (prev === 0) {
-                 setTimeout(() => refetchRequests(), 0);
-                 return 0;
-            }
-            return 0;
-        });
+      // Reset all states
+      setSearchQuery('');
+      setDebouncedSearchQuery('');
+      resetFilters();
+      setAppliedFilters({
+        status: '',
+        type: '',
+        startDate: '',
+        endDate: '',
+      });
+
+      refetchTypes();
+
+      setPageNumber(prev => {
+        if (prev === 0) {
+          setTimeout(() => refetchRequests(), 0);
+          return 0;
+        }
+        return 0;
+      });
     }, [refetchRequests, refetchTypes])
   );
 
@@ -376,22 +376,22 @@ const RequestsScreen = () => {
     try {
       await cancelRequest(requestId).unwrap();
       setShowCancelRequestError(false);
-      
+
       Alert.alert(
-          t('common.success'),
-          t('requests.cancelSuccessDescription'),
-          [
-              {
-                  text: t('common.done'),
-                  onPress: () => {
-                       setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
-                       refetchRequests();
-                  }
-              }
-          ]
+        t('common.success'),
+        t('requests.cancelSuccessDescription'),
+        [
+          {
+            text: t('common.done'),
+            onPress: () => {
+              setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+              refetchRequests();
+            }
+          }
+        ]
       );
     } catch (error: any) {
-      console.error('Failed to cancel request', error); 
+      console.error('Failed to cancel request', error);
       setShowCancelRequestError(true);
     }
   };
@@ -399,7 +399,9 @@ const RequestsScreen = () => {
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
     const mainAction = item?.actions?.[0];
     const { backgroundColor, textColor } = getStatusColors(
-      mainAction?.actionType || 'default',
+      item.status === 'CANCELLED' || item.status === 'REJECTED' || item.status === 'FAILED'
+        ? item.status
+        : mainAction?.actionType || 'default',
       colors,
     );
 
@@ -564,8 +566,8 @@ const RequestsScreen = () => {
           filterView === 'status'
             ? t('requests.filters.selectStatus')
             : filterView === 'type'
-            ? t('requests.filters.selectType')
-            : t('requests.filters.title')
+              ? t('requests.filters.selectType')
+              : t('requests.filters.title')
         }
       >
         <Animated.View
@@ -597,7 +599,7 @@ const RequestsScreen = () => {
                     <CustomRadioButton
                       label={option.displayName}
                       selected={selectedStatus === option.name}
-                      onPress={() => {}}
+                      onPress={() => { }}
                       labelStyle={styles.selectionLabel}
                       containerStyle={{ marginVertical: 0 }}
                     />
@@ -633,7 +635,7 @@ const RequestsScreen = () => {
                         <CustomRadioButton
                           label={option.displayName}
                           selected={selectedRequestType === option.name}
-                          onPress={() => {}}
+                          onPress={() => { }}
                           labelStyle={styles.selectionLabel}
                           containerStyle={{ marginVertical: 0 }}
                         />
@@ -667,8 +669,8 @@ const RequestsScreen = () => {
                     value={
                       startDate && endDate
                         ? `${formatDisplayDate(
-                            startDate,
-                          )} - ${formatDisplayDate(endDate)}`
+                          startDate,
+                        )} - ${formatDisplayDate(endDate)}`
                         : t('datePicker.selectRange')
                     }
                     editable={false}
