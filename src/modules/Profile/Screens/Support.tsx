@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -40,6 +40,29 @@ const Support = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [description, setDescription] = useState('');
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const scrollToInput = (y: number) => {
+    scrollViewRef.current?.scrollTo({ y, animated: true });
+  };
+
+  useEffect(() => {
+    const handleReset = () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+      }, 100);
+    };
+
+    const listeners = [
+      Keyboard.addListener('keyboardDidHide', handleReset),
+      Keyboard.addListener('keyboardWillHide', handleReset),
+    ];
+
+    return () => {
+      listeners.forEach(l => l.remove());
+    };
+  }, []);
+
 
   const [createSupportRequest, { isLoading: isSubmitting }] =
     useCreateSupportRequestMutation();
@@ -94,107 +117,114 @@ const Support = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1, backgroundColor : colors.background }}>
-      
-        <KeyboardAvoidingView
-            style={{ flex: 1, backgroundColor : colors.background }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? ms(0) : 0}
-          >
-          <CustomHeader
-            title={t('profile.items.support.title')}
-            titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
-            onBackPress={() => navigation.goBack()}
-          />
-          
-            <ScrollView
-              contentContainerStyle={styles.content}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
-              <View style={styles.headerContainer}>
-                <SupportHeaderSVG />
-                <CustomText
-                  type={TextType.ScreenHeadlineLarge}
-                  style={{ fontWeight: Typography.headlineMedium.fontWeight }}
-                >
-                  {t('support.title')}
-                </CustomText>
-                <CustomText
-                  type={TextType.ScreenDisplaySmall}
-                  style={{ color: colors.secondaryText }}
-                >
-                  {t('support.description')}
-                </CustomText>
-              </View>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <CustomHeader
+        title={t('profile.items.support.title')}
+        titleStyle={{ fontWeight: Typography.headlineMedium.fontWeight }}
+        onBackPress={() => navigation.goBack()}
+      />
 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? ms(100) : 0}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View>
+            <View style={styles.headerContainer}>
+              <SupportHeaderSVG />
               <CustomText
-                type={TextType.ScreenDisplaySmall}
+                type={TextType.ScreenHeadlineLarge}
                 style={{ fontWeight: Typography.headlineMedium.fontWeight }}
               >
-                {t('support.supportDescription')}
+                {t('support.title')}
               </CustomText>
+              <CustomText
+                type={TextType.ScreenDisplaySmall}
+                style={{ color: colors.secondaryText }}
+              >
+                {t('support.description')}
+              </CustomText>
+            </View>
 
-              <View>
-                <CustomTextInput
-                  label={t('support.contactNumber')}
-                  keyboardType="number-pad"
-                  value={phoneNumber}
-                  maxLength={9}
-                  onChangeText={setPhoneNumber}
-                  readOnly={isSubmitting}
-                  editable={!isSubmitting}
-                  inputStyle={styles.inputContainer}
-                  inputContainerStyle={[
-                    styles.inputContainerStyle,
-                    { borderColor: colors.outline },
-                  ]}
-                  leftIcon={
-                    <View style={styles.leftIconContainer}>
-                      <UAESVG width={ms(24)} height={ms(18)} />
-                      <CustomText
-                        type={TextType.ScreenDisplaySmall}
-                      >{`+971`}</CustomText>
-                    </View>
-                  }
-                />
-                <CustomDropdown
-                  label={t('support.selectTopic')}
-                  placeholder={t('common.select')}
-                  selectedValue={
-                    selectedTopic
-                      ? t(`support.topics.${selectedTopic}`)
-                      : undefined
-                  }
-                  disabled={isSubmitting}
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    setTempTopic(selectedTopic);
-                    setIsBottomSheetVisible(true);
-                  }}
-                  containerStyle={styles.dropdown}
-                  innerContainerStyle={styles.innerContainer}
-                />
-                <CustomTextInput
-                  label={t('support.selectTopicDesc')}
-                  placeholder={t('support.describeRequestPlaceholder')}
-                  multiline={true}
-                  value={description}
-                  maxLength={255}
-                  onChangeText={setDescription}
-                  readOnly={isSubmitting}
-                  editable={!isSubmitting}
-                  inputStyle={[styles.inputContainer, {paddingLeft : 0}]}
-                  inputContainerStyle={{
-                    borderColor: colors.outline,
-                    padding: ms(8),
-                    height: ms(120),
-                    backgroundColor: colors.surface,
-                  }}
-                />
-              </View>
-            </ScrollView>
-       
+            <CustomText
+              type={TextType.ScreenDisplaySmall}
+              style={{
+                fontWeight: Typography.headlineMedium.fontWeight,
+                marginTop: Spacing.xl,
+              }}
+            >
+              {t('support.supportDescription')}
+            </CustomText>
+
+            <View style={{ marginTop: Spacing.xl }}>
+              <CustomTextInput
+                label={t('support.contactNumber')}
+                keyboardType="number-pad"
+                value={phoneNumber}
+                maxLength={9}
+                onChangeText={setPhoneNumber}
+                readOnly={isSubmitting}
+                editable={!isSubmitting}
+                inputStyle={styles.inputContainer}
+                inputContainerStyle={[
+                  styles.inputContainerStyle,
+                  { borderColor: colors.outline },
+                ]}
+                leftIcon={
+                  <View style={styles.leftIconContainer}>
+                    <UAESVG width={ms(24)} height={ms(18)} />
+                    <CustomText
+                      type={TextType.ScreenDisplaySmall}
+                    >{`+971`}</CustomText>
+                  </View>
+                }
+              />
+              <CustomDropdown
+                label={t('support.selectTopic')}
+                placeholder={t('common.select')}
+                selectedValue={
+                  selectedTopic
+                    ? t(`support.topics.${selectedTopic}`)
+                    : undefined
+                }
+                disabled={isSubmitting}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setTempTopic(selectedTopic);
+                  setIsBottomSheetVisible(true);
+                }}
+                containerStyle={styles.dropdown}
+                innerContainerStyle={styles.innerContainer}
+              />
+              <CustomTextInput
+                label={t('support.selectTopicDesc')}
+                placeholder={t('support.describeRequestPlaceholder')}
+                multiline={true}
+                value={description}
+                maxLength={255}
+                onChangeText={setDescription}
+                readOnly={isSubmitting}
+                editable={!isSubmitting}
+                onFocus={() => scrollToInput(ms(400))}
+                inputStyle={[styles.inputContainer, { paddingLeft: 0 }]}
+                inputContainerStyle={{
+                  borderColor: colors.outline,
+                  padding: ms(8),
+                  height: ms(120),
+                  backgroundColor: colors.surface,
+                }}
+              />
+            </View>
+          </View>
+        </ScrollView>
+
         <View style={styles.footer}>
           <CustomButton
             title={t('support.contactMe')}
@@ -203,49 +233,49 @@ const Support = () => {
             uppercase={false}
           />
         </View>
+      </KeyboardAvoidingView>
 
-        <CustomBottomSheet
-          visible={isBottomSheetVisible}
-          onClose={() => setIsBottomSheetVisible(false)}
-          title={t('support.selectTopic')}
-        >
-          <View style={styles.bottomSheetContent}>
-            {TOPICS.map(topic => (
-              <TouchableOpacity
-                key={topic}
-                style={[
-                  styles.card,
-                  {
-                    borderColor:
-                      tempTopic === topic ? colors.primary : colors.outline,
-                    borderWidth: tempTopic === topic ? ms(1) : ms(0.5),
-                  },
-                ]}
-                activeOpacity={0.8}
+      <CustomBottomSheet
+        visible={isBottomSheetVisible}
+        onClose={() => setIsBottomSheetVisible(false)}
+        title={t('support.selectTopic')}
+      >
+        <View style={styles.bottomSheetContent}>
+          {TOPICS.map(topic => (
+            <TouchableOpacity
+              key={topic}
+              style={[
+                styles.card,
+                {
+                  borderColor:
+                    tempTopic === topic ? colors.primary : colors.outline,
+                  borderWidth: tempTopic === topic ? ms(1) : ms(0.5),
+                },
+              ]}
+              activeOpacity={0.8}
+              onPress={() => setTempTopic(topic)}
+            >
+              <CustomRadioButton
+                label={t(`support.topics.${topic}`)}
+                selected={tempTopic === topic}
                 onPress={() => setTempTopic(topic)}
-              >
-                <CustomRadioButton
-                  label={t(`support.topics.${topic}`)}
-                  selected={tempTopic === topic}
-                  onPress={() => setTempTopic(topic)}
-                  containerStyle={styles.radioButton}
-                  labelStyle={styles.radioLabel}
-                />
-              </TouchableOpacity>
-            ))}
+                containerStyle={styles.radioButton}
+                labelStyle={styles.radioLabel}
+              />
+            </TouchableOpacity>
+          ))}
 
-            <CustomButton
-              title={t('common.confirm')}
-              onPress={handleConfirm}
-              disabled={!tempTopic}
-              style={styles.confirmButton}
-              uppercase={false}
-            />
-          </View>
-        </CustomBottomSheet>
-        <CustomLoader loading={isSubmitting} />
-         </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+          <CustomButton
+            title={t('common.confirm')}
+            onPress={handleConfirm}
+            disabled={!tempTopic}
+            style={styles.confirmButton}
+            uppercase={false}
+          />
+        </View>
+      </CustomBottomSheet>
+      <CustomLoader loading={isSubmitting} />
+    </View>
   );
 };
 
@@ -256,9 +286,9 @@ const createStyles = (colors: any) =>
     },
     content: {
       paddingHorizontal: ms(36),
-      // paddingTop: Spacing.xl,
-      paddingBottom: ms(120), // Accommodation for fixed footer
+      paddingBottom: ms(180),
       gap: Spacing.xl,
+      flexGrow: 1,
     },
     headerContainer: {
       gap: Spacing.l,
@@ -306,13 +336,11 @@ const createStyles = (colors: any) =>
     },
     inputContainerStyle: {},
     footer: {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
       padding: Spacing.l,
       paddingHorizontal: ms(36),
       backgroundColor: colors.background,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.outline,
     },
   });
 

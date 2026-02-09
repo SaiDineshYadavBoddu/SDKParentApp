@@ -5,6 +5,13 @@
  */
 export const formatAmount = (amount: string | number) => {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  const [integer, decimal] = (isNaN(numAmount) ? '0.00' : numAmount.toFixed(2)).split('.');
-  return { integer, decimal: decimal ? `.${decimal}` : '.00' };
+  if (isNaN(numAmount)) return { integer: '0', decimal: '.00' };
+
+  const [integerPart, decimalPart] = numAmount.toFixed(2).split('.');
+
+  // Add commas to integer part
+  const integer = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const decimal = decimalPart ? `.${decimalPart}` : '.00';
+
+  return { integer, decimal };
 };

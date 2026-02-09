@@ -17,8 +17,8 @@ export const requestApi = backendApi.injectEndpoints({
         empty: boolean;
       },
       {
-        status?: string;
-        actionType?: string;
+        status?: string | string[];
+        actionType?: string | string[];
         startDate?: string;
         endDate?: string;
         pageNumber?: number;
@@ -62,12 +62,12 @@ export const requestApi = backendApi.injectEndpoints({
         if (arg && (arg as any).pageNumber === 0) {
           return newResponse;
         }
-        
+
         // Safety check for currentCache.content
         const existingContent = currentCache?.content || [];
         // Create a Set of existing IDs for O(1) lookup
         const existingIds = new Set(existingContent.map(item => item.id));
-        
+
         // Filter out incoming items that already exist
         const uniqueNewContent = newResponse.content.filter(item => !existingIds.has(item.id));
 

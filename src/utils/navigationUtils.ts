@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
@@ -27,7 +27,14 @@ export const navigateToNoInternetScreen = () => {
     },
     secondaryButton: {
       title: 'noInternet.secondaryButton.title',
-      onPress: () => Linking.openSettings(),
+      onPress: () => {
+        if (Platform.OS === 'ios') {
+          Linking.openURL('App-Prefs:root=WIFI').catch(() => Linking.openSettings());
+        } else {
+          // For Android, we attempt to open wireless settings if possible, fallback to app settings
+          Linking.sendIntent('android.settings.WIRELESS_SETTINGS').catch(() => Linking.openSettings());
+        }
+      },
     },
   });
 };

@@ -52,6 +52,18 @@ export const lightColors = {
   statusClosure: '#616161',
   onStatusClosure: '#E0E0E0',
 
+  statusCancelled: '#3CADF5',
+  onStatusCancelled: '#E3F2FD',
+
+  statusFailed: '#616161',
+  onStatusFailed: '#F5F5F5',
+
+  statusSupport: '#5C6BC0',
+  onStatusSupport: '#E8EAF6',
+
+  statusNewCard: '#2FBF71',
+  onStatusNewCard: '#E8F5E9',
+
   filterButtonBg: '#E3F2FD',
 
   // Inverse colors (Toast/Snackbar)
@@ -113,6 +125,18 @@ export const darkColors = {
 
   statusClosure: '#616161',
   onStatusClosure: '#E0E0E0',
+
+  statusCancelled: '#3CADF5',
+  onStatusCancelled: '#E3F2FD',
+
+  statusFailed: '#616161',
+  onStatusFailed: '#F5F5F5',
+
+  statusSupport: '#5C6BC0',
+  onStatusSupport: '#E8EAF6',
+
+  statusNewCard: '#2FBF71',
+  onStatusNewCard: '#E8F5E9',
 
   filterButtonBg: '#E3F2FD',
 

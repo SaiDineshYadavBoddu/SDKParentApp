@@ -23,7 +23,7 @@ import { Typography } from '../../../theme/typography';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomDropdown from '../../../common/components/CustomDropdown';
 import CustomButton from '../../../common/components/CustomButton';
-import CustomRadioButton from '../../../common/components/CustomRadioButton';
+import CustomCheckbox from '../../../common/components/CustomCheckbox';
 import FilterSVG from '../../../assets/svgs/FilterSVG';
 import DatePickerSVG from '../../../assets/svgs/DatePickerSVG';
 import CustomErrorView from '../../../common/components/CustomErrorView';
@@ -159,11 +159,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   selectionLabel: {
-    fontSize: ms(16),
-    fontWeight: '500',
+    fontSize: ms(12),
+    fontWeight: '400',
   },
   rangeInputWrapper: {
     width: '100%',
+  },
+  filterBadge: {
+    position: 'absolute',
+    top: ms(8),
+    right: ms(8),
+    width: ms(8),
+    height: ms(8),
+    borderRadius: ms(4),
+    borderWidth: 1,
+    borderColor: 'white',
   },
 });
 
@@ -189,8 +199,8 @@ const RequestsScreen = () => {
     'main',
   );
 
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedRequestType, setSelectedRequestType] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedRequestType, setSelectedRequestType] = useState<string[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(
     null,
   );
@@ -198,9 +208,14 @@ const RequestsScreen = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const PAGE_SIZE = 6;
 
-  const [appliedFilters, setAppliedFilters] = useState({
-    status: '',
-    type: '',
+  const [appliedFilters, setAppliedFilters] = useState<{
+    status: string[];
+    type: string[];
+    startDate: string;
+    endDate: string;
+  }>({
+    status: [],
+    type: [],
     startDate: '',
     endDate: '',
   });
@@ -221,8 +236,8 @@ const RequestsScreen = () => {
   const slideAnim = useRef(new Animated.Value(0)).current;
 
   const resetFilters = () => {
-    setSelectedStatus('');
-    setSelectedRequestType('');
+    setSelectedStatus([]);
+    setSelectedRequestType([]);
     setStartDate('');
     setEndDate('');
     setFilterView('main');
@@ -241,8 +256,8 @@ const RequestsScreen = () => {
   }, [searchQuery]);
 
   const { data, isLoading, isFetching, error, refetch: refetchRequests } = useGetRequestsQuery({
-    status: appliedFilters.status || undefined,
-    actionType: appliedFilters.type || undefined,
+    status: appliedFilters.status.length > 0 ? appliedFilters.status : undefined,
+    actionType: appliedFilters.type.length > 0 ? appliedFilters.type : undefined,
     startDate: appliedFilters.startDate || undefined,
     endDate: appliedFilters.endDate || undefined,
     pageNumber,
@@ -252,32 +267,32 @@ const RequestsScreen = () => {
     search: debouncedSearchQuery || undefined,
   });
   // })
-  
+
   const { data: requestTypes, refetch: refetchTypes } = useGetRequestTypesQuery();
 
   const [isManualRefresh, setIsManualRefresh] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setIsManualRefresh(true);
-    canLoadMore.current = false; 
+    canLoadMore.current = false;
     const typesPromise = refetchTypes();
 
     if (pageNumber === 0) {
-        try {
-            await refetchRequests();
-        } catch (error) {
-            console.error('Refetch requests failed', error);
-        }
+      try {
+        await refetchRequests();
+      } catch (error) {
+        console.error('Refetch requests failed', error);
+      }
     } else {
-        setPageNumber(0);
+      setPageNumber(0);
     }
-    
+
     try {
-        await typesPromise;
+      await typesPromise;
     } catch (error) {
-         console.error('Refetch types failed', error);
+      console.error('Refetch types failed', error);
     }
-    
+
     setIsManualRefresh(false);
   }, [pageNumber, refetchRequests, refetchTypes]);
 
@@ -285,28 +300,28 @@ const RequestsScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-        canLoadMore.current = false;
-        
-        // Reset all states
-        setSearchQuery('');
-        setDebouncedSearchQuery('');
-        resetFilters();
-        setAppliedFilters({
-            status: '',
-            type: '',
-            startDate: '',
-            endDate: '',
-        });
+      canLoadMore.current = false;
 
-        refetchTypes();
-        
-        setPageNumber(prev => {
-            if (prev === 0) {
-                 setTimeout(() => refetchRequests(), 0);
-                 return 0;
-            }
-            return 0;
-        });
+      // Reset all states
+      setSearchQuery('');
+      setDebouncedSearchQuery('');
+      resetFilters();
+      setAppliedFilters({
+        status: [],
+        type: [],
+        startDate: '',
+        endDate: '',
+      });
+
+      refetchTypes();
+
+      setPageNumber(prev => {
+        if (prev === 0) {
+          setTimeout(() => refetchRequests(), 0);
+          return 0;
+        }
+        return 0;
+      });
     }, [refetchRequests, refetchTypes])
   );
 
@@ -376,22 +391,22 @@ const RequestsScreen = () => {
     try {
       await cancelRequest(requestId).unwrap();
       setShowCancelRequestError(false);
-      
+
       Alert.alert(
-          t('common.success'),
-          t('requests.cancelSuccessDescription'),
-          [
-              {
-                  text: t('common.done'),
-                  onPress: () => {
-                       setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
-                       refetchRequests();
-                  }
-              }
-          ]
+        t('common.success'),
+        t('requests.cancelSuccessDescription'),
+        [
+          {
+            text: t('common.done'),
+            onPress: () => {
+              setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+              refetchRequests();
+            }
+          }
+        ]
       );
     } catch (error: any) {
-      console.error('Failed to cancel request', error); 
+      console.error('Failed to cancel request', error);
       setShowCancelRequestError(true);
     }
   };
@@ -399,7 +414,9 @@ const RequestsScreen = () => {
   const renderRequestItem = ({ item }: { item: RequestItem }) => {
     const mainAction = item?.actions?.[0];
     const { backgroundColor, textColor } = getStatusColors(
-      mainAction?.actionType || 'default',
+      item.status === 'CANCELLED' || item.status === 'REJECTED' || item.status === 'FAILED'
+        ? item.status
+        : mainAction?.actionType || 'default',
       colors,
     );
 
@@ -491,6 +508,9 @@ const RequestsScreen = () => {
                   }}
                 >
                   <FilterSVG width={ms(24)} height={ms(24)} />
+                  {!!(appliedFilters.status.length > 0 || appliedFilters.type.length > 0 || appliedFilters.startDate || appliedFilters.endDate) && (
+                    <View style={[styles.filterBadge, { backgroundColor: colors.error }]} />
+                  )}
                 </TouchableOpacity>
               </View>
 
@@ -564,8 +584,8 @@ const RequestsScreen = () => {
           filterView === 'status'
             ? t('requests.filters.selectStatus')
             : filterView === 'type'
-            ? t('requests.filters.selectType')
-            : t('requests.filters.title')
+              ? t('requests.filters.selectType')
+              : t('requests.filters.title')
         }
       >
         <Animated.View
@@ -573,74 +593,100 @@ const RequestsScreen = () => {
         >
           {filterView === 'status' ? (
             <View style={styles.selectionContent}>
-              {STATUS_OPTIONS.map(option => (
-                <TouchableOpacity
-                  key={option.name}
-                  activeOpacity={0.6}
-                  delayPressIn={0}
-                  style={[
-                    styles.selectionItem,
-                    {
-                      borderColor:
-                        selectedStatus === option.name
+              {STATUS_OPTIONS.map(option => {
+                const isSelected = selectedStatus.includes(option.name);
+                return (
+                  <TouchableOpacity
+                    key={option.name}
+                    activeOpacity={0.6}
+                    delayPressIn={0}
+                    style={[
+                      styles.selectionItem,
+                      {
+                        borderColor: isSelected
                           ? colors.primary
                           : colors.outline,
-                      backgroundColor: colors.surface,
-                    },
-                  ]}
-                  onPress={() => {
-                    setSelectedStatus(option.name);
-                    toggleFilterView('main');
-                  }}
-                >
-                  <View pointerEvents="none">
-                    <CustomRadioButton
-                      label={option.displayName}
-                      selected={selectedStatus === option.name}
-                      onPress={() => {}}
-                      labelStyle={styles.selectionLabel}
-                      containerStyle={{ marginVertical: 0 }}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
+                        backgroundColor: colors.surface,
+                      },
+                    ]}
+                    onPress={() => {
+                      setSelectedStatus(prev => {
+                        if (prev.includes(option.name)) {
+                          return prev.filter(s => s !== option.name);
+                        } else {
+                          return [...prev, option.name];
+                        }
+                      });
+                    }}
+                  >
+                    <View pointerEvents="none">
+                      <CustomCheckbox
+                        label={option.displayName}
+                        selected={isSelected}
+                        onPress={() => { }}
+                        labelStyle={styles.selectionLabel}
+                      // containerStyle={{ marginVertical: 0 }}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                )
+              })}
+              <CustomButton
+                title={t('common.done')}
+                onPress={() => toggleFilterView('main')}
+                style={{ marginTop: Spacing.m }}
+              />
             </View>
           ) : filterView === 'type' ? (
             <View style={styles.selectionContent}>
               {requestTypes && requestTypes.length > 0 ? (
-                requestTypes.map(
-                  (option: { name: string; displayName: string }) => (
-                    <TouchableOpacity
-                      key={option.name}
-                      activeOpacity={0.6}
-                      delayPressIn={0}
-                      style={[
-                        styles.selectionItem,
-                        {
-                          borderColor:
-                            selectedRequestType === option.name
-                              ? colors.primary
-                              : colors.outline,
-                          backgroundColor: colors.surface,
-                        },
-                      ]}
-                      onPress={() => {
-                        setSelectedRequestType(option.name);
-                        toggleFilterView('main');
-                      }}
-                    >
-                      <View pointerEvents="none">
-                        <CustomRadioButton
-                          label={option.displayName}
-                          selected={selectedRequestType === option.name}
-                          onPress={() => {}}
-                          labelStyle={styles.selectionLabel}
-                          containerStyle={{ marginVertical: 0 }}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  ),
-                )
+                <>
+                  {requestTypes.map(
+                    (option: { name: string; displayName: string }) => {
+                      const isSelected = selectedRequestType.includes(option.name);
+                      return (
+                        <TouchableOpacity
+                          key={option.name}
+                          activeOpacity={0.6}
+                          delayPressIn={0}
+                          style={[
+                            styles.selectionItem,
+                            {
+                              borderColor: isSelected
+                                ? colors.primary
+                                : colors.outline,
+                              backgroundColor: colors.surface,
+                            },
+                          ]}
+                          onPress={() => {
+                            setSelectedRequestType(prev => {
+                              if (prev.includes(option.name)) {
+                                return prev.filter(t => t !== option.name);
+                              } else {
+                                return [...prev, option.name];
+                              }
+                            });
+                          }}
+                        >
+                          <View pointerEvents="none">
+                            <CustomCheckbox
+                              label={option.displayName}
+                              selected={isSelected}
+                              onPress={() => { }}
+                              labelStyle={styles.selectionLabel}
+                            // containerStyle={{ marginVertical: 0 }}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                      )
+                    }
+                  )}
+                  <CustomButton
+                    title={t('common.done')}
+                    onPress={() => toggleFilterView('main')}
+                    style={{ marginTop: Spacing.m }}
+                  />
+                </>
               ) : (
                 <CustomText
                   type={TextType.CardText}
@@ -667,8 +713,8 @@ const RequestsScreen = () => {
                     value={
                       startDate && endDate
                         ? `${formatDisplayDate(
-                            startDate,
-                          )} - ${formatDisplayDate(endDate)}`
+                          startDate,
+                        )} - ${formatDisplayDate(endDate)}`
                         : t('datePicker.selectRange')
                     }
                     editable={false}
@@ -709,11 +755,9 @@ const RequestsScreen = () => {
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    STATUS_OPTIONS.find(s => s.name === selectedStatus)
-                      ?.displayName ||
-                    (selectedStatus === ''
-                      ? t('requests.filters.selectStatus')
-                      : selectedStatus)
+                    selectedStatus.length > 0
+                      ? `${selectedStatus.length} ${t('common.selected', 'Selected')}`
+                      : t('requests.filters.selectStatus')
                   }
                   onPress={() => toggleFilterView('status')}
                   innerContainerStyle={[
@@ -734,12 +778,9 @@ const RequestsScreen = () => {
                 <CustomDropdown
                   label=""
                   selectedValue={
-                    requestTypes?.find(
-                      (t: any) => t.name === selectedRequestType,
-                    )?.displayName ||
-                    (selectedRequestType === ''
-                      ? t('requests.filters.selectType')
-                      : selectedRequestType)
+                    selectedRequestType.length > 0
+                      ? `${selectedRequestType.length} ${t('common.selected', 'Selected')}`
+                      : t('requests.filters.selectType')
                   }
                   onPress={() => toggleFilterView('type')}
                   innerContainerStyle={[
@@ -755,8 +796,8 @@ const RequestsScreen = () => {
                   title={t('common.reset')}
                   variant="outlined"
                   disabled={
-                    selectedStatus === '' &&
-                    selectedRequestType === '' &&
+                    selectedStatus.length === 0 &&
+                    selectedRequestType.length === 0 &&
                     startDate === '' &&
                     endDate === ''
                   }
@@ -769,8 +810,8 @@ const RequestsScreen = () => {
                 <CustomButton
                   title={t('requests.filters.apply')}
                   disabled={
-                    selectedStatus === appliedFilters.status &&
-                    selectedRequestType === appliedFilters.type &&
+                    JSON.stringify(selectedStatus.sort()) === JSON.stringify(appliedFilters.status.sort()) &&
+                    JSON.stringify(selectedRequestType.sort()) === JSON.stringify(appliedFilters.type.sort()) &&
                     startDate === appliedFilters.startDate &&
                     endDate === appliedFilters.endDate
                   }

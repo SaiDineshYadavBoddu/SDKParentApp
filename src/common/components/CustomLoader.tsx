@@ -121,9 +121,11 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 9999,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+    zIndex: 9998,
   },
   card: {
     padding: ms(40),
@@ -136,6 +138,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     gap: ms(32),
+    maxWidth: ms(320),
+    zIndex: 10000,
   },
   indicatorContainer: {
     width: ms(70),

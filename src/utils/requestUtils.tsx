@@ -34,9 +34,13 @@ export const getProgressStatusIcon = (status: string, colors: any) => {
         case 'inProgress':
             return <InProgressSVG width={ms(16)} height={ms(16)} />;
         case 'REJECTED':
+            return <CloseSVG width={ms(16)} height={ms(16)} color={colors?.statusBlocked || colors?.error} />;
         case 'FAILED':
+            return <CloseSVG width={ms(16)} height={ms(16)} color={colors?.statusFailed} />;
         case 'CANCELLED':
-            return <CloseSVG width={ms(16)} height={ms(16)} color={colors?.error} />;
+            return <CloseSVG width={ms(16)} height={ms(16)} color={colors?.statusCancelled} />;
+        case 'DISPUTE':
+            return <InProgressSVG width={ms(16)} height={ms(16)} />;
         default:
             return null;
     }
@@ -53,9 +57,11 @@ export const getProgressStatusColor = (status: string, colors: any) => {
         case 'inProgress':
             return colors.statusInProgress;
         case 'REJECTED':
-        case 'FAILED':
-        case 'CANCELLED':
             return colors.error || '#FF0000';
+        case 'FAILED':
+            return colors.statusFailed;
+        case 'CANCELLED':
+            return colors.statusCancelled;
         default:
             return colors.tertiaryText;
     }
@@ -64,7 +70,7 @@ export const getProgressStatusColor = (status: string, colors: any) => {
 export const getStatusColors = (type: string, colors: any) => {
     switch (type) {
         case 'ACTIVATE':
-             return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
+            return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation };
         case 'UNBLOCK':
             return { backgroundColor: colors.onStatusUnblocking, textColor: colors.statusUnblocking };
         case 'BLOCK':
@@ -74,7 +80,18 @@ export const getStatusColors = (type: string, colors: any) => {
         case 'CLOSE':
             return { backgroundColor: colors.onStatusClosure, textColor: colors.statusClosure };
         case 'SUPPORT':
-             return { backgroundColor: colors.onStatusActivation, textColor: colors.statusActivation }; // Mapping to the blueish color
+        case 'SUPPORT_REQUEST':
+            return { backgroundColor: colors.onStatusSupport, textColor: colors.statusSupport };
+        case 'NEW_CARD':
+            return { backgroundColor: colors.onStatusNewCard, textColor: colors.statusNewCard };
+        case 'DISPUTE':
+            return { backgroundColor: colors.onStatusNewCard, textColor: colors.statusNewCard };
+        case 'CANCELLED':
+            return { backgroundColor: colors.onStatusCancelled, textColor: colors.statusCancelled };
+        case 'REJECTED':
+            return { backgroundColor: colors.onStatusBlocked, textColor: colors.statusBlocked };
+        case 'FAILED':
+            return { backgroundColor: colors.onStatusFailed, textColor: colors.statusFailed };
         default:
             return { backgroundColor: colors.outline, textColor: colors.secondaryText };
     }

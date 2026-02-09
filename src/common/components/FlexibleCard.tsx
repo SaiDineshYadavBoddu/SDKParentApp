@@ -43,6 +43,7 @@ export default function FlexibleCard({
   return (
     <Wrapper
       onPress={disabled ? undefined : onPress}
+      disabled={disabled}
       activeOpacity={0.85}
       style={[
         styles.card,

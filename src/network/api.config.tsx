@@ -30,7 +30,7 @@ const dynamicBaseQuery: BaseQueryFn<
       }
       return headers;
     },
-    timeout: 10000,
+    timeout: 15000,
   });
 
   const url = typeof args === 'string' ? args : args.url;
