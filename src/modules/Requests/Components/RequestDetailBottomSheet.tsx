@@ -228,13 +228,33 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                 </CustomText>
                             )}
 
-                            {/* Description Quote Box */}
-                            {mainAction?.description && (
-                                <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
-                                    <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
-                                    <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
-                                        {mainAction.description}
+                            {/* Manager Comment - Only if rejected and reason exists */}
+                            {activeRequest?.rejectReason && (
+                                <View style={styles.commentContainer}>
+                                    <CustomText type={TextType.Label} style={[styles.commentLabel, { color: colors.onBackground }]}>
+                                        {t('requests.detailSheet.managerComment', 'Manager Comment')}
                                     </CustomText>
+                                    <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
+                                        <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.onBackground }]}>"</CustomText>
+                                        <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
+                                            {activeRequest.rejectReason}
+                                        </CustomText>
+                                    </View>
+                                </View>
+                            )}
+
+                            {/* Cardholder Comment */}
+                            {mainAction?.description && (
+                                <View style={styles.commentContainer}>
+                                    <CustomText type={TextType.Label} style={[styles.commentLabel, { color: colors.secondaryText }]}>
+                                        {t('requests.detailSheet.cardholderComment', 'Cardholder Comment')}
+                                    </CustomText>
+                                    <View style={[styles.descriptionBox, { backgroundColor: colors.backgroundVariant }]}>
+                                        <CustomText type={TextType.CardTitle} style={[styles.quoteIcon, { color: colors.primary }]}>"</CustomText>
+                                        <CustomText type={TextType.CardText} style={[styles.descriptionText, { color: colors.onBackground }]}>
+                                            {mainAction.description}
+                                        </CustomText>
+                                    </View>
                                 </View>
                             )}
 
@@ -356,11 +376,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.m,
         fontWeight: '600',
     },
+    commentContainer: {
+        marginHorizontal: Spacing.m,
+        marginBottom: Spacing.l,
+    },
+    commentLabel: {
+        marginBottom: Spacing.xs,
+        marginLeft: Spacing.xs,
+        fontWeight: '600',
+    },
     descriptionBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: Spacing.m,
-        marginBottom: Spacing.l,
         padding: Spacing.m,
         borderRadius: ms(12),
         gap: Spacing.s,
