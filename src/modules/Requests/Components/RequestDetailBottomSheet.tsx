@@ -79,20 +79,30 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         }
     }
 
-    const detailsFields = [
-        { label: 'actionType', value: mainAction?.actionType || '-' },
-        { label: 'bankCode', value: actionData?.bankCode || '-' },
-        { label: 'bankId', value: actionData?.bankId || '-' },
-        { label: 'cardId', value: actionData?.cardId || '-' },
-        { label: 'cardMaskedPan', value: actionData?.cardMaskedPan || '-' },
-        { label: 'cardholderRequest', value: String(actionData?.cardholderRequest ?? '-') },
-        { label: 'companyId', value: actionData?.companyId || '-' },
-        { label: 'customerId', value: actionData?.customerId || '-' },
-        { label: 'requester', value: activeRequest?.requester || '-' },
-        { label: 'requesterId', value: activeRequest?.requesterId || '-' },
-        { label: 'requesterName', value: activeRequest?.requester || '-' },
-        { label: 'role', value: getGlobalRole() || '-' },
-    ];
+    let detailsFields: { label: string; value: string }[] = [];
+
+    if (mainAction?.actionType === 'SUPPORT_REQUEST') {
+        detailsFields = [
+            { label: 'description', value: actionData?.description || '-' },
+            { label: 'phoneNumber', value: actionData?.phoneNumber || '-' },
+            { label: 'topic', value: actionData?.topic || '-' },
+        ];
+    } else {
+        detailsFields = [
+            { label: 'actionType', value: mainAction?.actionType || '-' },
+            { label: 'bankCode', value: actionData?.bankCode || '-' },
+            { label: 'bankId', value: actionData?.bankId || '-' },
+            { label: 'cardId', value: actionData?.cardId || '-' },
+            { label: 'cardMaskedPan', value: actionData?.cardMaskedPan || '-' },
+            { label: 'cardholderRequest', value: String(actionData?.cardholderRequest ?? '-') },
+            { label: 'companyId', value: actionData?.companyId || '-' },
+            { label: 'customerId', value: actionData?.customerId || '-' },
+            { label: 'requester', value: activeRequest?.requester || '-' },
+            { label: 'requesterId', value: activeRequest?.requesterId || '-' },
+            { label: 'requesterName', value: activeRequest?.requester || '-' },
+            { label: 'role', value: getGlobalRole() || '-' },
+        ];
+    }
 
     const getTimeline = (): TimelineEvent[] => {
         if (!activeRequest) return [];
