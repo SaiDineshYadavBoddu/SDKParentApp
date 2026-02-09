@@ -181,10 +181,10 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const timeline = getTimeline();
 
     const renderHeader = () => (
-        <View style={styles.headerTitleRow}>
-            <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                {t('requests.idPrefix')} {activeRequest?.id || ''}
-            </CustomText>
+            <View style={styles.headerTitleRow}>
+                <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
+                    {t('requests.idPrefix')} {request?.id || activeRequest?.id || ''}
+                </CustomText>
             {activeRequest && (
                 <View style={[styles.badge, { backgroundColor }]}>
                     <View style={[styles.badgeDot, { backgroundColor: textColor }]} />

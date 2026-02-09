@@ -166,6 +166,7 @@ const Support = () => {
             <View style={{ marginTop: Spacing.xl }}>
               <CustomTextInput
                 label={t('support.contactNumber')}
+                required={true}
                 keyboardType="number-pad"
                 value={phoneNumber}
                 maxLength={9}
@@ -188,6 +189,7 @@ const Support = () => {
               />
               <CustomDropdown
                 label={t('support.selectTopic')}
+                required={true}
                 placeholder={t('common.select')}
                 selectedValue={
                   selectedTopic
@@ -205,6 +207,7 @@ const Support = () => {
               />
               <CustomTextInput
                 label={t('support.selectTopicDesc')}
+                required={true}
                 placeholder={t('support.describeRequestPlaceholder')}
                 multiline={true}
                 value={description}
