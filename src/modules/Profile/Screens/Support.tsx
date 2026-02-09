@@ -196,6 +196,7 @@ const Support = () => {
                 }
                 disabled={isSubmitting}
                 onPress={() => {
+                  Keyboard.dismiss();
                   setTempTopic(selectedTopic);
                   setIsBottomSheetVisible(true);
                 }}

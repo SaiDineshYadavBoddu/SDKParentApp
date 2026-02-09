@@ -422,6 +422,7 @@ const RequestsScreen = () => {
   ), [handleRequestPress]);
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
       <CustomHeader
         title={t('requests.title')}
@@ -436,8 +437,7 @@ const RequestsScreen = () => {
           </TouchableOpacity>
         }
       />
-
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      
         <View style={styles.container}>
           {isTimeoutError ? (
             <RequestTimeoutScreen onRetry={refetchRequests} />
@@ -546,7 +546,7 @@ const RequestsScreen = () => {
             </>
           )}
         </View>
-      </TouchableWithoutFeedback>
+      
 
       <CustomBottomSheet
         visible={isFilterSheetVisible}
@@ -829,6 +829,7 @@ const RequestsScreen = () => {
         loading={isLoading || (isFetching && pageNumber === 0) || isCancelling}
       />
     </View>
+    </TouchableWithoutFeedback>
   );
 };
 
