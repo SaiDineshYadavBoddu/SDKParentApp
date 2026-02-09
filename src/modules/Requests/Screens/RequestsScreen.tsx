@@ -43,6 +43,7 @@ import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 import { RequestItem } from '../../../network/requests/request.types';
+import RequestListItem from '../Components/RequestListItem';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import SuccessSVG from '../../../assets/svgs/SuccessSVG';
 
@@ -411,48 +412,14 @@ const RequestsScreen = () => {
     }
   };
 
-  const renderRequestItem = ({ item }: { item: RequestItem }) => {
-    const mainAction = item?.actions?.[0];
-    const { backgroundColor, textColor } = getStatusColors(
-      item.status === 'CANCELLED' || item.status === 'REJECTED' || item.status === 'FAILED'
-        ? item.status
-        : mainAction?.actionType || 'default',
-      colors,
-    );
+  const handleRequestPress = useCallback((item: RequestItem) => {
+    setSelectedRequest(item);
+    setIsDetailSheetVisible(true);
+  }, []);
 
-    return (
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => {
-          setSelectedRequest(item);
-          setIsDetailSheetVisible(true);
-        }}
-        style={[styles.requestCard, { backgroundColor: colors.surface }]}
-      >
-        {/* Header Row */}
-        <View style={styles.headerRow}>
-          <CustomText
-            type={TextType.CardTitle}
-            style={[styles.requestID, { color: colors.onSurface }]}
-          >
-            {t('requests.idPrefix')} {item.id}
-          </CustomText>
-          <View style={[styles.badge, { backgroundColor }]}>
-            <View style={[styles.badgeDot, { backgroundColor: textColor }]} />
-            <CustomText
-              type={TextType.CardSubtitle}
-              style={[styles.badgeText, { color: textColor }]}
-            >
-              {mainAction?.displayName || t(`requests.status.${item.status}`)}
-            </CustomText>
-          </View>
-        </View>
-
-        {/* Details Rows */}
-        <RequestInfoGroup item={item} />
-      </TouchableOpacity>
-    );
-  };
+  const renderRequestItem = useCallback(({ item }: { item: RequestItem }) => (
+    <RequestListItem item={item} onPress={handleRequestPress} />
+  ), [handleRequestPress]);
 
   return (
     <View style={{ backgroundColor: colors.screenBackground, flex: 1 }}>
@@ -563,6 +530,17 @@ const RequestsScreen = () => {
                     ) : null
                   }
                   contentContainerStyle={styles.listContent}
+                  removeClippedSubviews={true}
+                  scrollEnabled={!isLoading && !isFetching}
+                  maxToRenderPerBatch={10}
+                  updateCellsBatchingPeriod={50}
+                  initialNumToRender={8}
+                  windowSize={21}
+                  getItemLayout={(data, index) => ({
+                    length: ms(120),
+                    offset: ms(120) * index,
+                    index,
+                  })}
                 />
               )}
             </>

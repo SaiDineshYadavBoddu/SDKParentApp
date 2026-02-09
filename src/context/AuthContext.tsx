@@ -114,19 +114,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const prevTokenRef = useRef<string | null>(null);
+  const prevClaimsRef = useRef<string | null>(null);
 
-  // Reset API state when accessToken changes (e.g. after password change or company selection)
+  // Reset API state when context/claims change (e.g. after password change or company selection)
   useEffect(() => {
     if (accessToken && isAuthenticated) {
-      // Only reset if we had a previous token and it changed
-      // This skips the reset on the initial login which was causing AbortError
-      if (prevTokenRef.current && prevTokenRef.current !== accessToken) {
-        console.log('🚀 ~ accessToken changed, resetting API state...');
+      // Create a unique key for the current company/role context
+      const currentClaims = `${globalBankId}-${globalBankCode}-${globalRole}`;
+
+      // Only reset if we had previous claims and they are different from current
+      if (prevClaimsRef.current && prevClaimsRef.current !== currentClaims) {
+        console.log('🚀 ~ Auth context changed (Bank/Role), resetting API state...');
         dispatch(backendApi.util.resetApiState());
       }
-      // Update the ref with the current token
-      prevTokenRef.current = accessToken;
+
+      // Update the ref with current context
+      prevClaimsRef.current = currentClaims;
     }
   }, [accessToken, isAuthenticated, dispatch]);
 
@@ -190,7 +193,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       globalIsAuthenticated = false;
       setIsCardholder(false);
       globalIsCardholder = false;
-      prevTokenRef.current = null; // Reset prev token to avoid triggering resetApiState on next login
+      prevClaimsRef.current = null; // Reset prev claims to avoid triggering resetApiState on next login
       dispatch(backendApi.util.resetApiState());
     }
   };

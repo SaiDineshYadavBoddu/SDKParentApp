@@ -336,6 +336,7 @@ export default function CardListScreen() {
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={!isLoading && !isFetching} // Temporarily disable/enable to "kick" the responder
         refreshControl={
           <RefreshControl
             refreshing={isManualRefresh}
@@ -518,7 +519,9 @@ export default function CardListScreen() {
           </>
         )}
       </ScrollView>
-      <CustomLoader loading={isFocused && (isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm && !isActivating} />
+      <CustomLoader
+        loading={isFocused && (isLoading || (isFetching && !isManualRefresh && (!data || data.content.length === 0))) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
+      />
 
       <ConfirmationBottomSheet
         visible={showUnblockConfirm}

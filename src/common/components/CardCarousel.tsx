@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -123,7 +123,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
     },
   });
 
-  const renderItem = ({ item, index }: { item: CardData; index: number }) => (
+  const renderItem = useCallback(({ item, index }: { item: CardData; index: number }) => (
     <PaymentCard
       item={item}
       index={index}
@@ -137,7 +137,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       }}
       showEyeIcon={showEyeIcon}
     />
-  );
+  ), [visibleCardIds, scrollX, showEyeIcon, toggleCardVisibility]);
 
   return (
     <View style={styles.cardListContainer}>
@@ -175,7 +175,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   );
 };
 
-const Dot = ({ i, scrollX, colors }: { i: number; scrollX: any; colors: any }) => {
+const Dot = memo(({ i, scrollX, colors }: { i: number; scrollX: any; colors: any }) => {
   const animatedDotStyle = useAnimatedStyle(() => {
     const baseOffset = i * SNAP_INTERVAL;
     const dotScaleX = interpolate(
@@ -206,7 +206,7 @@ const Dot = ({ i, scrollX, colors }: { i: number; scrollX: any; colors: any }) =
       ]}
     />
   );
-};
+});
 
 const styles = StyleSheet.create({
   cardListContainer: {
