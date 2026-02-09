@@ -412,7 +412,7 @@ export default function CardListScreen() {
                 }
               }}
               selectedIndex={activeCardIndex}
-              showEyeIcon={true}
+              showEyeIcon={false}
             />
 
             {activeCard && !isLoading && (
