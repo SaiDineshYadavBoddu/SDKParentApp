@@ -217,4 +217,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationItem;
+export default React.memo(NotificationItem);

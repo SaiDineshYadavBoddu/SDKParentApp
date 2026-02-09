@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -52,7 +52,7 @@ const NotificationsScreen = () => {
     fetchNotifications(0);
   }, []);
 
-  const fetchNotifications = async (pageNumber: number) => {
+  const fetchNotifications = useCallback(async (pageNumber: number) => {
     if (isLoading) return;
 
     try {
@@ -80,9 +80,9 @@ const NotificationsScreen = () => {
         setHasError(true);
       }
     }
-  };
+  }, [isLoading, getNotifications]);
 
-  const handleMarkAsRead = async (id: number) => {
+  const handleMarkAsRead = useCallback(async (id: number) => {
     try {
       await markAsRead(id).unwrap();
       setNotifications(prev =>
@@ -91,16 +91,16 @@ const NotificationsScreen = () => {
     } catch (error) {
       console.error('Failed to mark as read', error);
     }
-  };
+  }, [markAsRead]);
 
-  const handleMarkAllAsRead = async () => {
+  const handleMarkAllAsRead = useCallback(async () => {
     try {
       await markAllAsRead().unwrap();
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     } catch (error) {
       console.error('Failed to mark all as read', error);
     }
-  };
+  }, [markAllAsRead]);
 
   const groupedNotifications = useMemo(() => {
     const today = new Date();
@@ -135,33 +135,33 @@ const NotificationsScreen = () => {
       }));
   }, [notifications]);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (!isLoading && hasMore && !hasError) {
       fetchNotifications(page + 1);
     }
-  };
+  }, [isLoading, hasMore, hasError, fetchNotifications, page]);
 
   const handleCancelRequest = async (requestId: string) => {
     try {
       await cancelRequest(requestId).unwrap();
       setShowCancelRequestError(false);
-      
+
       Alert.alert(
-          t('common.success'),
-          t('requests.cancelSuccessDescription'),
-          [
-              {
-                  text: t('common.done'),
-                  onPress: () => {
-                       setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
-                       fetchNotifications(0); 
-                  }
-              }
-          ]
+        t('common.success'),
+        t('requests.cancelSuccessDescription'),
+        [
+          {
+            text: t('common.done'),
+            onPress: () => {
+              setSelectedRequest(prev => prev ? { ...prev, status: 'CANCELLED' } : null);
+              fetchNotifications(0);
+            }
+          }
+        ]
       );
     } catch (error) {
-       console.error('Failed to cancel request in Notifications', error);
-       setShowCancelRequestError(true);
+      console.error('Failed to cancel request in Notifications', error);
+      setShowCancelRequestError(true);
     }
   };
 
@@ -183,7 +183,7 @@ const NotificationsScreen = () => {
         <SectionList
           sections={groupedNotifications}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={useCallback(({ item }: { item: NotificationType }) => (
             <NotificationItem
               item={item}
               onViewRequest={() => {
@@ -215,8 +215,8 @@ const NotificationsScreen = () => {
                 }
               }}
             />
-          )}
-          renderSectionHeader={({ section: { title } }) => (
+          ), [handleMarkAsRead, navigation])}
+          renderSectionHeader={useCallback(({ section: { title } }: { section: { title: string } }) => (
             <View style={styles.sectionHeader}>
               <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
                 {t(`notifications.sections.${title}`)}
@@ -232,10 +232,15 @@ const NotificationsScreen = () => {
                 </TouchableOpacity>
               )}
             </View>
-          )}
+          ), [t, handleMarkAllAsRead, colors.primary])}
           contentContainerStyle={styles.listContent}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          initialNumToRender={10}
+          windowSize={11}
+          scrollEnabled={!isLoading}
           ListFooterComponent={
             isLoading ? (
               <ActivityIndicator style={{ margin: Spacing.m }} />
@@ -269,7 +274,7 @@ const NotificationsScreen = () => {
       <RequestDetailBottomSheet
         visible={!!selectedRequest}
         onClose={() => {
-          setSelectedRequest(null); 
+          setSelectedRequest(null);
           setShowCancelRequestError(false);
         }}
         request={selectedRequest}
