@@ -1,4 +1,4 @@
-package com.networkinternational.networkcommercial
+package com.techmojo.networkcommercial
 
 import android.app.Application
 import com.facebook.react.PackageList
