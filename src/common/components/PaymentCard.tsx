@@ -31,6 +31,7 @@ interface PaymentCardProps {
   isDetailsVisible: boolean;
   onToggleVisibility: (id: string) => void;
   showEyeIcon?: boolean;
+  sensitiveData?: any;
 }
 
 const PaymentCard: React.FC<PaymentCardProps> = ({
@@ -43,9 +44,24 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
   isDetailsVisible,
   onToggleVisibility,
   showEyeIcon = false,
+  sensitiveData,
 }) => {
   const { colors } = useTheme();
   const scaledTranslate = ms(40);
+
+  const formatPAN = (pan?: string) => {
+    if (!pan) return '**** **** **** ****';
+    const clean = pan.replace(/[\s-]/g, '');
+    const chunks = clean.match(/.{1,4}/g) || [];
+    return chunks.join(' ');
+  };
+
+  const formatExpiry = (expiry?: string) => {
+    if (!expiry || expiry.length !== 4) return '--/--';
+    const mm = expiry.slice(2);
+    const yy = expiry.slice(0, 2);
+    return `${mm}/${yy}`;
+  };
 
   const animatedStyle = useAnimatedStyle(() => {
     const baseOffset = index * snapInterval;
@@ -117,7 +133,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             style={{ paddingBottom: Spacing.s }}
           >
             {isDetailsVisible
-              ? item.cardIdentifier
+              ? formatPAN(sensitiveData?.clearPan || item.cardIdentifier)
               : (() => {
                 const masked = item.maskedPan || '';
                 const clean = masked.replace(/[\s-]/g, '');
@@ -136,27 +152,31 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             }}
           >
             <CustomText type={TextType.ImageSmall}>
-              {(() => {
-                const date = item.expiryDate || '';
-                const parts = date.split('-');
-                if (parts.length >= 2) {
-                  const year = parts[0].slice(-2);
-                  const month = parts[1];
-                  return `${month}/${year}`;
-                }
-                return date;
-              })()}
+              {isDetailsVisible && sensitiveData?.expiry
+                ? formatExpiry(sensitiveData.expiry)
+                : (() => {
+                  const date = item.expiryDate || '';
+                  const parts = date.split('-');
+                  if (parts.length >= 2) {
+                    const year = parts[0].slice(-2);
+                    const month = parts[1];
+                    return `${month}/${year}`;
+                  }
+                  return date;
+                })()}
             </CustomText>
             <CustomText
               type={TextType.ImageSmall}
               style={{ marginLeft: ms(15) }}
             >
-              {'***'}
+              {isDetailsVisible && sensitiveData?.clearCVV2
+                ? sensitiveData.clearCVV2
+                : '***'}
             </CustomText>
           </View>
 
           <CustomText type={TextType.ImageSmall}>
-            {item.cardholderName}
+            {sensitiveData?.cardholderName || item.cardholderName}
           </CustomText>
         </View>
 

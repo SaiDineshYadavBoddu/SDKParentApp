@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,6 +17,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { useGetCardDetails, type NIErrorResponse } from '@networkinternational/ni-card-management-sdk'
 import { TEST_INPUT } from '../../config/NISDKConfig';
 import { useAuth, getGlobalBankId } from '../../context/AuthContext';
+import { useSecondaryAuth } from '../../hooks/useSecondaryAuth';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_MARGIN = ms(5);
@@ -44,14 +46,22 @@ interface CardCarouselProps {
 const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon }) => {
   const { colors } = useTheme();
   const { accessToken } = useAuth();
+  const { startAuthFlow } = useSecondaryAuth();
   const { result, error, onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
+  const [fetchingCardId, setFetchingCardId] = useState<string | null>(null);
   const scrollX = useSharedValue(0);
   const flatListRef = useRef<any>(null);
   const [currentIndex, setCurrentIndex] = useState(selectedIndex || 0);
+  const isFocused = useIsFocused();
 
-  console.log('NI SDK result:', result);
-  console.log('NI SDK error:', error);
+  // Reset visibility when screen loses focus
+  useEffect(() => {
+    if (!isFocused) {
+      setVisibleCardIds(new Set());
+    }
+  }, [isFocused]);
+
 
   useEffect(() => {
     if (selectedIndex !== undefined && selectedIndex !== currentIndex && selectedIndex >= 0 && selectedIndex < data.length) {
@@ -70,7 +80,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
     }
   }, [selectedIndex, data.length, currentIndex]);
 
-  const fetchCardSensitiveData = (cardIdentifierId: string) => {
+  const fetchCardSensitiveData = useCallback((cardIdentifierId: string, actionToken?: string) => {
     if (!accessToken) {
       console.warn('No access token available for fetching card details');
       return;
@@ -83,21 +93,32 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
     }
 
     onGetCardDetails(
-      TEST_INPUT(accessToken, cardIdentifierId, bankId),
+      TEST_INPUT(accessToken, cardIdentifierId, bankId, actionToken),
       (error: NIErrorResponse | null, result: string | null) => {
-        console.log('NI SDK error:', error);
-        console.log('NI SDK result:', result);
+        // Handled via result state
       },
     );
-  };
+  }, [accessToken, onGetCardDetails]);
 
-  const toggleCardVisibility = (cardIdentifier: string) => {
+  const toggleCardVisibility = useCallback((cardIdentifier: string) => {
     const isBecomingVisible = !visibleCardIds.has(cardIdentifier);
     if (isBecomingVisible) {
-      fetchCardSensitiveData(cardIdentifier);
+      startAuthFlow({
+        onSuccess: async (token: string) => {
+          setFetchingCardId(cardIdentifier);
+          fetchCardSensitiveData(cardIdentifier, token);
+          setVisibleCardIds(prev => toggleInSet(prev, cardIdentifier));
+        },
+        selectionTitle: 'cardDetails.authTitle',
+        selectionSubtitle: 'cardDetails.authSubtitle',
+      });
+    } else {
+      if (fetchingCardId === cardIdentifier) {
+        setFetchingCardId(null);
+      }
+      setVisibleCardIds(prev => toggleInSet(prev, cardIdentifier));
     }
-    setVisibleCardIds(prev => toggleInSet(prev, cardIdentifier));
-  };
+  }, [visibleCardIds, fetchCardSensitiveData, fetchingCardId, startAuthFlow]);
 
   const currentIndexRef = useRef(currentIndex);
   useEffect(() => {
@@ -107,6 +128,8 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   const handleIndexChange = React.useCallback((index: number) => {
     if (index !== currentIndexRef.current) {
       setCurrentIndex(index);
+      // Reset visibility when swiping to a new card
+      setVisibleCardIds(new Set());
       if (onIndexChange) {
         onIndexChange(index);
       }
@@ -136,8 +159,9 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         toggleCardVisibility(item.cardIdentifier)
       }}
       showEyeIcon={showEyeIcon}
+      sensitiveData={fetchingCardId === item.cardIdentifier ? result : null}
     />
-  ), [visibleCardIds, scrollX, showEyeIcon, toggleCardVisibility]);
+  ), [visibleCardIds, scrollX, showEyeIcon, toggleCardVisibility, fetchingCardId, result]);
 
   return (
     <View style={styles.cardListContainer}>

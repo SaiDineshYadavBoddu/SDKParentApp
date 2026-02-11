@@ -19,27 +19,33 @@ const getTraceparent = () => {
 const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
 const CARD_TYPE = 'EXID';
 
-const connectionProperties = (token: string) => {
+const connectionProperties = (token: string, actionToken?: string) => {
   const traceparent = getTraceparent();
   Logger.log('🚀 ~ NI SDK ROOT_URL:', ROOT_URL);
   Logger.log('🚀 ~ NI SDK traceparent:', traceparent);
 
+  const headers: any = {
+    "apiuat_za_network_global": "qWyQt3D44Upner1T",
+    "traceparent": traceparent
+  };
+
+  if (actionToken) {
+    headers["Action-Authorization"] = `Bearer ${actionToken}`;
+  }
+
   return {
     rootUrl: ROOT_URL,
     token: token,
-    extraHeaders: JSON.stringify({
-      "apiuat_za_network_global": "qWyQt3D44Upner1T",
-      "traceparent": traceparent
-    }),
+    extraHeaders: JSON.stringify(headers),
   } as NIConnectionProperties;
 };
 
-export const TEST_INPUT = (token: string, CardId: string, bankCode: string) => {
+export const TEST_INPUT = (token: string, CardId: string, bankCode: string, actionToken?: string) => {
   Logger.log('🚀 ~ NI SDK bankCode:', bankCode);
   return {
     bankCode: bankCode,
     cardIdentifierId: CardId,
     cardIdentifierType: CARD_TYPE,
-    connectionProperties: connectionProperties(token),
+    connectionProperties: connectionProperties(token, actionToken),
   } as NiInputInterface;
 };
