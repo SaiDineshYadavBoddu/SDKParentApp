@@ -87,8 +87,7 @@ export const canCloseCard = (status?: string) => {
 
 export const canSetPin = (status?: string) => {
     // Visible for active and blocked cards, but disabled for blocked
-    return false;
-    // return isCardActive(status) || isCardBlocked(status);
+    return isCardActive(status) || isCardBlocked(status);
 };
 
 export const canViewTransactions = (status?: string) => {
