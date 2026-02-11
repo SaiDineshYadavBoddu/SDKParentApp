@@ -19,6 +19,8 @@ import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
 import { getGlobalRole } from '../../../context/AuthContext';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import CurrencySVG from '../../../assets/svgs/CurrencySVG';
+import InfoSVG from '../../../assets/svgs/InfoSVG';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -183,7 +185,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const renderHeader = () => (
             <View style={styles.headerTitleRow}>
                 <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                    {t('requests.idPrefix')} {request?.id || activeRequest?.id || ''}
+                    {t('requests.idPrefix')} #{request?.id || activeRequest?.id || ''}
                 </CustomText>
             {activeRequest && (
                 <View style={[styles.badge, { backgroundColor }]}>
@@ -285,6 +287,28 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                             onToggleVisibility={() => setIsCardDetailVisible(!isCardDetailVisible)}
                                         />
                                     ) : null}
+                                </View>
+                            )}
+
+                            {/* Card Balance and Status Section */}
+                            {isCardSubject && cardData && (
+                                <View style={styles.cardBalanceRow}>
+                                    <View style={styles.balanceColumn}>
+                                        <CurrencySVG width={ms(16)} height={ms(16)} color={colors.secondaryText} />
+                                        <CustomText type={TextType.ScreenDisplaySmall} style={[styles.balanceText, { color: colors.secondaryText }]}>
+                                            {cardData.currencyCode} {(cardData.balance ?? 0).toFixed(2)}
+                                        </CustomText>
+                                    </View>
+
+                                    <View style={styles.statusColumn}>
+                                        <InfoSVG width={ms(16)} height={ms(16)} color={colors.secondaryText} />
+                                        <CustomText
+                                            type={TextType.ScreenDisplaySmall}
+                                            style={[styles.balanceText, { color: colors.secondaryText }]}
+                                        >
+                                            {cardData.cardStatus}
+                                        </CustomText>
+                                    </View>
                                 </View>
                             )}
 
@@ -445,6 +469,29 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         marginTop: Spacing.xl
+    },
+    cardBalanceRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: Spacing.m,
+        marginBottom: Spacing.xl,
+    },
+    balanceColumn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.s,
+        width: '55%',
+    },
+    statusColumn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: Spacing.s,
+        width: '45%',
+    },
+    balanceText: {
+        fontSize: ms(13),
+        fontWeight: '600',
     },
 });
 

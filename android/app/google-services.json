@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143912879744",
+    "project_id": "mint-commercial-cards",
+    "storage_bucket": "mint-commercial-cards.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143912879744:android:825aab410767b121c84865",
+        "android_client_info": {
+          "package_name": "com.techmojo.networkcommercial"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr9lSFedqyzZZPNn-gz87AMmqmB0GgiSI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

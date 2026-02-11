@@ -1,4 +1,4 @@
-package com.networkinternational.networkcommercial
+package com.techmojo.networkcommercial
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
