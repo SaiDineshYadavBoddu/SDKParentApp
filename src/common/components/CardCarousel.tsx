@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -13,6 +14,9 @@ import { ms } from 'react-native-size-matters';
 import { Spacing } from '../../theme/spacing';
 import PaymentCard from './PaymentCard';
 import { toggleInSet } from '../../utils/selectionUtils';
+import ConfirmationBottomSheet from './ConfirmationBottomSheet';
+import FailureSVG from '../../assets/svgs/FailureSVG';
+import CustomLoader from './CustomLoader';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useGetCardDetails, type NIErrorResponse } from '@networkinternational/ni-card-management-sdk'
 import { TEST_INPUT } from '../../config/NISDKConfig';
@@ -45,11 +49,14 @@ interface CardCarouselProps {
 
 const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const { accessToken } = useAuth();
   const { startAuthFlow } = useSecondaryAuth();
   const { result, error, onGetCardDetails } = useGetCardDetails();
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const [fetchingCardId, setFetchingCardId] = useState<string | null>(null);
+  const [showErrorSheet, setShowErrorSheet] = useState(false);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
   const scrollX = useSharedValue(0);
   const flatListRef = useRef<any>(null);
   const [currentIndex, setCurrentIndex] = useState(selectedIndex || 0);
@@ -92,10 +99,20 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       return;
     }
 
+    setIsFetchingDetails(true);
     onGetCardDetails(
       TEST_INPUT(accessToken, cardIdentifierId, bankId, actionToken),
       (error: NIErrorResponse | null, result: string | null) => {
-        // Handled via result state
+        setIsFetchingDetails(false);
+        if (error) {
+          setShowErrorSheet(true);
+          setVisibleCardIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(cardIdentifierId);
+            return newSet;
+          });
+          setFetchingCardId(null);
+        }
       },
     );
   }, [accessToken, onGetCardDetails]);
@@ -195,6 +212,16 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
           <Dot i={i} scrollX={scrollX} colors={colors} key={i.toString()} />
         ))}
       </View>
+      <ConfirmationBottomSheet
+        visible={showErrorSheet}
+        onClose={() => setShowErrorSheet(false)}
+        title={t('cardDetails.errorTitle')}
+        message={t('cardDetails.errorMessage')}
+        confirmText={t('common.done')}
+        onConfirm={() => setShowErrorSheet(false)}
+        icon={<FailureSVG width={ms(64)} height={ms(64)} />}
+      />
+      <CustomLoader loading={isFetchingDetails} />
     </View>
   );
 };
