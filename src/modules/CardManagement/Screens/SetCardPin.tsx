@@ -189,6 +189,7 @@ const SetCardPin = () => {
           await handleUpdateCardPIN(card?.cardIdentifier);
         },
         externalLoading: isSettingPin,
+        skipNavigationOnSuccess: true,
       });
     }
   };
