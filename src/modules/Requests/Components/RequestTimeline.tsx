@@ -7,6 +7,7 @@ import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
 import CustomIcon from '../../../common/components/CustomIcon';
 import { useTranslation } from 'react-i18next';
+import CheckmarkSVG from '../../../assets/svgs/CheckmarkSVG';
 
 export type TimelineEvent = {
     title: string;
@@ -38,7 +39,7 @@ const RequestTimeline: React.FC<RequestTimelineProps> = ({ events, onRetry, isRe
                             <View style={styles.iconWrapper}>
                                 {event.status === 'success' ? (
                                     <View style={[styles.circle, { backgroundColor: colors.statusResolved }]}>
-                                        <CustomIcon name="check" size={ms(10)} color={colors.onPrimary} type="mci" />
+                                        <CheckmarkSVG stroke={colors.onPrimary} width={ms(12)} height={ms(12)}/>
                                     </View>
                                 ) : event.status === 'error' ? (
                                     <View style={[styles.circle, { backgroundColor: colors.error }]}>
