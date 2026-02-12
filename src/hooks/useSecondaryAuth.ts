@@ -10,6 +10,7 @@ export interface SecondaryAuthOptions {
     otpTitle?: string;
     otpSubtitle?: string;
     externalLoading?: boolean;
+    skipNavigationOnSuccess?: boolean;
 }
 
 export const useSecondaryAuth = () => {
@@ -23,7 +24,9 @@ export const useSecondaryAuth = () => {
             const response = await verifyOtp({ code, type }).unwrap() as any;
             const token = response?.token || response?.authorizationToken || '';
             await options.onSuccess(token);
-            navigation.pop(2);
+            if (!options.skipNavigationOnSuccess) {
+                navigation.pop(2);
+            }
         } catch (error: any) {
             console.error('OTP Verification failed:', error);
             // Alert.alert(t('common.error'), error?.data?.errorMessage || t('otp.invalidCode'));

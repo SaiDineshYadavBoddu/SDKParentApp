@@ -414,6 +414,7 @@ export default function CardListScreen() {
               }}
               selectedIndex={activeCardIndex}
               showEyeIcon={true}
+              refreshing={isManualRefresh}
             />
 
             {activeCard && !isLoading && (

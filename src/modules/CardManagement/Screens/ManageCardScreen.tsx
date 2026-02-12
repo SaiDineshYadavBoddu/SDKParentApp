@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   Dimensions,
+  AppState,
 } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -34,6 +35,19 @@ const ManageCardScreen = () => {
   const { card } = route.params || {};
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
   const scrollX = useSharedValue(0);
+
+  // Hide details when app goes to background
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState.match(/inactive|background/)) {
+        setIsDetailsVisible(false);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const CARD_WIDTH = SCREEN_WIDTH - Spacing.l * 2;
   const CARD_MARGIN = 0;

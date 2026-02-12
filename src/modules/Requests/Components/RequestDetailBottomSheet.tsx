@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, StyleSheet, ScrollView, Dimensions, AppState } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { ms } from 'react-native-size-matters';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
@@ -45,6 +45,19 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const { t } = useTranslation();
     const [isCardDetailVisible, setIsCardDetailVisible] = useState(false);
     const scrollX = useSharedValue(0);
+
+    // Hide details when app goes to background
+    React.useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState.match(/inactive|background/)) {
+                setIsCardDetailVisible(false);
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
 
     const { data: fullRequestDetails, isLoading, error, refetch: refetchRequest } = useGetRequestByIdQuery(request?.id || '', {
         skip: !visible || !request?.id,
@@ -183,10 +196,10 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
     const timeline = getTimeline();
 
     const renderHeader = () => (
-            <View style={styles.headerTitleRow}>
-                <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
-                    {t('requests.idPrefix')} #{request?.id || activeRequest?.id || ''}
-                </CustomText>
+        <View style={styles.headerTitleRow}>
+            <CustomText type={TextType.CardTitle} style={styles.requestNumber}>
+                {t('requests.idPrefix')} #{request?.id || activeRequest?.id || ''}
+            </CustomText>
             {activeRequest && (
                 <View style={[styles.badge, { backgroundColor }]}>
                     <View style={[styles.badgeDot, { backgroundColor: textColor }]} />

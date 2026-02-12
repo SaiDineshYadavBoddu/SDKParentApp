@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, AppState } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Animated, {
@@ -45,9 +45,10 @@ interface CardCarouselProps {
   onIndexChange?: (index: number) => void;
   selectedIndex?: number;
   showEyeIcon?: boolean;
+  refreshing?: boolean;
 }
 
-const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon }) => {
+const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, selectedIndex, showEyeIcon, refreshing }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { accessToken } = useAuth();
@@ -68,6 +69,27 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       setVisibleCardIds(new Set());
     }
   }, [isFocused]);
+
+  // Hide details when refreshing
+  useEffect(() => {
+    if (refreshing) {
+      setVisibleCardIds(new Set());
+      setFetchingCardId(null);
+    }
+  }, [refreshing]);
+
+  // Hide details when app goes to background
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState.match(/inactive|background/)) {
+        setVisibleCardIds(new Set());
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
 
   useEffect(() => {
