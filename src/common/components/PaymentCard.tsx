@@ -132,8 +132,8 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             type={TextType.ImageLarge}
             style={{ paddingBottom: Spacing.s }}
           >
-            {isDetailsVisible
-              ? formatPAN(sensitiveData?.clearPan || item.cardIdentifier)
+            {isDetailsVisible && sensitiveData?.clearPan
+              ? formatPAN(sensitiveData.clearPan)
               : (() => {
                 const masked = item.maskedPan || '';
                 const clean = masked.replace(/[\s-]/g, '');

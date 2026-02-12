@@ -118,6 +118,12 @@
     "errorTitle": "Card closure request failed",
     "errorSubtitle": "Please try again"
   },
+  "cardDetails": {
+    "authTitle": "Verify your identity",
+    "authSubtitle": "To view card details, please verify your identity",
+    "errorTitle": "Failed to fetch card details",
+    "errorMessage": "Unable to retrieve card details. Please try again later."
+  },
   "cardUsage": {
     "title": "Card Usage",
     "online": "Online Transactions",
