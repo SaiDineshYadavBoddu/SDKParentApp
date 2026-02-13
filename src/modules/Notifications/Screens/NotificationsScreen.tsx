@@ -135,6 +135,13 @@ const NotificationsScreen = () => {
       }));
   }, [notifications]);
 
+  console.log(groupedNotifications, 'groupedNotifications')
+
+  const hasUnread = useMemo(
+    () => notifications.some(n => !n.isRead),
+    [notifications],
+  );
+
   const handleLoadMore = useCallback(() => {
     if (!isLoading && hasMore && !hasError) {
       fetchNotifications(page + 1);
@@ -221,7 +228,7 @@ const NotificationsScreen = () => {
               <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
                 {t(`notifications.sections.${title}`)}
               </CustomText>
-              {title === 'Today' && (
+              {hasUnread && title === groupedNotifications[0]?.title && (
                 <TouchableOpacity onPress={handleMarkAllAsRead}>
                   <CustomText
                     type={TextType.ScreenDisplaySmall}
@@ -232,7 +239,7 @@ const NotificationsScreen = () => {
                 </TouchableOpacity>
               )}
             </View>
-          ), [t, handleMarkAllAsRead, colors.primary])}
+          ), [t, handleMarkAllAsRead, colors.primary, hasUnread, groupedNotifications])}
           contentContainerStyle={styles.listContent}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
