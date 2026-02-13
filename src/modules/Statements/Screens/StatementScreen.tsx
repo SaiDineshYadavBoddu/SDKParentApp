@@ -4,6 +4,8 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Platform,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -20,10 +22,16 @@ import { calculateDateRange } from '../../../utils/transactionUtils';
 import NewStatementItem from '../Components/NewStatementItem';
 import StatementHistoryList from '../Components/StatementHistoryList';
 import { StatementHistoryItemData } from '../Components/StatementHistoryItem';
+import DownloadSVG from '../../../assets/svgs/DownloadSVG';
+import { useNavigation } from '@react-navigation/native';
+import { API_ENDPOINTS } from '../../../network/endpoint.const';
+import { getAccessToken } from '../../../context/AuthContext';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 const StatementScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const navigation = useNavigation();
   
   const [statementType, setStatementType] = useState<'new' | 'history'>('new');
   const [selectedCardId, setSelectedCardId] = useState<string>('');
@@ -70,15 +78,50 @@ const StatementScreen = () => {
     }
   };
 
-  const handleHistoryDownload = useCallback((item: StatementHistoryItemData) => {
-    // TODO: Implement download logic for history item
-    console.log('Download statement history:', item);
-  }, []);
+  const handleHistoryDownload = useCallback(async (item: StatementHistoryItemData) => {
+    if (!item.fileKey) return;
+    
+    const fileName = item.fileKey.split('/').pop() || item.fileKey;
+    const { dirs } = ReactNativeBlobUtil.fs;
+    const token = getAccessToken();
+    
+    try {
+      const configWithAuth = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: true, 
+          path: `${dirs.DownloadDir}/${fileName}`,
+          description: 'Downloading statement...',
+          mediaScannable: true,
+        },
+        path: Platform.OS === 'ios' ? `${dirs.DocumentDir}/${fileName}` : undefined,
+      };
+
+      const res = await ReactNativeBlobUtil.config(configWithAuth).fetch(
+        'GET',
+        `https://sit.corporate.un.infradev.w4.az.network.ae${API_ENDPOINTS.GET_STATEMENT_DOWNLOAD}?statementName=${item.fileKey}`,
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      );
+
+      if (Platform.OS === 'ios') {
+         ReactNativeBlobUtil.ios.openDocument(res.data);
+      } else {
+         // Android handles notification automatically with DownloadManager
+      }
+    } catch (error) {
+       console.error("Download failed", error);
+       Alert.alert(t('common.error'), t('statements.downloadFailed'));
+    }
+  }, [t]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background}]}>
       <CustomHeader
         title={t('statements.title')}
+        onBackPress={()=>navigation.goBack()}
         rightContent={
           <TouchableOpacity style={styles.iconButton}>
             <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onSurface} stroke={colors.onSurface} />
@@ -86,12 +129,9 @@ const StatementScreen = () => {
         }
       />
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollContent}
-      >
+      <View style={{ paddingHorizontal: Spacing.l }}>
         {/* Statement Type Segmented Control */}
-        <View style={styles.segmentedControl}>
+        <View style={[styles.segmentedControl, { backgroundColor: colors.backgroundVariant }]}>
           <TouchableOpacity
             style={[
               styles.segment,
@@ -107,8 +147,8 @@ const StatementScreen = () => {
               style={[
                 styles.segmentText,
                 {
-                  color: statementType === 'new' ? colors.onPrimary : colors.secondaryText,
-                  fontWeight: statementType === 'new' ? '600' : '400',
+                  color: statementType === 'new' ? colors.secondaryScreenBackground : colors.inverseSurface,
+                  fontWeight: '500',
                 },
               ]}
             >
@@ -130,8 +170,8 @@ const StatementScreen = () => {
               style={[
                 styles.segmentText,
                 {
-                  color: statementType === 'history' ? colors.onPrimary : colors.secondaryText,
-                  fontWeight: statementType === 'history' ? '600' : '400',
+                  color: statementType === 'history' ? colors.secondaryScreenBackground : colors.inverseSurface,
+                  fontWeight: '500',
                 },
               ]}
             >
@@ -139,35 +179,40 @@ const StatementScreen = () => {
             </CustomText>
           </TouchableOpacity>
         </View>
+      </View>
 
-        {statementType === 'new' && (
-          <NewStatementItem
-            selectedCard={selectedCard}
-            selectedTimeRange={selectedTimeRange}
-            selectedFormat={selectedFormat}
-            onCardSelect={() => setCardSheetVisible(true)}
-            onTimeRangeChange={handleTimeRangePress}
-            onFormatChange={setSelectedFormat}
-          />
-        )}
-
-        {statementType === 'history' && (
+      {statementType === 'new' ? (
+        <>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <NewStatementItem
+              selectedCard={selectedCard}
+              selectedTimeRange={selectedTimeRange}
+              selectedFormat={selectedFormat}
+              onCardSelect={() => setCardSheetVisible(true)}
+              onTimeRangeChange={handleTimeRangePress}
+              onFormatChange={setSelectedFormat}
+            />
+          </ScrollView>
+          <View style={styles.bottomContainer}>
+            <TouchableOpacity
+              onPress={handleDownload}
+              disabled={!selectedCardId}
+              style={[styles.downloadButton, { backgroundColor: colors.primary }]}
+              activeOpacity={0.7}
+            >
+              <DownloadSVG />
+              <CustomText type={TextType.ActionLabel} style={{ color: colors.onPrimary }}>{t('statements.download')}</CustomText>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <View style={{ flex: 1, paddingHorizontal: Spacing.l }}>
           <StatementHistoryList
             cardId={selectedCardId}
             onDownload={handleHistoryDownload}
-          />
-        )}
-      </ScrollView>
-
-      {/* Download Button */}
-      {statementType === 'new' && (
-        <View style={styles.bottomContainer}>
-          <CustomButton
-            title={t('statements.download')}
-            onPress={handleDownload}
-            disabled={!selectedCardId}
-            style={styles.downloadButton}
-            uppercase={false}
           />
         </View>
       )}
@@ -210,6 +255,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: Spacing.l,
     marginTop: Spacing.s,
+    borderRadius: ms(8),
+    padding: ms(4),
   },
   segment: {
     flex: 1,
@@ -218,12 +265,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   segmentLeft: {
-    borderTopLeftRadius: ms(8),
-    borderBottomLeftRadius: ms(8),
+    // borderTopLeftRadius: ms(8),
+    // borderBottomLeftRadius: ms(8),
+    borderRadius: ms(8),
   },
   segmentRight: {
-    borderTopRightRadius: ms(8),
-    borderBottomRightRadius: ms(8),
+    // borderTopRightRadius: ms(8),
+    // borderBottomRightRadius: ms(8),
+    borderRadius: ms(8),
   },
   segmentText: {
     // Text styles handled inline for dynamic colors
@@ -233,7 +282,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
+    paddingVertical: Spacing.m,
+    borderRadius: ms(8),
+    gap: Spacing.m
   },
 });
 

@@ -11,9 +11,15 @@ import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import FileIconSVG from '../../../assets/svgs/FileIconSVG';
 import { formatMaskedCardNumber } from '../../../utils/cardUtils';
+import ChevronDownSVG from '../../../assets/svgs/CheveronDownSVG';
 
 const STATEMENT_TIME_RANGES = ['lastWeek', 'lastMonth', 'last3Months', 'custom'];
-const EXPORT_FORMATS = ['csv', 'excel', 'pdf', 'word'];
+const EXPORT_FORMATS = [
+  { label: 'statements.formats.csv', value: 'csv' },
+  { label: 'statements.formats.excel', value: 'excel' },
+  { label: 'statements.formats.pdf', value: 'pdf' },
+  { label: 'statements.formats.word', value: 'word' },
+];
 
 interface NewStatementItemProps {
   selectedCard?: any;
@@ -52,7 +58,7 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
             {selectedCard?.maskedPan ? formatMaskedCardNumber(selectedCard.maskedPan) : t('statements.selectCard')}
           </CustomText>
         </View>
-        <ChevronSVG width={ms(20)} height={ms(20)} color={colors.primary} />
+        <ChevronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
       </TouchableOpacity>
 
       {/* Time Period Selection */}
@@ -77,22 +83,22 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
         <CustomText type={TextType.SectionTitle} style={styles.exportTitle}>
           {t('statements.exportTo')}
         </CustomText>
-        {EXPORT_FORMATS.map((format) => (
+        {EXPORT_FORMATS.map((item) => (
           <TouchableOpacity
-            key={format}
-            style={[styles.formatItem, { borderBottomColor: colors.outline }]}
-            onPress={() => onFormatChange(format)}
+            key={item.value}
+            style={styles.formatItem}
+            onPress={() => onFormatChange(item.value)}
             activeOpacity={0.7}
           >
             <View style={styles.formatLeft}>
               <FileIconSVG width={ms(17)} height={ms(20)} color={colors.primary} />
               <CustomText type={TextType.CardTitle} style={styles.formatLabel}>
-                {t(`statements.formats.${format}`)}
+                {t(item.label)}
               </CustomText>
             </View>
             <CustomRadioButton
-              selected={selectedFormat === format}
-              onPress={() => onFormatChange(format)}
+              selected={selectedFormat === item.value}
+              onPress={() => onFormatChange(item.value)}
             />
           </TouchableOpacity>
         ))}
@@ -123,16 +129,17 @@ const styles = StyleSheet.create({
   },
   exportSection: {
     marginTop: Spacing.m,
+    gap: Spacing.xl
   },
   exportTitle: {
-    marginBottom: Spacing.m,
+    // marginBottom: Spacing.m,
   },
   formatItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.m,
-    borderBottomWidth: 1,
+    // paddingVertical: Spacing.l,
+    // borderBottomWidth: 1,
   },
   formatLeft: {
     flexDirection: 'row',

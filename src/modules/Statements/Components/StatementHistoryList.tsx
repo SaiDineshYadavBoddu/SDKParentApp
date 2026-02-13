@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
@@ -20,18 +20,42 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const [pageNumber, setPageNumber] = useState(0);
+  const canLoadMore = useRef(false);
+
+  useEffect(() => {
+    setPageNumber(0);
+  }, [cardId]);
 
   const { data: statementHistory, isLoading, isError, refetch, isFetching } = useGetStatementsQuery(
     {
       cardId,
       pageSize: 20,
-      pageNumber: 0,
+      pageNumber,
     },
   );
 
+  const handleLoadMore = () => {
+    if (!canLoadMore.current) return;
+    if (!isFetching && !isLoading && !isError && statementHistory && !statementHistory.last) {
+      setPageNumber(prev => prev + 1);
+    }
+  };
+
+  const renderFooter = () => {
+    if (isFetching && pageNumber > 0) {
+      return (
+        <View style={styles.footerContainer}>
+          <ActivityIndicator size="small" color={colors.primary} />
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <View style={styles.historyContainer}>
-      {isError && !isFetching ? (
+      {isError && !isFetching && pageNumber === 0 ? (
         <CustomErrorView onRetry={refetch} loading={isFetching} />
       ) : (
         <FlatList
@@ -40,32 +64,45 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
             <StatementHistoryItem item={item} onDownload={onDownload} />
           )}
           keyExtractor={(item) => item?.id.toString()}
-          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
+          onScrollBeginDrag={() => { canLoadMore.current = true; }}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
+          contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <View style={styles.historyPlaceholder}>
-              <CustomText type={TextType.CardText} style={{ color: colors.secondaryText }}>
-                {t('statements.historyPlaceholder')}
-              </CustomText>
-            </View>
+            !isLoading ? (
+              <View style={styles.historyPlaceholder}>
+                <CustomText type={TextType.CardText} style={{ color: colors.secondaryText }}>
+                  {t('statements.historyPlaceholder')}
+                </CustomText>
+              </View>
+            ) : null
           }
         />
       )}
-      <CustomLoader loading={isLoading} />
+      {isLoading && pageNumber === 0 && <CustomLoader loading={isLoading} />}
     </View>
-
-
   );
 };
 
 const styles = StyleSheet.create({
   historyContainer: {
+    flex: 1,
     marginTop: Spacing.s,
   },
   historyPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.xxl,
+  },
+  footerContainer: {
+    paddingVertical: Spacing.m,
+    alignItems: 'center',
+  },
+  listContent: {
+    paddingBottom: Spacing.xl,
+    gap: Spacing.s,
   },
 });
 

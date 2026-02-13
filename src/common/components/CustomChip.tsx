@@ -35,7 +35,7 @@ const CustomChip: React.FC<CustomChipProps> = ({
       <CustomText
         type={TextType.CardText}
         style={{
-          color: selected ? colors.onPrimary : colors.secondaryText,
+          color: selected ? colors.secondaryScreenBackground : colors.inverseSurface,
           fontWeight: selected ? '600' : '400',
         }}
       >
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: Spacing.m,
     paddingVertical: Spacing.s,
-    borderRadius: ms(8),
+    borderRadius: ms(24),
   },
 });
 

@@ -72,6 +72,7 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
 
                 <CustomButton
                     title={t('common.select')}
+                    uppercase={false}
                     onPress={() => {
                         onSelect(tempSelectedId);
                         onClose();

@@ -56,11 +56,11 @@ const BottomTabNavigator = () => {
       <Tab.Screen
         name="Transactions"
         component={TransactionsScreen}
-        listeners={{
-          tabPress: e => {
-            e.preventDefault();
-          },
-        }}
+        // listeners={{
+        //   tabPress: e => {
+        //     e.preventDefault();
+        //   },
+        // }}
       />
 
       <Tab.Screen name="Requests" component={RequestsScreen} />

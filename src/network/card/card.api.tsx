@@ -75,6 +75,35 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'GET',
         params,
       }),
+      // Consolidate cache keys across pages. Skip pageNumber in key.
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        if (!queryArgs) return endpointName;
+        const { pageNumber, ...otherParams } = queryArgs as any;
+        return `${endpointName}-${JSON.stringify(otherParams)}`;
+      },
+      // Merge results and reset when on first page
+      merge: (currentCache, newResponse, { arg }) => {
+        if (arg && (arg as any).pageNumber === 0) {
+          return newResponse;
+        }
+
+        // Safety check for currentCache.content
+        const existingContent = currentCache?.content || [];
+        // Create a Set of existing IDs for O(1) lookup
+        const existingIds = new Set(existingContent.map((item: any) => item.id));
+
+        // Filter out incoming items that already exist
+        const uniqueNewContent = newResponse.content.filter((item: any) => !existingIds.has(item.id));
+
+        return {
+          ...newResponse,
+          content: [...existingContent, ...uniqueNewContent],
+        };
+      },
+      // Force cache update on any change
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
     searchCards: builder.query<any, { ids: string[] }>({
       query: body => ({
@@ -83,7 +112,29 @@ export const cardApi = backendApi.injectEndpoints({
         body,
       }),
     }),
+    downloadStatement: builder.mutation<any, { statementName: string }>({
+      query: ({ statementName }) => ({
+        url: API_ENDPOINTS.GET_STATEMENT_DOWNLOAD,
+        method: 'GET',
+        params: { statementName },
+        responseHandler: (response) => response.blob(),
+      }),
+      transformResponse: async (response: Blob) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('Failed to convert blob to base64'));
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(response);
+        });
+      },
+    }),
   }),
 });
 
-export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation, useGetStatementsQuery, useSearchCardsQuery } = cardApi;
+export const { useGetCardsQuery, useGetTransactionsQuery, useGetCardLimitsQuery, useGetCardRestrictionsQuery, useCloseCardMutation, useGetCardTariffsQuery, useReplaceCardMutation, useBlockCardMutation, useUnblockCardMutation, useActivateCardMutation, useGetStatementsQuery, useSearchCardsQuery, useDownloadStatementMutation } = cardApi;
