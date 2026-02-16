@@ -176,6 +176,9 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   }, [onIndexChange]);
 
   const scrollHandler = useAnimatedScrollHandler({
+    onBeginDrag: () => {
+      runOnJS(setVisibleCardIds)(new Set());
+    },
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
     },
