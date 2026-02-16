@@ -49,7 +49,7 @@ export const useSecondaryAuth = () => {
             return response;
         } catch (error) {
             console.error('Failed to send OTP:', error);
-            Alert.alert(t('common.error'), t('otp.sendError'));
+            Alert.alert(t('otp.sendErrorTitle'), t('otp.sendErrorSubtitle'));
             throw error;
         }
     };

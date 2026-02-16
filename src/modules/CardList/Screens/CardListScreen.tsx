@@ -304,6 +304,7 @@ export default function CardListScreen() {
     startAuthFlow({
       onSuccess: handleActivationSuccess,
       externalLoading: isActivating,
+      skipNavigationOnSuccess: true,
     });
   };
 
