@@ -25,33 +25,60 @@ export const formatTransactionDate = (dateString: string) => {
 };
 
 /**
+ * Formats a transaction amount with sign and multi-currency support.
+ * @param txn The transaction object.
+ * @returns An object containing the formatted amount string and its color.
+ */
+export const getFormattedTransaction = (txn: any, colors: any) => {
+    const isCredit = txn.debitCardFlag === 'C';
+    const sign = isCredit ? '+ ' : '- ';
+    const color = isCredit ? colors.statusResolved : colors.onSurface;
+
+    const absAmount = Math.abs(txn.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const absSourceAmount = Math.abs(txn.sourceAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    let amountDisplay = `${sign}${txn.currency} ${absAmount}`;
+
+    if (txn.sourceCurrency && txn.sourceCurrency !== txn.currency) {
+        amountDisplay = `${sign}${txn.sourceCurrency} ${absSourceAmount} (${txn.currency} ${absAmount})`;
+    }
+
+    const displayName = txn.merchantName || (txn.debitCardFlag === 'D' ? 'Withdrawal' : txn.description);
+
+    return { amountDisplay, color, displayName };
+};
+
+/**
  * Maps API transaction objects to SectionItem objects for display in SectionContainer.
  * @param transactions Array of transaction objects from the API.
  */
-export const mapTransactionsToSectionItems = (transactions: any[], secondaryTextColor?: string): SectionItem[] => {
-    const textColor = secondaryTextColor || '#707070';
-    return transactions.map((txn) => ({
-        id: txn.transactionRefId,
-        top: (
-            <>
-                <CustomText type={TextType.CardTitle}>{txn.merchantName}</CustomText>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}>
-                    <CurrencySVG width={ms(14)} height={ms(14)} />
-                    <CustomText type={TextType.CardTitle}>{txn.amount}</CustomText>
-                </View>
-            </>
-        ),
-        middle: (
-            <>
-                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: textColor, fontSize: ms(12) }}>
-                    {txn.transactionRefId}
-                </CustomText>
-                <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: textColor, fontSize: ms(12) }}>
-                    {formatTransactionDate(txn.transactionDate)}
-                </CustomText>
-            </>
-        ),
-    }));
+export const mapTransactionsToSectionItems = (transactions: any[], colors: any): SectionItem[] => {
+    return transactions.map((txn) => {
+        const { amountDisplay, color, displayName } = getFormattedTransaction(txn, colors);
+        return {
+            id: txn.transactionRefId,
+            top: (
+                <>
+                    <CustomText type={TextType.CardTitle}>{displayName}</CustomText>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: ms(4) }}>
+                        <CustomText type={TextType.CardTitle} style={{ color }}>
+                            {amountDisplay}
+                        </CustomText>
+                    </View>
+                </>
+            ),
+            middle: (
+                <>
+                    <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: colors.secondaryText, fontSize: ms(12) }}>
+                        {txn.transactionRefId}
+                    </CustomText>
+                    <CustomText type={TextType.ScreenHeadlineSmall} style={{ color: colors.secondaryText, fontSize: ms(12) }}>
+                        {formatTransactionDate(txn.transactionDate)}
+                    </CustomText>
+                </>
+            ),
+        };
+    });
 };
 
 /**
@@ -74,16 +101,14 @@ export const filterTransactions = (
  */
 export const sortTransactions = (transactions: any[], sortBy: string) => {
     return [...transactions].sort((a, b) => {
-        const idA = a.transactionRefId || '';
-        const idB = b.transactionRefId || '';
-        // Very basic manual sort simulation for mock data
-        return sortBy === 'newest'
-            ? idA < idB
-                ? 1
-                : -1
-            : idA > idB
-                ? 1
-                : -1;
+        const dateA = a.transactionDate ? new Date(a.transactionDate).getTime() : 0;
+        const dateB = b.transactionDate ? new Date(b.transactionDate).getTime() : 0;
+
+        if (sortBy === 'newest') {
+            return dateB - dateA;
+        } else {
+            return dateA - dateB;
+        }
     });
 };
 /**
@@ -106,15 +131,14 @@ export const calculateDateRange = (
             from.setDate(1);
             break;
         case 'lastMonth':
-            // Set 'to' to the last day of the previous month
-            to.setDate(0);
-            // Set 'from' to the first day of that same previous month
-            from.setDate(1);
-            from.setMonth(to.getMonth());
-            from.setFullYear(to.getFullYear());
+            // 1 month ago + 1 day (e.g. Feb 16 -> Jan 17)
+            from.setMonth(today.getMonth() - 1);
+            from.setDate(today.getDate() + 1);
             break;
         case 'last3Months':
+            // 3 months ago + 2 days (e.g. Feb 16 -> Nov 18)
             from.setMonth(today.getMonth() - 3);
+            from.setDate(today.getDate() + 2);
             break;
         case 'thisYear':
             from.setMonth(0, 1); // January 1st

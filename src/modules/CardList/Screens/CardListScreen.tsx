@@ -44,7 +44,7 @@ import {
   shouldShowManageCard,
   hasResourceAction
 } from "../../../utils/cardUtils";
-import { mapTransactionsToSectionItems, calculateDateRange } from "../../../utils/transactionUtils";
+import { mapTransactionsToSectionItems, calculateDateRange, sortTransactions } from "../../../utils/transactionUtils";
 import { MOCK_TRANSACTIONS } from "../../../constants/mockData";
 import CustomHeader from '../../../common/components/CustomHeader';
 import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
@@ -184,16 +184,15 @@ export default function CardListScreen() {
 
   const activeCard = cards[activeCardIndex];
 
-  const dateRange = React.useMemo(() => calculateDateRange('thisMonth'), []);
+  const dateRange = React.useMemo(() => calculateDateRange('lastMonth'), []);
 
   const { data: transactionsData, isLoading: isTxnLoading } = useGetTransactionsQuery({
     cardId: activeCard?.cardIdentifier,
-    pageSize: 4,
+    pageSize: 5,
     pageNumber: 0,
     ...dateRange,
   }, {
-    // skip: isLoading || !activeCard?.cardIdentifier
-    skip: true
+    skip: isLoading || !activeCard?.cardIdentifier
   });
   // Card status checks
   const isBlocked = isCardBlocked(activeCard?.cardStatus);
@@ -213,13 +212,9 @@ export default function CardListScreen() {
   const showBlockButton = (canBlock || canUnblock) && !isReplaced && !isPendingClosure;
   const showTransactions = shouldShowTransactions(activeCard?.cardStatus);
 
-  // const transactions = APP_CONFIG.USE_MOCK_TRANSACTIONS
-  // ? MOCK_TRANSACTIONS.filter(t => t.cardId === activeCard?.cardIdentifier).slice(0, 4)
-  // : (transactionsData?.content || []);
+  const transactions = sortTransactions(transactionsData?.content || [], 'newest');
 
-  const transactions: any[] = []; // Show empty message for now
-
-  const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions, colors.secondaryText);
+  const transactionItems: SectionItem[] = mapTransactionsToSectionItems(transactions, colors);
 
   // Handlers for card activation using secondary auth
   const handleActivationSuccess = async (actionToken: string) => {
@@ -511,7 +506,12 @@ export default function CardListScreen() {
                 <SectionContainer
                   title={t('cardList.recentTransactions')}
                   rightTitle={t('cardList.viewAll')}
-                  onRightTitlePress={() => { }}
+                  onRightTitlePress={() => {
+                    navigation.navigate('BottomTabs', {
+                      screen: 'Transactions',
+                      params: { cardId: activeCard?.cardIdentifier },
+                    });
+                  }}
                   items={transactionItems}
                   emptyMessage={t('cardList.noTransactions')}
                   loading={isTxnLoading}

@@ -25,7 +25,7 @@ import { useSecondaryAuth } from '../../hooks/useSecondaryAuth';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_MARGIN = ms(5);
-const CARD_WIDTH = SCREEN_WIDTH * 0.85;
+const CARD_WIDTH = SCREEN_WIDTH * 0.9;
 const SNAP_INTERVAL = CARD_WIDTH + CARD_MARGIN * 2;
 const SIDE_SPACER = (SCREEN_WIDTH - SNAP_INTERVAL) / 2;
 

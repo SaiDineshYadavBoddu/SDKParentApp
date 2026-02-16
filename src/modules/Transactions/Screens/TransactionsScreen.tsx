@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
@@ -24,6 +24,7 @@ import {
   filterTransactions,
   sortTransactions,
   calculateDateRange,
+  getFormattedTransaction,
 } from '../../../utils/transactionUtils';
 import { formatMaskedCardNumber } from '../../../utils/cardUtils';
 import CardSelectionBottomSheet from '../Components/CardSelectionBottomSheet';
@@ -41,23 +42,38 @@ const TransactionsScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const initialCardId = route.params?.cardId;
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTimeRange, setSelectedTimeRange] = useState('thisMonth');
+  const [selectedTimeRange, setSelectedTimeRange] = useState('lastMonth');
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
+  const [pageNumber, setPageNumber] = useState(0);
+  const PAGE_SIZE = 20;
 
   const cardsData = useSelector((state: any) => state.card?.cards);
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
 
-  const [selectedCardId, setSelectedCardId] = useState<string>('');
+  const [selectedCardId, setSelectedCardId] = useState<string>(initialCardId || '');
 
   React.useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
       setSelectedCardId(cards[0].cardIdentifier);
     }
   }, [cards, selectedCardId]);
+
+  React.useEffect(() => {
+    if (route.params?.cardId) {
+      setSelectedCardId(route.params.cardId);
+    }
+  }, [route.params?.cardId]);
+
+  // Reset page when card or time range changes
+  React.useEffect(() => {
+    setPageNumber(0);
+  }, [selectedCardId, selectedTimeRange, customDateRange]);
 
   const selectedCard = useMemo(
     () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
@@ -71,8 +87,8 @@ const TransactionsScreen = () => {
 
   const { data: txnData, isLoading: isTxnLoading, isError, refetch, isFetching, error } = useGetTransactionsQuery({
     cardId: selectedCardId,
-    pageSize: 20,
-    pageNumber: 0,
+    pageSize: PAGE_SIZE,
+    pageNumber: pageNumber,
     ...dateRange,
   }, {
     skip: !selectedCardId,
@@ -81,6 +97,22 @@ const TransactionsScreen = () => {
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
 
+
+  if (isError && !isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={t('transactions.title')}
+        />
+        <CustomErrorView
+          title={t('common.error')}
+          description={t('transactions.errorLoading')}
+          onRetry={refetch}
+        />
+        <CustomLoader loading={isFetching} />
+      </View>
+    );
+  }
 
   if (isTimeoutError) {
     return (
@@ -103,27 +135,36 @@ const TransactionsScreen = () => {
     return sortTransactions(filtered, 'newest');
   }, [transactions, searchQuery]);
 
-  const renderTransactionItem = ({ item }: { item: any }) => (
-    <View style={[styles.transactionItem, { borderBottomColor: colors.outline }]}>
-      <View style={styles.txnLeft}>
-        <CustomText type={TextType.CardTitle} style={styles.txnTitle}>
-          {item.merchantName || item.description}
-        </CustomText>
-        <CustomText type={TextType.CardSubtitle} style={styles.txnId}>{item.transactionRefId}</CustomText>
+  const handleLoadMore = () => {
+    if (!isTxnLoading && !isFetching && txnData && !txnData.last) {
+      setPageNumber(prev => prev + 1);
+    }
+  };
+
+  const renderTransactionItem = ({ item }: { item: any }) => {
+    const { amountDisplay, color, displayName } = getFormattedTransaction(item, colors);
+    return (
+      <View style={[styles.transactionItem, { borderBottomColor: colors.outline }]}>
+        <View style={styles.txnLeft}>
+          <CustomText type={TextType.CardTitle} style={styles.txnTitle}>
+            {displayName}
+          </CustomText>
+          <CustomText type={TextType.CardSubtitle} style={styles.txnId}>{item.transactionRefId}</CustomText>
+        </View>
+        <View style={styles.txnRight}>
+          <CustomText
+            type={TextType.CardTitle}
+            style={[styles.txnAmount, { color }]}
+          >
+            {amountDisplay}
+          </CustomText>
+          <CustomText type={TextType.CardSubtitle} style={styles.txnDate}>
+            {formatTransactionDate(item.transactionDate)}
+          </CustomText>
+        </View>
       </View>
-      <View style={styles.txnRight}>
-        <CustomText
-          type={TextType.CardTitle}
-          style={[styles.txnAmount, { color: item.isCredit ? colors.statusResolved : colors.onSurface }]}
-        >
-          {item.isCredit ? `+ ${item.amount}` : item.amount}
-        </CustomText>
-        <CustomText type={TextType.CardSubtitle} style={styles.txnDate}>
-          {formatTransactionDate(item.transactionDate)}
-        </CustomText>
-      </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -136,10 +177,14 @@ const TransactionsScreen = () => {
           </TouchableOpacity>
         }
       />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {isError && !isFetching ? (
-          <CustomErrorView onRetry={refetch} loading={isFetching} />
-        ) : (
+      <FlatList
+        data={filteredTransactions}
+        renderItem={renderTransactionItem}
+        keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        contentContainerStyle={styles.scrollContent}
+        ListHeaderComponent={
           <>
             {/* Card Selector */}
             <TouchableOpacity
@@ -201,22 +246,16 @@ const TransactionsScreen = () => {
                 />
               ))}
             </ScrollView>
-
-            {/* Transaction List */}
-            <FlatList
-              data={filteredTransactions}
-              renderItem={renderTransactionItem}
-              keyExtractor={(item) => item.transactionRefId}
-              scrollEnabled={false}
-              ListEmptyComponent={
-                <View style={styles.emptyContainer}>
-                  <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
-                </View>
-              }
-            />
           </>
-        )}
-      </ScrollView>
+        }
+        ListEmptyComponent={
+          !isTxnLoading && !isFetching ? (
+            <View style={styles.emptyContainer}>
+              <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
+            </View>
+          ) : null
+        }
+      />
 
       {/* Bottom Sheets */}
       <CardSelectionBottomSheet
@@ -314,8 +353,8 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.m,
-    borderBottomWidth: 1,
+    paddingVertical: Spacing.l,
+    borderBottomWidth: 1
   },
   txnLeft: {
     flex: 1,

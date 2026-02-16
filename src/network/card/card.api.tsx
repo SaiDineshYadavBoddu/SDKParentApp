@@ -17,6 +17,35 @@ export const cardApi = backendApi.injectEndpoints({
         method: 'GET',
         params,
       }),
+      // Consolidate cache keys across pages. Skip pageNumber in key.
+      serializeQueryArgs: ({ endpointName, queryArgs }) => {
+        if (!queryArgs) return endpointName;
+        const { pageNumber, ...otherParams } = queryArgs as any;
+        return `${endpointName}-${JSON.stringify(otherParams)}`;
+      },
+      // Merge results and reset when on first page
+      merge: (currentCache, newResponse, { arg }) => {
+        if (arg && (arg as any).pageNumber === 0) {
+          return newResponse;
+        }
+
+        const existingContent = currentCache?.content || [];
+        // Create a unique key combining refId, date, amount and merchant to prevent data loss
+        const getUniqueKey = (item: any) =>
+          `${item.transactionRefId || ''}-${item.transactionDate || ''}-${item.amount || 0}-${item.merchantName || ''}`;
+
+        const existingKeys = new Set(existingContent.map(getUniqueKey));
+        const uniqueNewContent = newResponse.content.filter((item: any) => !existingKeys.has(getUniqueKey(item)));
+
+        return {
+          ...newResponse,
+          content: [...existingContent, ...uniqueNewContent],
+        };
+      },
+      // Force cache update on any change
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
     getCardLimits: builder.query<any, string>({
       query: cardId => ({
