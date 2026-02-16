@@ -54,7 +54,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   const { accessToken } = useAuth();
   const { startAuthFlow } = useSecondaryAuth();
   const { result, error, onGetCardDetails } = useGetCardDetails();
-  console.log("Ni SDK result log",result)
+  console.log("Ni SDK result log", result)
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const [fetchingCardId, setFetchingCardId] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
@@ -179,9 +179,6 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   }, [onIndexChange]);
 
   const scrollHandler = useAnimatedScrollHandler({
-    onBeginDrag: () => {
-      runOnJS(setVisibleCardIds)(new Set());
-    },
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
     },
@@ -226,6 +223,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
           paddingHorizontal: SIDE_SPACER,
         }}
         onScroll={scrollHandler}
+        onScrollBeginDrag={() => setVisibleCardIds(new Set())}
         scrollEventThrottle={16}
         removeClippedSubviews={false}
         getItemLayout={(_, index) => ({
