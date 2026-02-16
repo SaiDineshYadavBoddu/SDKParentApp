@@ -152,9 +152,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             }}
           >
             <CustomText type={TextType.ImageSmall}>
-              {isDetailsVisible && sensitiveData?.expiry
-                ? formatExpiry(sensitiveData.expiry)
-                : (() => {
+              {(() => {
                   const date = item.expiryDate || '';
                   const parts = date.split('-');
                   if (parts.length >= 2) {
