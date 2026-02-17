@@ -7,6 +7,7 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
+  Share,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -198,7 +199,16 @@ const StatementScreen = () => {
       }
 
       if (Platform.OS === 'ios') {
-        ReactNativeBlobUtil.ios.openDocument(filePath);
+        setTimeout(async () => {
+          try {
+            await Share.share({
+              url: `file://${filePath}`,
+              title: 'Share Statement',
+            });
+          } catch (error) {
+            console.error('Error sharing file:', error);
+          }
+        }, 100);
       } else {
         setDownloadedFileData({ path: filePath, mime: config.mime });
         setDownloadSuccessVisible(true);
@@ -281,7 +291,16 @@ const StatementScreen = () => {
       }
 
       if (Platform.OS === 'ios') {
-        ReactNativeBlobUtil.ios.openDocument(filePath);
+        setTimeout(async () => {
+          try {
+            await Share.share({
+              url: `file://${filePath}`,
+              title: 'Share Statement',
+            });
+          } catch (error) {
+            console.error('Error sharing file:', error);
+          }
+        }, 100);
       } else {
         setDownloadedFileData({ path: filePath, mime: getMimeType(fileName) });
         setDownloadSuccessVisible(true);
