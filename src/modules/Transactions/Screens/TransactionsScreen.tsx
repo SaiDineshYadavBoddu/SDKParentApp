@@ -56,6 +56,7 @@ const TransactionsScreen = () => {
   const initialCardId = route.params?.cardId;
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   console.log("Transaction screen added")
 
@@ -75,12 +76,23 @@ const TransactionsScreen = () => {
   useFocusEffect(
     useCallback(() => {
       setSearchQuery('');
+      setDebouncedSearchQuery('');
       setSelectedTimeRange('lastMonth');
       if (cards.length > 0) {
         setSelectedCardId(cards[0].cardIdentifier);
       }
     }, [cards])
   );
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 1000);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   React.useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
@@ -98,7 +110,7 @@ const TransactionsScreen = () => {
   React.useEffect(() => {
     setPageNumber(0);
     setExpandedTxnId(null);
-  }, [selectedCardId, selectedTimeRange, customDateRange, searchQuery]);
+  }, [selectedCardId, selectedTimeRange, customDateRange, debouncedSearchQuery]);
 
   const selectedCard = useMemo(
     () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
@@ -163,9 +175,9 @@ const TransactionsScreen = () => {
   }, [txnData]);
 
   const filteredTransactions = useMemo(() => {
-    const filtered = filterTransactions(transactions, searchQuery);
+    const filtered = filterTransactions(transactions, debouncedSearchQuery);
     return sortTransactions(filtered, 'newest');
-  }, [transactions, searchQuery]);
+  }, [transactions, debouncedSearchQuery]);
 
   const handleLoadMore = () => {
     if (!isTxnLoading && !isFetching && txnData && !txnData.last) {
