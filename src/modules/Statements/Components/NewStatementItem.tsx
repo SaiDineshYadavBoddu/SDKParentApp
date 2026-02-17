@@ -12,8 +12,8 @@ import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import FileIconSVG from '../../../assets/svgs/FileIconSVG';
 import { formatMaskedCardNumber } from '../../../utils/cardUtils';
 import ChevronDownSVG from '../../../assets/svgs/CheveronDownSVG';
+import { STATEMENTS_TIME_RANGES } from '../../../constants/appConstants';
 
-const STATEMENT_TIME_RANGES = ['lastWeek', 'lastMonth', 'last3Months', 'custom'];
 const EXPORT_FORMATS = [
   { label: 'statements.formats.csv', value: 'csv' },
   { label: 'statements.formats.excel', value: 'excel' },
@@ -68,7 +68,7 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
         style={styles.timeRangeScroll}
         contentContainerStyle={styles.timeRangeContent}
       >
-        {STATEMENT_TIME_RANGES.map((range) => (
+        {STATEMENTS_TIME_RANGES.map((range) => (
           <CustomChip
             key={range}
             label={t(`statements.timeRanges.${range}`)}

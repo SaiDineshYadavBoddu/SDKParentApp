@@ -10,6 +10,8 @@ import {
   LayoutAnimation,
   Platform,
   UIManager,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
@@ -24,7 +26,7 @@ import CustomTextInput from '../../../common/components/CustomTextInput';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import CheveronDownSVG from '../../../assets/svgs/CheveronDownSVG';
 import StatementDownloadSVG from '../../../assets/svgs/StatementDownloadSVG';
-import { TIME_RANGES } from '../../../constants/appConstants';
+import { TRANSACTIONS_TIME_RANGES } from '../../../constants/appConstants';
 import {
   formatTransactionDate,
   filterTransactions,
@@ -57,8 +59,6 @@ const TransactionsScreen = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-
-  console.log("Transaction screen added")
 
   const [selectedTimeRange, setSelectedTimeRange] = useState('lastMonth');
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
@@ -262,137 +262,143 @@ const TransactionsScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader
-        title={t('transactions.title')}
-        rightContent={
-          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
-            <NotificationSVG width={ms(24)} height={ms(24)} />
-          </TouchableOpacity>
-        }
-      />
-
-      {cards.length > 0 ? (
-        <View style={styles.contentContainer}>
-          {/* Fixed Header Elements */}
-          <View style={styles.fixedHeader}>
-            {/* Card Selector */}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={t('transactions.title')}
+          rightContent={
             <TouchableOpacity
-              style={[styles.cardSelector, { borderColor: colors.outline }]}
-              onPress={() => setCardSheetVisible(true)}
+              style={styles.rightButton}
+              onPress={() => navigation.navigate('Notifications')}
             >
-              <View style={styles.cardSelectorLeft}>
-                <CustomImage
-                  source={require('../../../assets/images/SmallCard.png')}
-                  style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
-                  resizeMode="contain"
-                />
-                <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(selectedCard?.maskedPan)}</CustomText>
-              </View>
-              <CheveronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
+              <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onBackground} />
             </TouchableOpacity>
+          }
+        />
 
-            {/* Search Row */}
-            <View style={styles.searchRow}>
-              <CustomTextInput
-                placeholder={t('transactions.searchPlaceholder')}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                leftIcon={<SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} />}
-                containerStyle={styles.searchBar}
-                inputContainerStyle={[
-                  styles.searchInputContainer,
-                  {
-                    borderColor: colors.outline,
-                    backgroundColor: colors.surface,
-                  },
-                ]}
-              />
+        {cards.length > 0 ? (
+          <View style={styles.contentContainer}>
+            {/* Fixed Header Elements */}
+            <View style={styles.fixedHeader}>
+              {/* Card Selector */}
               <TouchableOpacity
-                style={styles.downloadButton}
-                onPress={() => {
-                  navigation.navigate('Statement');
-                }}
+                style={[styles.cardSelector, { borderColor: colors.outline }]}
+                onPress={() => setCardSheetVisible(true)}
               >
-                <StatementDownloadSVG width={ms(48)} height={ms(48)} />
+                <View style={styles.cardSelectorLeft}>
+                  <CustomImage
+                    source={require('../../../assets/images/SmallCard.png')}
+                    style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
+                    resizeMode="contain"
+                  />
+                  <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(selectedCard?.maskedPan)}</CustomText>
+                </View>
+                <CheveronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
               </TouchableOpacity>
+
+              {/* Search Row */}
+              <View style={styles.searchRow}>
+                <CustomTextInput
+                  placeholder={t('transactions.searchPlaceholder')}
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  leftIcon={<SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} />}
+                  containerStyle={styles.searchBar}
+                  inputContainerStyle={[
+                    styles.searchInputContainer,
+                    {
+                      borderColor: colors.outline,
+                      backgroundColor: colors.surface,
+                    },
+                  ]}
+                />
+                <TouchableOpacity
+                  style={styles.downloadButton}
+                  onPress={() => {
+                    navigation.navigate('Statement');
+                  }}
+                >
+                  <StatementDownloadSVG width={ms(48)} height={ms(48)} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Time chips */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.timeRangeScroll}
+                contentContainerStyle={styles.timeRangeContent}
+              >
+                {TRANSACTIONS_TIME_RANGES.map((range) => (
+                  <CustomChip
+                    key={range}
+                    label={t(`transactions.timeRanges.${range}`)}
+                    selected={selectedTimeRange === range}
+                    onPress={() => {
+                      if (range === 'custom') {
+                        setDatePickerVisible(true);
+                      } else {
+                        setSelectedTimeRange(range);
+                      }
+                    }}
+                  />
+                ))}
+              </ScrollView>
             </View>
 
-            {/* Time chips */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.timeRangeScroll}
-              contentContainerStyle={styles.timeRangeContent}
-            >
-              {TIME_RANGES.map((range) => (
-                <CustomChip
-                  key={range}
-                  label={t(`transactions.timeRanges.${range}`)}
-                  selected={selectedTimeRange === range}
-                  onPress={() => {
-                    if (range === 'custom') {
-                      setDatePickerVisible(true);
-                    } else {
-                      setSelectedTimeRange(range);
-                    }
-                  }}
-                />
-              ))}
-            </ScrollView>
+            {/* Scrollable Transaction List */}
+            <FlatList
+              data={filteredTransactions}
+              renderItem={renderTransactionItem}
+              keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
+              onEndReached={handleLoadMore}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={renderFooter}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="handled"
+              ListEmptyComponent={
+                !isTxnLoading && !isFetching ? (
+                  <View style={styles.emptyContainer}>
+                    <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
+                  </View>
+                ) : null
+              }
+            />
           </View>
+        ) : (
+          <View style={styles.emptyCardContainer}>
+            <CustomText type={TextType.CardSubtitle}>No cards available to show transactions</CustomText>
+          </View>
+        )}
 
-          {/* Scrollable Transaction List */}
-          <FlatList
-            data={filteredTransactions}
-            renderItem={renderTransactionItem}
-            keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
-            onEndReached={handleLoadMore}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={renderFooter}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardDismissMode="on-drag"
-            keyboardShouldPersistTaps="handled"
-            ListEmptyComponent={
-              !isTxnLoading && !isFetching ? (
-                <View style={styles.emptyContainer}>
-                  <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
-                </View>
-              ) : null
-            }
-          />
-        </View>
-      ) : (
-        <View style={styles.emptyCardContainer}>
-          <CustomText type={TextType.CardSubtitle}>No cards available to show transactions</CustomText>
-        </View>
-      )}
-
-      {/* Bottom Sheets */}
-      <CardSelectionBottomSheet
-        visible={isCardSheetVisible}
-        onClose={() => setCardSheetVisible(false)}
-        cards={cards}
-        selectedCardId={selectedCardId}
-        onSelect={(id) => {
-          setSelectedCardId(id);
-          setCardSheetVisible(false);
-        }}
-      />
-      <CustomDatePicker
-        visible={isDatePickerVisible}
-        onClose={() => setDatePickerVisible(false)}
-        onApply={(start, end) => {
-          setCustomDateRange({ start, end });
-          setSelectedTimeRange('custom');
-          setDatePickerVisible(false);
-        }}
-        initialStartDate={customDateRange.start}
-        initialEndDate={customDateRange.end}
-      />
-      <CustomLoader loading={isTxnLoading || (isFetching && pageNumber === 0)} />
-    </View>
+        {/* Bottom Sheets */}
+        <CardSelectionBottomSheet
+          visible={isCardSheetVisible}
+          onClose={() => setCardSheetVisible(false)}
+          cards={cards}
+          selectedCardId={selectedCardId}
+          onSelect={(id) => {
+            setSelectedCardId(id);
+            setCardSheetVisible(false);
+          }}
+        />
+        <CustomDatePicker
+          visible={isDatePickerVisible}
+          onClose={() => setDatePickerVisible(false)}
+          onApply={(start, end) => {
+            setCustomDateRange({ start, end });
+            setSelectedTimeRange('custom');
+            setDatePickerVisible(false);
+          }}
+          initialStartDate={customDateRange.start}
+          initialEndDate={customDateRange.end}
+          maxDate={new Date().toISOString().split('T')[0]}
+        />
+        <CustomLoader loading={isTxnLoading || (isFetching && pageNumber === 0)} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

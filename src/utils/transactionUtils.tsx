@@ -134,21 +134,25 @@ export const calculateDateRange = (
     console.log(`calculateDateRange called with: ${timeRange}`);
 
     switch (timeRange) {
+        case 'lastWeek':
+            // 7 days ago to today
+            from.setDate(today.getDate() - 7);
+            break;
         case 'thisMonth':
+            // Start of current month to today
             from.setDate(1);
             break;
         case 'lastMonth':
-            // today - 1 month + 1 day
-            from.setMonth(today.getMonth() - 1);
-            from.setDate(today.getDate() + 1);
+            // 30 days ago to today (e.g. Jan 18 to Feb 17)
+            from.setDate(today.getDate() - 30);
             break;
         case 'last3Months':
-            // today - 3 months + 1 day (e.g. Feb 17 -> Nov 18)
-            from.setMonth(today.getMonth() - 3);
-            from.setDate(today.getDate() + 1);
+            // 90 days ago to today (e.g. Nov 19 to Feb 17)
+            from.setDate(today.getDate() - 90);
             break;
         case 'thisYear':
-            from.setMonth(0, 1); // January 1st
+            // Start of current year to today
+            from.setMonth(0, 1);
             break;
         case 'custom':
             if (customRange?.start && customRange?.end) {

@@ -315,11 +315,6 @@ const StatementScreen = () => {
       <CustomHeader
         title={t('statements.title')}
         onBackPress={() => navigation.goBack()}
-        rightContent={
-          <TouchableOpacity style={styles.iconButton}>
-            <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onSurface} stroke={colors.onSurface} />
-          </TouchableOpacity>
-        }
       />
 
       <View style={{ paddingHorizontal: Spacing.l }}>
@@ -427,7 +422,10 @@ const StatementScreen = () => {
         onClose={() => setCardSheetVisible(false)}
         cards={cards}
         selectedCardId={selectedCardId}
-        onSelect={setSelectedCardId}
+        onSelect={(id) => {
+          setSelectedCardId(id);
+          setCardSheetVisible(false);
+        }}
       />
       <CustomDatePicker
         visible={isDatePickerVisible}
@@ -439,6 +437,7 @@ const StatementScreen = () => {
         }}
         initialStartDate={customDateRange.start}
         initialEndDate={customDateRange.end}
+        maxDate={new Date().toISOString().split('T')[0]}
       />
       <CustomLoader loading={isDownloading} />
 
