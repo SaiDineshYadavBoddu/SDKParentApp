@@ -99,7 +99,13 @@ const StatementScreen = () => {
     const baseUrl = 'https://sit.corporate.un.infradev.w4.az.network.ae';
     const formatValue = selectedFormat.toUpperCase();
     const config = FORMAT_CONFIG[selectedFormat] || FORMAT_CONFIG.csv;
-    const fileName = `Statement_${selectedCardId}_${dateRange.dateFrom}_${dateRange.dateTo}.${config.extension}`;
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const fileName = `Corporate Executive Card Statement ${day}-${month}-${year} ${hours}-${minutes}.${config.extension}`;
 
     const params = `cardId=${selectedCardId}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
     const url = `${baseUrl}${API_ENDPOINTS.GET_STATEMENTS}?${params}`;
@@ -157,13 +163,6 @@ const StatementScreen = () => {
             filePath
           );
 
-          ReactNativeBlobUtil.android.addCompleteDownload({
-            title: fileName,
-            description: 'Statement downloaded successfully',
-            mime: config.mime,
-            path: publicPath || filePath,
-            showNotification: true,
-          });
         } catch (copyError) {
           console.error('MediaStore copy failed', copyError);
           await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: config.mime }]);
