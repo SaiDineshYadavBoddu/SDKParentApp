@@ -107,11 +107,16 @@ const TransactionsScreen = () => {
     }
   }, [route.params?.cardId]);
 
-  // Reset page when card, time range, or search changes
+  // Reset page when card or time range changes
   React.useEffect(() => {
     setPageNumber(0);
     setExpandedTxnIds({});
-  }, [selectedCardId, selectedTimeRange, customDateRange, searchQuery]);
+  }, [selectedCardId, selectedTimeRange, customDateRange]);
+
+  // Reset expanded txn when search changes (no API call)
+  React.useEffect(() => {
+    setExpandedTxnIds({});
+  }, [debouncedSearchQuery]);
 
   const selectedCard = useMemo(
     () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
