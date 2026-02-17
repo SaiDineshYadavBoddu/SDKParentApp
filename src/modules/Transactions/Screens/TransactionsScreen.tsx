@@ -346,6 +346,7 @@ const TransactionsScreen = () => {
                       if (range === 'custom') {
                         setDatePickerVisible(true);
                       } else {
+                        setPageNumber(0);
                         setSelectedTimeRange(range);
                         setCustomDateRange({ start: '', end: '' });
                       }
@@ -389,6 +390,7 @@ const TransactionsScreen = () => {
           cards={cards}
           selectedCardId={selectedCardId}
           onSelect={(id) => {
+            setPageNumber(0);
             setSelectedCardId(id);
             setCardSheetVisible(false);
           }}
@@ -397,6 +399,7 @@ const TransactionsScreen = () => {
           visible={isDatePickerVisible}
           onClose={() => setDatePickerVisible(false)}
           onApply={(start, end) => {
+            setPageNumber(0);
             setCustomDateRange({ start, end });
             setSelectedTimeRange('custom');
             setDatePickerVisible(false);
