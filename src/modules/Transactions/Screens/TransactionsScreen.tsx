@@ -255,8 +255,11 @@ const TransactionsScreen = () => {
         <CustomHeader
           title={t('transactions.title')}
           rightContent={
-            <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
-              <NotificationSVG width={ms(24)} height={ms(24)} />
+            <TouchableOpacity
+              style={styles.rightButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onBackground} />
             </TouchableOpacity>
           }
         />
@@ -379,6 +382,7 @@ const TransactionsScreen = () => {
           }}
           initialStartDate={customDateRange.start}
           initialEndDate={customDateRange.end}
+          maxDate={new Date().toISOString().split('T')[0]}
         />
         <CustomLoader loading={isTxnLoading || (isFetching && pageNumber === 0)} />
       </View>

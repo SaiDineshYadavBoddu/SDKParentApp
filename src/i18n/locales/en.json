@@ -513,7 +513,7 @@
     "successMessage": "Your PIN has been successfully reset."
   },
   "statements": {
-    "title": "New statement",
+    "title": "Statement",
     "newStatement": "New statement",
     "statementHistory": "Statement history",
     "selectCard": "Select card",

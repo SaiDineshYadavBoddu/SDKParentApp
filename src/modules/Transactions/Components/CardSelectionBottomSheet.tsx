@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
@@ -34,7 +34,11 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
             onClose={onClose}
             title={t('transactions.selectCard')}
         >
-            <View style={styles.container}>
+            <ScrollView
+                style={styles.container}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
                 {cards.map((card) => (
                     <TouchableOpacity
                         key={card.cardIdentifier}
@@ -61,13 +65,16 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                         />
                     </TouchableOpacity>
                 ))}
-            </View>
+            </ScrollView>
         </CustomBottomSheet>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        maxHeight: ms(400),
+    },
+    scrollContent: {
         paddingBottom: Spacing.m,
     },
     cardItem: {
