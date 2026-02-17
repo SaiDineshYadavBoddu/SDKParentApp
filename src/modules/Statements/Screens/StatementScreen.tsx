@@ -164,10 +164,34 @@ const StatementScreen = () => {
 
       setIsDownloading(false);
       const filePath = res.path();
+      console.log('✅ Statement saved to:', filePath);
 
       if (Platform.OS === 'android') {
-        // Scans the file to make it visible in Gallery/Downloads app
-        await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: config.mime }]);
+        try {
+          // Modern way to save to public Downloads folder on Android 10+
+          const publicPath = await (ReactNativeBlobUtil.MediaCollection as any).copyToMediaStore(
+            {
+              name: fileName,
+              parentFolder: '', // Root of Downloads
+              mimeType: config.mime,
+            },
+            'Download',
+            filePath
+          );
+          console.log('✅ Statement copied to public Downloads:', publicPath);
+
+          // Still register it in the download history for visibility
+          ReactNativeBlobUtil.android.addCompleteDownload({
+            title: fileName,
+            description: 'Statement downloaded successfully',
+            mime: config.mime,
+            path: publicPath || filePath,
+            showNotification: true,
+          });
+        } catch (copyError) {
+          console.error('Failed to copy to MediaStore, falling back to basic scan:', copyError);
+          await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: config.mime }]);
+        }
       }
 
       if (Platform.OS === 'ios') {
@@ -245,9 +269,25 @@ const StatementScreen = () => {
       );
 
       const filePath = res.path();
+      console.log('✅ History statement saved to:', filePath);
 
       if (Platform.OS === 'android') {
-        await ReactNativeBlobUtil.fs.scanFile([{ path: filePath }]);
+        try {
+          const mimeType = getMimeType(fileName);
+          const publicPath = await (ReactNativeBlobUtil.MediaCollection as any).copyToMediaStore(
+            {
+              name: fileName,
+              parentFolder: '',
+              mimeType: mimeType,
+            },
+            'Download',
+            filePath
+          );
+          console.log('✅ History statement copied to public Downloads:', publicPath);
+        } catch (copyError) {
+          console.error('Failed to copy history to MediaStore:', copyError);
+          await ReactNativeBlobUtil.fs.scanFile([{ path: filePath }]);
+        }
       }
 
       if (Platform.OS === 'ios') {
