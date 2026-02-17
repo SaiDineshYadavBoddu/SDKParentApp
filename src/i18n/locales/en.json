@@ -183,7 +183,8 @@
       "last3Months": "Last 3 months",
       "thisYear": "This year",
       "custom": "Custom"
-    }
+    },
+    "errorLoading": "Failed to load transactions. Please try again."
   },
   "profile": {
     "headerTitle": "My Profile",
@@ -531,6 +532,10 @@
       "excel": "Excel",
       "pdf": "PDF",
       "word": "Word"
-    }
+    },
+    "downloadSuccess": "Download complete",
+    "openFileMessage": "Your statement has been downloaded. Would you like to open it?",
+    "openFile": "Open File",
+    "downloadFailed": "Failed to download statement. Please try again."
   }
 }

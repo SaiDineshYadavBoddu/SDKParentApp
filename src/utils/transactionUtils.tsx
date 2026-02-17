@@ -116,6 +116,13 @@ export const sortTransactions = (transactions: any[], sortBy: string) => {
  * @param timeRange The range key (e.g., 'thisMonth', 'lastMonth').
  * @param customRange Optional start and end dates for 'custom' range.
  */
+const formatToISODate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
 export const calculateDateRange = (
     timeRange: string,
     customRange?: { start?: string; end?: string }
@@ -131,14 +138,14 @@ export const calculateDateRange = (
             from.setDate(1);
             break;
         case 'lastMonth':
-            // 1 month ago + 1 day (e.g. Feb 16 -> Jan 17)
+            // today - 1 month + 1 day
             from.setMonth(today.getMonth() - 1);
             from.setDate(today.getDate() + 1);
             break;
         case 'last3Months':
-            // 3 months ago + 2 days (e.g. Feb 16 -> Nov 18)
+            // today - 3 months + 1 day (e.g. Feb 17 -> Nov 18)
             from.setMonth(today.getMonth() - 3);
-            from.setDate(today.getDate() + 2);
+            from.setDate(today.getDate() + 1);
             break;
         case 'thisYear':
             from.setMonth(0, 1); // January 1st
@@ -152,13 +159,13 @@ export const calculateDateRange = (
             }
             break;
         default:
-            // Default to last 30 days if no match
+            // Default to last 30 days
             from.setDate(today.getDate() - 30);
     }
 
     const result = {
-        dateFrom: from.toISOString().split('T')[0],
-        dateTo: to.toISOString().split('T')[0],
+        dateFrom: formatToISODate(from),
+        dateTo: formatToISODate(to),
     };
     console.log(`calculated result:`, result);
     return result;
