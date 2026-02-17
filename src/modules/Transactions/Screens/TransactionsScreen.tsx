@@ -146,6 +146,14 @@ const TransactionsScreen = () => {
 
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
+  const transactions = useMemo(() => {
+    return txnData?.content || [];
+  }, [txnData]);
+
+  const filteredTransactions = useMemo(() => {
+    const filtered = filterTransactions(transactions, debouncedSearchQuery);
+    return sortTransactions(filtered, 'newest');
+  }, [transactions, debouncedSearchQuery]);
 
 
   if (isError && !isTimeoutError) {
@@ -175,15 +183,6 @@ const TransactionsScreen = () => {
       </View>
     );
   }
-
-  const transactions = useMemo(() => {
-    return txnData?.content || [];
-  }, [txnData]);
-
-  const filteredTransactions = useMemo(() => {
-    const filtered = filterTransactions(transactions, debouncedSearchQuery);
-    return sortTransactions(filtered, 'newest');
-  }, [transactions, debouncedSearchQuery]);
 
   const handleLoadMore = () => {
     if (!isTxnLoading && !isFetching && txnData && !txnData.last) {
