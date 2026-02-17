@@ -8,7 +8,6 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomTextInput from '../../../common/components/CustomTextInput';
 import CustomButton from '../../../common/components/CustomButton';
-import CustomIcon from '../../../common/components/CustomIcon';
 import ResetPinSVG from '../../../assets/svgs/ResetPinSVG';
 import { Spacing } from '../../../theme/spacing';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -18,6 +17,8 @@ import { useSecondaryAuth } from '../../../hooks/useSecondaryAuth';
 import { useChangePin, useSetPin, type NIErrorResponse, NIThemeEnum } from '@networkinternational/ni-card-management-sdk'
 import { useAuth, getGlobalBankId } from '../../../context/AuthContext';
 import { TEST_INPUT } from '../../../config/NISDKConfig';
+import EyeOpenSVG from '../../../assets/svgs/EyeOpenSVG';
+import EyeCloseSvg from '../../../assets/svgs/EyeCloseSvg';
 
 const SetCardPin = () => {
   const { t } = useTranslation();
@@ -245,12 +246,7 @@ const SetCardPin = () => {
                 error={errors.newPin}
                 rightIcon={
                   <TouchableOpacity onPress={() => setShowNewPin(!showNewPin)}>
-                    <CustomIcon
-                      type="feather"
-                      name={showNewPin ? 'eye' : 'eye-off'}
-                      size={ms(20)}
-                      color={colors.outline}
-                    />
+                    {showNewPin ? <EyeOpenSVG /> : <EyeCloseSvg />}
                   </TouchableOpacity>
                 }
               />
@@ -270,12 +266,7 @@ const SetCardPin = () => {
                 error={errors.confirmPin}
                 rightIcon={
                   <TouchableOpacity onPress={() => setShowConfirmPin(!showConfirmPin)}>
-                    <CustomIcon
-                      type="feather"
-                      name={showConfirmPin ? 'eye' : 'eye-off'}
-                      size={ms(20)}
-                      color={colors.outline}
-                    />
+                    {showConfirmPin ? <EyeOpenSVG /> : <EyeCloseSvg />}
                   </TouchableOpacity>
                 }
               />
