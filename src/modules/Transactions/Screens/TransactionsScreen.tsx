@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
   UIManager,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
@@ -20,6 +20,7 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomImage from '../../../common/components/CustomImage';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import SearchSVG from '../../../assets/svgs/SearchSVG';
+import CustomTextInput from '../../../common/components/CustomTextInput';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import CheveronDownSVG from '../../../assets/svgs/CheveronDownSVG';
 import StatementDownloadSVG from '../../../assets/svgs/StatementDownloadSVG';
@@ -55,6 +56,9 @@ const TransactionsScreen = () => {
   const initialCardId = route.params?.cardId;
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  console.log("Transaction screen added")
+
   const [selectedTimeRange, setSelectedTimeRange] = useState('lastMonth');
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
@@ -68,6 +72,16 @@ const TransactionsScreen = () => {
 
   const [selectedCardId, setSelectedCardId] = useState<string>(initialCardId || '');
 
+  useFocusEffect(
+    useCallback(() => {
+      setSearchQuery('');
+      setSelectedTimeRange('lastMonth');
+      if (cards.length > 0) {
+        setSelectedCardId(cards[0].cardIdentifier);
+      }
+    }, [cards])
+  );
+
   React.useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
       setSelectedCardId(cards[0].cardIdentifier);
@@ -80,11 +94,11 @@ const TransactionsScreen = () => {
     }
   }, [route.params?.cardId]);
 
-  // Reset page when card or time range changes
+  // Reset page when card, time range, or search changes
   React.useEffect(() => {
     setPageNumber(0);
     setExpandedTxnId(null);
-  }, [selectedCardId, selectedTimeRange, customDateRange]);
+  }, [selectedCardId, selectedTimeRange, customDateRange, searchQuery]);
 
   const selectedCard = useMemo(
     () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
@@ -237,7 +251,6 @@ const TransactionsScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
       <CustomHeader
         title={t('transactions.title')}
         rightContent={
@@ -246,87 +259,98 @@ const TransactionsScreen = () => {
           </TouchableOpacity>
         }
       />
+
       {cards.length > 0 ? (
-        <FlatList
-          data={filteredTransactions}
-          renderItem={renderTransactionItem}
-          keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={renderFooter}
-          contentContainerStyle={styles.scrollContent}
-          ListHeaderComponent={
-            <>
-              {/* Card Selector */}
+        <View style={styles.contentContainer}>
+          {/* Fixed Header Elements */}
+          <View style={styles.fixedHeader}>
+            {/* Card Selector */}
+            <TouchableOpacity
+              style={[styles.cardSelector, { borderColor: colors.outline }]}
+              onPress={() => setCardSheetVisible(true)}
+            >
+              <View style={styles.cardSelectorLeft}>
+                <CustomImage
+                  source={require('../../../assets/images/SmallCard.png')}
+                  style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
+                  resizeMode="contain"
+                />
+                <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(selectedCard?.maskedPan)}</CustomText>
+              </View>
+              <CheveronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
+            </TouchableOpacity>
+
+            {/* Search Row */}
+            <View style={styles.searchRow}>
+              <CustomTextInput
+                placeholder={t('transactions.searchPlaceholder')}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                leftIcon={<SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} />}
+                containerStyle={styles.searchBar}
+                inputContainerStyle={[
+                  styles.searchInputContainer,
+                  {
+                    borderColor: colors.outline,
+                    backgroundColor: colors.surface,
+                  },
+                ]}
+              />
               <TouchableOpacity
-                style={[styles.cardSelector, { borderColor: colors.outline }]}
-                onPress={() => setCardSheetVisible(true)}
+                style={styles.downloadButton}
+                onPress={() => {
+                  navigation.navigate('Statement');
+                }}
               >
-                <View style={styles.cardSelectorLeft}>
-                  <CustomImage
-                    source={require('../../../assets/images/SmallCard.png')}
-                    style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
-                    resizeMode="contain"
-                  />
-                  <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(selectedCard?.maskedPan)}</CustomText>
-                </View>
-                <CheveronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
+                <StatementDownloadSVG width={ms(48)} height={ms(48)} />
               </TouchableOpacity>
+            </View>
 
-              {/* Search and Filters */}
-              <View style={styles.searchRow}>
-                <View style={[styles.searchBar, { borderColor: colors.outline }]}>
-                  <SearchSVG width={ms(20)} height={ms(20)} color={colors.textColorDisabled} style={styles.searchIcon} />
-                  <TextInput
-                    placeholder={t('transactions.searchPlaceholder')}
-                    placeholderTextColor={colors.textColorDisabled}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    style={[styles.searchInput, { color: colors.onSurface }]}
-                  />
-                </View>
-                <TouchableOpacity
-                  style={styles.downloadButton}
+            {/* Time chips */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.timeRangeScroll}
+              contentContainerStyle={styles.timeRangeContent}
+            >
+              {TIME_RANGES.map((range) => (
+                <CustomChip
+                  key={range}
+                  label={t(`transactions.timeRanges.${range}`)}
+                  selected={selectedTimeRange === range}
                   onPress={() => {
-                    navigation.navigate('Statement');
+                    if (range === 'custom') {
+                      setDatePickerVisible(true);
+                    } else {
+                      setSelectedTimeRange(range);
+                    }
                   }}
-                >
-                  <StatementDownloadSVG width={ms(48)} height={ms(48)} />
-                </TouchableOpacity>
-              </View>
+                />
+              ))}
+            </ScrollView>
+          </View>
 
-              {/* Time chips */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.timeRangeScroll}
-                contentContainerStyle={styles.timeRangeContent}
-              >
-                {TIME_RANGES.map((range) => (
-                  <CustomChip
-                    key={range}
-                    label={t(`transactions.timeRanges.${range}`)}
-                    selected={selectedTimeRange === range}
-                    onPress={() => {
-                      if (range === 'custom') {
-                        setDatePickerVisible(true);
-                      } else {
-                        setSelectedTimeRange(range);
-                      }
-                    }}
-                  />
-                ))}
-              </ScrollView>
-            </>
-          }
-          ListEmptyComponent={
-            !isTxnLoading && !isFetching ? (
-              <View style={styles.emptyContainer}>
-                <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
-              </View>
-            ) : null
-          }
-        />
+          {/* Scrollable Transaction List */}
+          <FlatList
+            data={filteredTransactions}
+            renderItem={renderTransactionItem}
+            keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
+            onEndReached={handleLoadMore}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={renderFooter}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            ListEmptyComponent={
+              !isTxnLoading && !isFetching ? (
+                <View style={styles.emptyContainer}>
+                  <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
+                </View>
+              ) : null
+            }
+          />
+        </View>
       ) : (
         <View style={styles.emptyCardContainer}>
           <CustomText type={TextType.CardSubtitle}>No cards available to show transactions</CustomText>
@@ -364,6 +388,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  contentContainer: {
+    flex: 1,
+  },
+  fixedHeader: {
+    paddingHorizontal: Spacing.l,
+    paddingTop: Spacing.s,
+  },
   rightButton: {
     padding: ms(6),
     marginRight: -ms(6),
@@ -380,7 +411,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: ms(12),
     marginBottom: Spacing.l,
-    marginTop: Spacing.s,
   },
   cardSelectorLeft: {
     flexDirection: 'row',
@@ -394,8 +424,9 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 0,
+  },
+  searchInputContainer: {
     borderWidth: 1,
     borderRadius: ms(8),
     height: ms(48),
@@ -431,7 +462,7 @@ const styles = StyleSheet.create({
   },
   transactionItem: {
     paddingVertical: Spacing.l,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   txnMainRow: {
     flexDirection: 'row',
@@ -499,4 +530,3 @@ const styles = StyleSheet.create({
 });
 
 export default TransactionsScreen;
-

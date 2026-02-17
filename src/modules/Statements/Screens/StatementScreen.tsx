@@ -30,6 +30,7 @@ import { API_ENDPOINTS } from '../../../network/endpoint.const';
 import { getAccessToken } from '../../../context/AuthContext';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { navigateToServerErrorScreen, navigateToTimeoutScreen } from '../../../utils/navigationUtils';
+import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 
 const FORMAT_CONFIG: Record<string, { extension: string; mime: string }> = {
   pdf: { extension: 'pdf', mime: 'application/pdf' },
@@ -59,6 +60,8 @@ const StatementScreen = () => {
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
+  const [downloadSuccessVisible, setDownloadSuccessVisible] = useState(false);
+  const [downloadedFileData, setDownloadedFileData] = useState<{ path: string; mime: string } | null>(null);
 
   const cardsData = useSelector((state: any) => state.card?.cards);
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
@@ -197,22 +200,8 @@ const StatementScreen = () => {
       if (Platform.OS === 'ios') {
         ReactNativeBlobUtil.ios.openDocument(filePath);
       } else {
-        Alert.alert(
-          t('statements.downloadSuccess'),
-          t('statements.openFileMessage'),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('statements.openFile'),
-              onPress: () => {
-                ReactNativeBlobUtil.android.actionViewIntent(
-                  filePath,
-                  config.mime
-                );
-              },
-            },
-          ]
-        );
+        setDownloadedFileData({ path: filePath, mime: config.mime });
+        setDownloadSuccessVisible(true);
       }
     } catch (error: any) {
       console.error('Download failed', error);
@@ -293,22 +282,8 @@ const StatementScreen = () => {
       if (Platform.OS === 'ios') {
         ReactNativeBlobUtil.ios.openDocument(filePath);
       } else {
-        Alert.alert(
-          t('statements.downloadSuccess'),
-          t('statements.openFileMessage'),
-          [
-            { text: t('common.cancel'), style: 'cancel' },
-            {
-              text: t('statements.openFile'),
-              onPress: () => {
-                ReactNativeBlobUtil.android.actionViewIntent(
-                  filePath,
-                  getMimeType(fileName)
-                );
-              },
-            },
-          ]
-        );
+        setDownloadedFileData({ path: filePath, mime: getMimeType(fileName) });
+        setDownloadSuccessVisible(true);
       }
     } catch (error) {
       console.error("Download failed", error);
@@ -445,6 +420,25 @@ const StatementScreen = () => {
         }}
         initialStartDate={customDateRange.start}
         initialEndDate={customDateRange.end}
+      />
+      <CustomLoader loading={isDownloading} />
+
+      <ConfirmationBottomSheet
+        visible={downloadSuccessVisible}
+        onClose={() => setDownloadSuccessVisible(false)}
+        title={t('statements.downloadSuccess')}
+        message={t('statements.openFileMessage')}
+        confirmText={t('statements.openFile')}
+        cancelText={t('common.cancel')}
+        onConfirm={() => {
+          if (downloadedFileData) {
+            ReactNativeBlobUtil.android.actionViewIntent(
+              downloadedFileData.path,
+              downloadedFileData.mime
+            );
+          }
+          setDownloadSuccessVisible(false);
+        }}
       />
     </View>
   );
