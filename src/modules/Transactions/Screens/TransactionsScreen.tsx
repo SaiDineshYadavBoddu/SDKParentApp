@@ -59,11 +59,6 @@ const TransactionsScreen = () => {
 
   console.log("Transaction screen added")
 
-  useFocusEffect(
-    useCallback(() => {
-      setSearchQuery('');
-    }, [])
-  );
   const [selectedTimeRange, setSelectedTimeRange] = useState('lastMonth');
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
@@ -76,6 +71,16 @@ const TransactionsScreen = () => {
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
 
   const [selectedCardId, setSelectedCardId] = useState<string>(initialCardId || '');
+
+  useFocusEffect(
+    useCallback(() => {
+      setSearchQuery('');
+      setSelectedTimeRange('lastMonth');
+      if (cards.length > 0) {
+        setSelectedCardId(cards[0].cardIdentifier);
+      }
+    }, [cards])
+  );
 
   React.useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
