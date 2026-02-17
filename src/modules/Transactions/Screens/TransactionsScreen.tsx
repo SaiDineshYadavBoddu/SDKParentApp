@@ -64,7 +64,7 @@ const TransactionsScreen = () => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
   const [pageNumber, setPageNumber] = useState(0);
-  const [expandedTxnId, setExpandedTxnId] = useState<string | null>(null);
+  const [expandedTxnIds, setExpandedTxnIds] = useState<Record<string, boolean>>({});
   const PAGE_SIZE = 20;
 
   const cardsData = useSelector((state: any) => state.card?.cards);
@@ -79,6 +79,7 @@ const TransactionsScreen = () => {
       if (cards.length > 0) {
         setSelectedCardId(cards[0].cardIdentifier);
       }
+      setCustomDateRange({ start: '', end: '' });
     }, [cards])
   );
 
@@ -97,7 +98,7 @@ const TransactionsScreen = () => {
   // Reset page when card, time range, or search changes
   React.useEffect(() => {
     setPageNumber(0);
-    setExpandedTxnId(null);
+    setExpandedTxnIds({});
   }, [selectedCardId, selectedTimeRange, customDateRange, searchQuery]);
 
   const selectedCard = useMemo(
@@ -175,11 +176,14 @@ const TransactionsScreen = () => {
 
   const renderTransactionItem = ({ item }: { item: any }) => {
     const { amountDisplay, color, displayName } = getFormattedTransaction(item, colors);
-    const isExpanded = expandedTxnId === item.transactionRefId;
+    const isExpanded = !!expandedTxnIds[item.transactionRefId];
 
     const handlePress = () => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setExpandedTxnId(isExpanded ? null : item.transactionRefId);
+      setExpandedTxnIds(prev => ({
+        ...prev,
+        [item.transactionRefId]: !isExpanded
+      }));
     };
 
     return (
@@ -257,9 +261,14 @@ const TransactionsScreen = () => {
           rightContent={
             <TouchableOpacity
               style={styles.rightButton}
-              onPress={() => navigation.navigate('Notifications')}
+              onPress={() => navigation.navigate('Notifications' as never)}
             >
-              <NotificationSVG width={ms(24)} height={ms(24)} color={colors.onBackground} />
+              <NotificationSVG
+                width={ms(24)}
+                height={ms(24)}
+                color={colors.onBackground}
+                stroke={colors.onBackground}
+              />
             </TouchableOpacity>
           }
         />
@@ -327,6 +336,7 @@ const TransactionsScreen = () => {
                         setDatePickerVisible(true);
                       } else {
                         setSelectedTimeRange(range);
+                        setCustomDateRange({ start: '', end: '' });
                       }
                     }}
                   />

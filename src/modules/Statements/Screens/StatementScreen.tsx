@@ -222,6 +222,7 @@ const StatementScreen = () => {
       setDatePickerVisible(true);
     } else {
       setSelectedTimeRange(range);
+      setCustomDateRange({ start: '', end: '' });
     }
   };
 
@@ -309,7 +310,10 @@ const StatementScreen = () => {
                 backgroundColor: statementType === 'new' ? colors.primary : colors.backgroundVariant,
               },
             ]}
-            onPress={() => setStatementType('new')}
+            onPress={() => {
+              setStatementType('new');
+              setCustomDateRange({ start: '', end: '' });
+            }}
           >
             <CustomText
               type={TextType.CardText}
@@ -332,7 +336,10 @@ const StatementScreen = () => {
                 backgroundColor: statementType === 'history' ? colors.primary : colors.backgroundVariant,
               },
             ]}
-            onPress={() => setStatementType('history')}
+            onPress={() => {
+              setStatementType('history');
+              setCustomDateRange({ start: '', end: '' });
+            }}
           >
             <CustomText
               type={TextType.CardText}
