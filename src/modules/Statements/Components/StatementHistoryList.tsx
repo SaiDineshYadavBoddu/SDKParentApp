@@ -8,6 +8,7 @@ import CustomLoader from '../../../common/components/CustomLoader';
 import StatementHistoryItem, { StatementHistoryItemData } from './StatementHistoryItem';
 import { useGetStatementsQuery } from '../../../network/card/card.api';
 import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 
 interface StatementHistoryListProps {
   cardId: string;
@@ -27,7 +28,7 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
     setPageNumber(0);
   }, [cardId]);
 
-  const { data: statementHistory, isLoading, isError, refetch, isFetching } = useGetStatementsQuery(
+  const { data: statementHistory, isLoading, isError, error, refetch, isFetching } = useGetStatementsQuery(
     {
       cardId,
       pageSize: 20,
@@ -56,7 +57,11 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
   return (
     <View style={styles.historyContainer}>
       {isError && !isFetching && pageNumber === 0 ? (
-        <CustomErrorView onRetry={refetch} loading={isFetching} />
+        (error as any)?.status === 'TIMEOUT_ERROR' ? (
+          <RequestTimeoutScreen onRetry={refetch} />
+        ) : (
+          <CustomErrorView onRetry={refetch} loading={isFetching} />
+        )
       ) : (
         <FlatList
           data={statementHistory?.content || []}
@@ -107,4 +112,3 @@ const styles = StyleSheet.create({
 });
 
 export default StatementHistoryList;
-

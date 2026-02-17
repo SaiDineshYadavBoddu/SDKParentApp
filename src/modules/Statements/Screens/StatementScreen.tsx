@@ -30,7 +30,8 @@ import { useNavigation } from '@react-navigation/native';
 import { API_ENDPOINTS } from '../../../network/endpoint.const';
 import { getAccessToken } from '../../../context/AuthContext';
 import ReactNativeBlobUtil from 'react-native-blob-util';
-import { navigateToServerErrorScreen, navigateToTimeoutScreen } from '../../../utils/navigationUtils';
+import CustomErrorView from '../../../common/components/CustomErrorView';
+import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
 import ConfirmationBottomSheet from '../../../common/components/ConfirmationBottomSheet';
 
 const FORMAT_CONFIG: Record<string, { extension: string; mime: string }> = {
@@ -63,6 +64,7 @@ const StatementScreen = () => {
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
   const [downloadSuccessVisible, setDownloadSuccessVisible] = useState(false);
   const [downloadedFileData, setDownloadedFileData] = useState<{ path: string; mime: string } | null>(null);
+  const [downloadError, setDownloadError] = useState<'timeout' | 'server' | null>(null);
 
   const cardsData = useSelector((state: any) => state.card?.cards);
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
@@ -70,8 +72,6 @@ const StatementScreen = () => {
   useEffect(() => {
     if (cards.length > 0 && !selectedCardId) {
       setSelectedCardId(cards[0].cardIdentifier);
-    } else if (cards.length === 0 && !selectedCardId) {
-      // Fallback for debugging if card list API is failing
     }
   }, [cards, selectedCardId]);
 
@@ -101,17 +101,14 @@ const StatementScreen = () => {
     const config = FORMAT_CONFIG[selectedFormat] || FORMAT_CONFIG.csv;
     const fileName = `Statement_${selectedCardId}_${dateRange.dateFrom}_${dateRange.dateTo}.${config.extension}`;
 
-    // POST request with query parameters (matching portal behavior)
     const params = `cardId=${selectedCardId}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
     const url = `${baseUrl}${API_ENDPOINTS.GET_STATEMENTS}?${params}`;
-
-    console.log(`Download Attempt: [POST] ${url}`);
 
     try {
       const configWithAuth = {
         fileCache: true,
         addAndroidDownloads: {
-          useDownloadManager: false, // Handle download manually to support POST with Auth headers
+          useDownloadManager: false,
           notification: true,
           title: fileName,
           description: 'Downloading statement...',
@@ -121,7 +118,7 @@ const StatementScreen = () => {
         path: Platform.OS === 'ios'
           ? `${dirs.DocumentDir}/${fileName}`
           : `${dirs.DownloadDir}/${fileName}`,
-        timeout: 20000, // 20 second timeout
+        timeout: 20000,
       };
 
       const res = await ReactNativeBlobUtil.config(configWithAuth).fetch(
@@ -134,57 +131,32 @@ const StatementScreen = () => {
       );
 
       const responseStatus = res.info().status;
-      console.log(`Download Response Status: ${responseStatus}`);
 
       if (responseStatus >= 400) {
         setIsDownloading(false);
-        let errorMsg = 'Unknown error';
-        try {
-          const body = await res.json();
-          console.log(`Error Body:`, body);
-          errorMsg = body?.message || body?.error || JSON.stringify(body);
-        } catch (e) {
-          try {
-            const textData = await res.text();
-            console.log(`Error Text:`, textData);
-            errorMsg = textData || `Status ${responseStatus}`;
-          } catch (e2) {
-            errorMsg = `Status ${responseStatus}`;
-          }
-        }
-
-        // Special handling for 504 Gateway Timeout
         if (responseStatus === 504) {
-          navigateToTimeoutScreen();
+          setDownloadError('timeout');
         } else {
-          // Alert.alert(
-          //   t('common.error'),
-          //   `Server Error ${responseStatus}: ${errorMsg}`
-          // );
-          navigateToServerErrorScreen();
+          setDownloadError('server');
         }
         return;
       }
 
       setIsDownloading(false);
       const filePath = res.path();
-      console.log('✅ Statement saved to:', filePath);
 
       if (Platform.OS === 'android') {
         try {
-          // Modern way to save to public Downloads folder on Android 10+
           const publicPath = await (ReactNativeBlobUtil.MediaCollection as any).copyToMediaStore(
             {
               name: fileName,
-              parentFolder: '', // Root of Downloads
+              parentFolder: '',
               mimeType: config.mime,
             },
             'Download',
             filePath
           );
-          console.log('✅ Statement copied to public Downloads:', publicPath);
 
-          // Still register it in the download history for visibility
           ReactNativeBlobUtil.android.addCompleteDownload({
             title: fileName,
             description: 'Statement downloaded successfully',
@@ -193,7 +165,7 @@ const StatementScreen = () => {
             showNotification: true,
           });
         } catch (copyError) {
-          console.error('Failed to copy to MediaStore, falling back to basic scan:', copyError);
+          console.error('MediaStore copy failed', copyError);
           await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: config.mime }]);
         }
       }
@@ -216,13 +188,10 @@ const StatementScreen = () => {
     } catch (error: any) {
       console.error('Download failed', error);
       setIsDownloading(false);
-
-      // Check if it's a timeout error
       if (error.message && (error.message.includes('timeout') || error.message.includes('timed out'))) {
-        navigateToTimeoutScreen();
+        setDownloadError('timeout');
       } else {
-        // Alert.alert(t('common.error'), t('statements.downloadFailed'));
-        navigateToServerErrorScreen();
+        setDownloadError('server');
       }
     }
   };
@@ -269,12 +238,11 @@ const StatementScreen = () => {
       );
 
       const filePath = res.path();
-      console.log('✅ History statement saved to:', filePath);
 
       if (Platform.OS === 'android') {
         try {
           const mimeType = getMimeType(fileName);
-          const publicPath = await (ReactNativeBlobUtil.MediaCollection as any).copyToMediaStore(
+          await (ReactNativeBlobUtil.MediaCollection as any).copyToMediaStore(
             {
               name: fileName,
               parentFolder: '',
@@ -283,9 +251,7 @@ const StatementScreen = () => {
             'Download',
             filePath
           );
-          console.log('✅ History statement copied to public Downloads:', publicPath);
         } catch (copyError) {
-          console.error('Failed to copy history to MediaStore:', copyError);
           await ReactNativeBlobUtil.fs.scanFile([{ path: filePath }]);
         }
       }
@@ -307,9 +273,10 @@ const StatementScreen = () => {
       }
     } catch (error) {
       console.error("Download failed", error);
-      Alert.alert(t('common.error'), t('statements.downloadFailed'));
+      setIsDownloading(false);
+      setDownloadError('server');
     }
-  }, [t]);
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -318,112 +285,118 @@ const StatementScreen = () => {
         onBackPress={() => navigation.goBack()}
       />
 
-      <View style={{ paddingHorizontal: Spacing.l }}>
-        {/* Statement Type Segmented Control */}
-        <View style={[styles.segmentedControl, { backgroundColor: colors.backgroundVariant }]}>
-          <TouchableOpacity
-            style={[
-              styles.segment,
-              styles.segmentLeft,
-              {
-                backgroundColor: statementType === 'new' ? colors.primary : colors.backgroundVariant,
-              },
-            ]}
-            onPress={() => {
-              setStatementType('new');
-              setCustomDateRange({ start: '', end: '' });
-            }}
-          >
-            <CustomText
-              type={TextType.CardText}
-              style={[
-                styles.segmentText,
-                {
-                  color: statementType === 'new' ? colors.secondaryScreenBackground : colors.inverseSurface,
-                  fontWeight: '500',
-                },
-              ]}
-            >
-              {t('statements.newStatement')}
-            </CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.segment,
-              styles.segmentRight,
-              {
-                backgroundColor: statementType === 'history' ? colors.primary : colors.backgroundVariant,
-              },
-            ]}
-            onPress={() => {
-              setStatementType('history');
-              setCustomDateRange({ start: '', end: '' });
-            }}
-          >
-            <CustomText
-              type={TextType.CardText}
-              style={[
-                styles.segmentText,
-                {
-                  color: statementType === 'history' ? colors.secondaryScreenBackground : colors.inverseSurface,
-                  fontWeight: '500',
-                },
-              ]}
-            >
-              {t('statements.statementHistory')}
-            </CustomText>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {statementType === 'new' ? (
-        <>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-          >
-            <NewStatementItem
-              selectedCard={selectedCard}
-              selectedTimeRange={selectedTimeRange}
-              selectedFormat={selectedFormat}
-              onCardSelect={() => setCardSheetVisible(true)}
-              onTimeRangeChange={handleTimeRangePress}
-              onFormatChange={setSelectedFormat}
-            />
-          </ScrollView>
-          <View style={styles.bottomContainer}>
-            <TouchableOpacity
-              onPress={handleDownload}
-              disabled={!selectedCardId || isDownloading}
-              style={[
-                styles.downloadButton,
-                {
-                  backgroundColor: colors.primary,
-                  opacity: (!selectedCardId || isDownloading) ? 0.6 : 1
-                }
-              ]}
-              activeOpacity={0.7}
-            >
-              <DownloadSVG />
-              <CustomText type={TextType.ActionLabel} style={{ color: colors.onPrimary }}>{t('statements.download')}</CustomText>
-            </TouchableOpacity>
-          </View>
-        </>
+      {downloadError === 'timeout' ? (
+        <RequestTimeoutScreen onRetry={() => setDownloadError(null)} />
+      ) : downloadError === 'server' ? (
+        <CustomErrorView onRetry={() => setDownloadError(null)} />
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: Spacing.l }}>
-          <StatementHistoryList
-            cardId={selectedCardId}
-            onDownload={(item) => {
-              setIsDownloading(true);
-              handleHistoryDownload(item).finally(() => setIsDownloading(false));
-            }}
-          />
-        </View>
+        <>
+          <View style={{ paddingHorizontal: Spacing.l }}>
+            <View style={[styles.segmentedControl, { backgroundColor: colors.backgroundVariant }]}>
+              <TouchableOpacity
+                style={[
+                  styles.segment,
+                  styles.segmentLeft,
+                  {
+                    backgroundColor: statementType === 'new' ? colors.primary : colors.backgroundVariant,
+                  },
+                ]}
+                onPress={() => {
+                  setStatementType('new');
+                  setCustomDateRange({ start: '', end: '' });
+                }}
+              >
+                <CustomText
+                  type={TextType.CardText}
+                  style={[
+                    styles.segmentText,
+                    {
+                      color: statementType === 'new' ? colors.secondaryScreenBackground : colors.inverseSurface,
+                      fontWeight: '500',
+                    },
+                  ]}
+                >
+                  {t('statements.newStatement')}
+                </CustomText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.segment,
+                  styles.segmentRight,
+                  {
+                    backgroundColor: statementType === 'history' ? colors.primary : colors.backgroundVariant,
+                  },
+                ]}
+                onPress={() => {
+                  setStatementType('history');
+                  setCustomDateRange({ start: '', end: '' });
+                }}
+              >
+                <CustomText
+                  type={TextType.CardText}
+                  style={[
+                    styles.segmentText,
+                    {
+                      color: statementType === 'history' ? colors.secondaryScreenBackground : colors.inverseSurface,
+                      fontWeight: '500',
+                    },
+                  ]}
+                >
+                  {t('statements.statementHistory')}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {statementType === 'new' ? (
+            <>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+              >
+                <NewStatementItem
+                  selectedCard={selectedCard}
+                  selectedTimeRange={selectedTimeRange}
+                  selectedFormat={selectedFormat}
+                  onCardSelect={() => setCardSheetVisible(true)}
+                  onTimeRangeChange={handleTimeRangePress}
+                  onFormatChange={setSelectedFormat}
+                />
+              </ScrollView>
+              <View style={styles.bottomContainer}>
+                <TouchableOpacity
+                  onPress={handleDownload}
+                  disabled={!selectedCardId || isDownloading}
+                  style={[
+                    styles.downloadButton,
+                    {
+                      backgroundColor: colors.primary,
+                      opacity: (!selectedCardId || isDownloading) ? 0.6 : 1
+                    }
+                  ]}
+                  activeOpacity={0.7}
+                >
+                  <DownloadSVG />
+                  <CustomText type={TextType.ActionLabel} style={{ color: colors.onPrimary }}>{t('statements.download')}</CustomText>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View style={{ flex: 1, paddingHorizontal: Spacing.l }}>
+              <StatementHistoryList
+                cardId={selectedCardId}
+                onDownload={(item) => {
+                  setIsDownloading(true);
+                  handleHistoryDownload(item).finally(() => setIsDownloading(false));
+                }}
+              />
+            </View>
+          )}
+        </>
       )}
 
       <CustomLoader loading={isDownloading} title={t('loader.title')} />
 
-      {/* Bottom Sheets */}
       <CardSelectionBottomSheet
         visible={isCardSheetVisible}
         onClose={() => setCardSheetVisible(false)}
@@ -446,7 +419,6 @@ const StatementScreen = () => {
         initialEndDate={customDateRange.end}
         maxDate={new Date().toISOString().split('T')[0]}
       />
-      <CustomLoader loading={isDownloading} />
 
       <ConfirmationBottomSheet
         visible={downloadSuccessVisible}
@@ -494,17 +466,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   segmentLeft: {
-    // borderTopLeftRadius: ms(8),
-    // borderBottomLeftRadius: ms(8),
     borderRadius: ms(8),
   },
   segmentRight: {
-    // borderTopRightRadius: ms(8),
-    // borderBottomRightRadius: ms(8),
     borderRadius: ms(8),
   },
   segmentText: {
-    // Text styles handled inline for dynamic colors
   },
   bottomContainer: {
     padding: Spacing.l,
@@ -522,4 +489,3 @@ const styles = StyleSheet.create({
 });
 
 export default StatementScreen;
-

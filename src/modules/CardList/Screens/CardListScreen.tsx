@@ -346,6 +346,14 @@ export default function CardListScreen() {
           <CustomErrorView onRetry={refetch} loading={isFetching} />
         ) : (
           <>
+            {cards.length === 0 && !isLoading && !isFetching && !isError && (
+              <View style={styles.emptyContainer}>
+                <CustomText type={TextType.SectionTitle} style={styles.emptyText}>
+                  {t('cardList.NoCardsFound')}
+                </CustomText>
+              </View>
+            )}
+
             {activeCard && !isLoading && (
               <View style={styles.balanceContainer}>
                 <View
@@ -646,6 +654,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.l,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xxl * 2,
+  },
+  emptyText: {
+    textAlign: 'center',
+    opacity: 0.6,
   },
 
   actionsRow: {

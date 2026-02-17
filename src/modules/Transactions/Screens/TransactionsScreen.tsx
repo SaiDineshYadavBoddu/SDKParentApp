@@ -78,11 +78,14 @@ const TransactionsScreen = () => {
       setSearchQuery('');
       setDebouncedSearchQuery('');
       setSelectedTimeRange('lastMonth');
-      if (cards.length > 0) {
+      const targetCardId = route.params?.cardId;
+      if (targetCardId) {
+        setSelectedCardId(targetCardId);
+      } else if (cards.length > 0) {
         setSelectedCardId(cards[0].cardIdentifier);
       }
       setCustomDateRange({ start: '', end: '' });
-    }, [cards])
+    }, [cards, route.params?.cardId])
   );
 
   React.useEffect(() => {
@@ -384,7 +387,7 @@ const TransactionsScreen = () => {
           </View>
         ) : (
           <View style={styles.emptyCardContainer}>
-            <CustomText type={TextType.CardSubtitle}>No cards available to show transactions</CustomText>
+            <CustomText type={TextType.CardSubtitle}>{t('cardList.NoCardsFound')}</CustomText>
           </View>
         )}
 
