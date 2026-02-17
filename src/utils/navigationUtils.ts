@@ -3,6 +3,7 @@ import { Linking, Platform } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomImage from '../common/components/CustomImage';
 import FailureSVG from '../assets/svgs/FailureSVG';
+import RequestTimeoutSVG from '../assets/svgs/RequestTimeoutSVG';
 import { Logger } from './logger';
 import { navigate, getNavigationRef } from './navigationRefUtils';
 import { getIsAuthenticated } from '../context/AuthContext';
@@ -49,6 +50,35 @@ export const navigateToServerErrorScreen = (onRetry?: () => void) => {
       icon: React.createElement(FailureSVG, { width: ms(100), height: ms(100) }),
       title: 'serverError.title',
       description: 'serverError.description',
+      primaryButton: {
+        title: 'serverError.tryAgain',
+        onPress: async () => {
+          try {
+            if (onRetry) {
+              await onRetry();
+            }
+            if (navigationRef?.canGoBack()) {
+              navigationRef.goBack();
+            }
+          } catch (error) {
+            Logger.error('Global retry failed:', error);
+          }
+        },
+      },
+    });
+  }
+};
+
+/**
+ * Navigates to timeout screen when API request times out
+ */
+export const navigateToTimeoutScreen = (onRetry?: () => void) => {
+  const navigationRef = getNavigationRef();
+  if (navigationRef?.isReady()) {
+    navigate(getInfoScreenRoute(), {
+      icon: React.createElement(RequestTimeoutSVG, { width: ms(100), height: ms(100) }),
+      title: 'timeoutError.title',
+      description: 'timeoutError.description',
       primaryButton: {
         title: 'serverError.tryAgain',
         onPress: async () => {

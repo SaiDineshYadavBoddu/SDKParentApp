@@ -17,6 +17,7 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import CustomButton from '../../../common/components/CustomButton';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
+import CustomLoader from '../../../common/components/CustomLoader';
 import CardSelectionBottomSheet from '../../Transactions/Components/CardSelectionBottomSheet';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import { calculateDateRange } from '../../../utils/transactionUtils';
@@ -28,6 +29,23 @@ import { useNavigation } from '@react-navigation/native';
 import { API_ENDPOINTS } from '../../../network/endpoint.const';
 import { getAccessToken } from '../../../context/AuthContext';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { navigateToServerErrorScreen, navigateToTimeoutScreen } from '../../../utils/navigationUtils';
+
+const FORMAT_CONFIG: Record<string, { extension: string; mime: string }> = {
+  pdf: { extension: 'pdf', mime: 'application/pdf' },
+  csv: { extension: 'csv', mime: 'text/csv' },
+  excel: { extension: 'xlsx', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+  word: { extension: 'docx', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+};
+
+const getMimeType = (fileName: string) => {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+  if (extension === 'pdf') return 'application/pdf';
+  if (extension === 'csv') return 'text/csv';
+  if (extension === 'xlsx' || extension === 'xls' || fileName.toLowerCase().includes('excel')) return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  if (extension === 'docx' || extension === 'doc' || fileName.toLowerCase().includes('word')) return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  return 'application/octet-stream';
+};
 
 const StatementScreen = () => {
   const { t } = useTranslation();
@@ -41,7 +59,6 @@ const StatementScreen = () => {
   const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
-  const HARDCODED_CARD_ID = '22344402145871534452';
 
   const cardsData = useSelector((state: any) => state.card?.cards);
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
@@ -51,20 +68,12 @@ const StatementScreen = () => {
       setSelectedCardId(cards[0].cardIdentifier);
     } else if (cards.length === 0 && !selectedCardId) {
       // Fallback for debugging if card list API is failing
-      setSelectedCardId(HARDCODED_CARD_ID);
     }
   }, [cards, selectedCardId]);
 
   const selectedCard = useMemo(
     () => {
       const card = cards.find((c: any) => c.cardIdentifier === selectedCardId);
-      if (!card && selectedCardId === HARDCODED_CARD_ID) {
-        return {
-          cardIdentifier: HARDCODED_CARD_ID,
-          maskedPan: '223444******4452', // Placeholder based on hardcoded ID
-          cardStatus: 'Active'
-        };
-      }
       return card;
     },
     [cards, selectedCardId]
@@ -85,7 +94,8 @@ const StatementScreen = () => {
     const token = getAccessToken();
     const baseUrl = 'https://sit.corporate.un.infradev.w4.az.network.ae';
     const formatValue = selectedFormat.toUpperCase();
-    const fileName = `Statement_${selectedCardId}_${dateRange.dateFrom}_${dateRange.dateTo}.${selectedFormat}`;
+    const config = FORMAT_CONFIG[selectedFormat] || FORMAT_CONFIG.csv;
+    const fileName = `Statement_${selectedCardId}_${dateRange.dateFrom}_${dateRange.dateTo}.${config.extension}`;
 
     // POST request with query parameters (matching portal behavior)
     const params = `cardId=${selectedCardId}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
@@ -96,10 +106,18 @@ const StatementScreen = () => {
     try {
       const configWithAuth = {
         fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: false, // Handle download manually to support POST with Auth headers
+          notification: true,
+          title: fileName,
+          description: 'Downloading statement...',
+          mime: config.mime,
+          path: `${dirs.DownloadDir}/${fileName}`,
+        },
         path: Platform.OS === 'ios'
           ? `${dirs.DocumentDir}/${fileName}`
           : `${dirs.DownloadDir}/${fileName}`,
-        timeout: 15000, // 15 second timeout
+        timeout: 20000, // 20 second timeout
       };
 
       const res = await ReactNativeBlobUtil.config(configWithAuth).fetch(
@@ -133,15 +151,13 @@ const StatementScreen = () => {
 
         // Special handling for 504 Gateway Timeout
         if (responseStatus === 504) {
-          Alert.alert(
-            t('common.error'),
-            'Statement generation is taking longer than expected. Please try with a smaller date range.'
-          );
+          navigateToTimeoutScreen();
         } else {
-          Alert.alert(
-            t('common.error'),
-            `Server Error ${responseStatus}: ${errorMsg}`
-          );
+          // Alert.alert(
+          //   t('common.error'),
+          //   `Server Error ${responseStatus}: ${errorMsg}`
+          // );
+          navigateToServerErrorScreen();
         }
         return;
       }
@@ -150,7 +166,8 @@ const StatementScreen = () => {
       const filePath = res.path();
 
       if (Platform.OS === 'android') {
-        await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: selectedFormat === 'pdf' ? 'application/pdf' : 'text/csv' }]);
+        // Scans the file to make it visible in Gallery/Downloads app
+        await ReactNativeBlobUtil.fs.scanFile([{ path: filePath, mime: config.mime }]);
       }
 
       if (Platform.OS === 'ios') {
@@ -166,7 +183,7 @@ const StatementScreen = () => {
               onPress: () => {
                 ReactNativeBlobUtil.android.actionViewIntent(
                   filePath,
-                  selectedFormat === 'pdf' ? 'application/pdf' : 'text/csv'
+                  config.mime
                 );
               },
             },
@@ -178,13 +195,11 @@ const StatementScreen = () => {
       setIsDownloading(false);
 
       // Check if it's a timeout error
-      if (error.message && error.message.includes('timeout')) {
-        Alert.alert(
-          'Request Timeout',
-          'Statement generation is taking too long. Please try with a smaller date range (e.g., Last Week instead of Last Month).'
-        );
+      if (error.message && (error.message.includes('timeout') || error.message.includes('timed out'))) {
+        navigateToTimeoutScreen();
       } else {
-        Alert.alert(t('common.error'), t('statements.downloadFailed'));
+        // Alert.alert(t('common.error'), t('statements.downloadFailed'));
+        navigateToServerErrorScreen();
       }
     }
   };
@@ -207,6 +222,15 @@ const StatementScreen = () => {
     try {
       const configWithAuth = {
         fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: true,
+          mediaScannable: true,
+          title: fileName,
+          description: 'Downloading statement history...',
+          mime: getMimeType(fileName),
+          path: `${dirs.DownloadDir}/${fileName}`,
+        },
         path: Platform.OS === 'ios'
           ? `${dirs.DocumentDir}/${fileName}`
           : `${dirs.DownloadDir}/${fileName}`,
@@ -239,7 +263,7 @@ const StatementScreen = () => {
               onPress: () => {
                 ReactNativeBlobUtil.android.actionViewIntent(
                   filePath,
-                  item.fileKey?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'text/csv'
+                  getMimeType(fileName)
                 );
               },
             },
@@ -344,14 +368,8 @@ const StatementScreen = () => {
               ]}
               activeOpacity={0.7}
             >
-              {isDownloading ? (
-                <ActivityIndicator color={colors.onPrimary} />
-              ) : (
-                <>
-                  <DownloadSVG />
-                  <CustomText type={TextType.ActionLabel} style={{ color: colors.onPrimary }}>{t('statements.download')}</CustomText>
-                </>
-              )}
+              <DownloadSVG />
+              <CustomText type={TextType.ActionLabel} style={{ color: colors.onPrimary }}>{t('statements.download')}</CustomText>
             </TouchableOpacity>
           </View>
         </>
@@ -359,10 +377,15 @@ const StatementScreen = () => {
         <View style={{ flex: 1, paddingHorizontal: Spacing.l }}>
           <StatementHistoryList
             cardId={selectedCardId}
-            onDownload={handleHistoryDownload}
+            onDownload={(item) => {
+              setIsDownloading(true);
+              handleHistoryDownload(item).finally(() => setIsDownloading(false));
+            }}
           />
         </View>
       )}
+
+      <CustomLoader loading={isDownloading} title={t('loader.title')} />
 
       {/* Bottom Sheets */}
       <CardSelectionBottomSheet

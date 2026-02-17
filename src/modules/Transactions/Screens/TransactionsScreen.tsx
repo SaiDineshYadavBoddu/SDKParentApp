@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -94,6 +95,13 @@ const TransactionsScreen = () => {
     skip: !selectedCardId,
   });
 
+  // Force refetch on card or date range change
+  React.useEffect(() => {
+    if (selectedCardId) {
+      refetch();
+    }
+  }, [selectedCardId, selectedTimeRange, customDateRange, refetch]);
+
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
 
@@ -109,7 +117,7 @@ const TransactionsScreen = () => {
           description={t('transactions.errorLoading')}
           onRetry={refetch}
         />
-        <CustomLoader loading={isFetching} />
+        {/* <CustomLoader loading={isFetching} /> */}
       </View>
     );
   }
@@ -121,7 +129,7 @@ const TransactionsScreen = () => {
           title={t('transactions.title')}
         />
         <RequestTimeoutScreen onRetry={refetch} />
-        <CustomLoader loading={isFetching} />
+        {/* <CustomLoader loading={isFetching} /> */}
       </View>
     );
   }
@@ -166,6 +174,15 @@ const TransactionsScreen = () => {
     );
   };
 
+  const renderFooter = () => {
+    if (!isFetching) return null;
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator size="small" color={colors.primary} />
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
@@ -183,6 +200,7 @@ const TransactionsScreen = () => {
         keyExtractor={(item, index) => `${item.transactionRefId}-${index}`}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
         contentContainerStyle={styles.scrollContent}
         ListHeaderComponent={
           <>
@@ -263,7 +281,10 @@ const TransactionsScreen = () => {
         onClose={() => setCardSheetVisible(false)}
         cards={cards}
         selectedCardId={selectedCardId}
-        onSelect={setSelectedCardId}
+        onSelect={(id) => {
+          setSelectedCardId(id);
+          setCardSheetVisible(false);
+        }}
       />
       <CustomDatePicker
         visible={isDatePickerVisible}
@@ -377,6 +398,10 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
     paddingTop: ms(40),
+  },
+  footerLoader: {
+    paddingVertical: Spacing.m,
+    alignItems: 'center',
   },
 });
 

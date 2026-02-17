@@ -28,14 +28,6 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
 }) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
-    const [tempSelectedId, setTempSelectedId] = React.useState(selectedCardId);
-
-    React.useEffect(() => {
-        if (visible) {
-            setTempSelectedId(selectedCardId);
-        }
-    }, [visible, selectedCardId]);
-
     return (
         <CustomBottomSheet
             visible={visible}
@@ -46,12 +38,12 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                 {cards.map((card) => (
                     <TouchableOpacity
                         key={card.cardIdentifier}
-                        onPress={() => setTempSelectedId(card.cardIdentifier)}
+                        onPress={() => onSelect(card.cardIdentifier)}
                         style={[
                             styles.cardItem,
                             {
-                                borderColor: tempSelectedId === card.cardIdentifier ? colors.primary : colors.outline,
-                                borderWidth: tempSelectedId === card.cardIdentifier ? ms(1.5) : ms(1),
+                                borderColor: selectedCardId === card.cardIdentifier ? colors.primary : colors.outline,
+                                borderWidth: selectedCardId === card.cardIdentifier ? ms(1.5) : ms(1),
                             },
                         ]}
                     >
@@ -64,21 +56,11 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                             <CustomText type={TextType.CardTitle}>{formatMaskedCardNumber(card.maskedPan)}</CustomText>
                         </View>
                         <CustomRadioButton
-                            selected={tempSelectedId === card.cardIdentifier}
-                            onPress={() => setTempSelectedId(card.cardIdentifier)}
+                            selected={selectedCardId === card.cardIdentifier}
+                            onPress={() => onSelect(card.cardIdentifier)}
                         />
                     </TouchableOpacity>
                 ))}
-
-                <CustomButton
-                    title={t('common.select')}
-                    uppercase={false}
-                    onPress={() => {
-                        onSelect(tempSelectedId);
-                        onClose();
-                    }}
-                    style={styles.selectButton}
-                />
             </View>
         </CustomBottomSheet>
     );
@@ -99,10 +81,6 @@ const styles = StyleSheet.create({
     cardInfo: {
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    selectButton: {
-        marginTop: Spacing.m,
-        width: '100%',
     },
 });
 

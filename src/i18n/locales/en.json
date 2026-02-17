@@ -168,7 +168,7 @@
   "transactions": {
     "title": "Transactions",
     "selectCard": "Select card",
-    "searchPlaceholder": "Search for a transaction",
+    "searchPlaceholder": "Merchant Name, Transaction Id",
     "filters": "Filters",
     "selectDateRange": "Select a date range",
     "transactionStatus": "Transaction Status",
