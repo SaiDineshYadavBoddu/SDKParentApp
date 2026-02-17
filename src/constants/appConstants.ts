@@ -35,7 +35,8 @@ export const FREEZE_CARD_REASONS = [
 
 export const TOPICS = ['general', 'portal', 'tariffs', 'card_service', 'transaction', 'others'];
 
-export const TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
+export const TRANSACTIONS_TIME_RANGES = ['thisMonth', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
+export const STATEMENTS_TIME_RANGES = ['lastWeek', 'lastMonth', 'last3Months', 'thisYear', 'custom'];
 
 export const CARD_STATUS = {
   PENDING_ACTIVATION: 'Pending Activation',

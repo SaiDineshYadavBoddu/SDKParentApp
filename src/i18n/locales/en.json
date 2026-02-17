@@ -178,6 +178,7 @@
     "applyFilters": "Apply Filters",
     "reset": "Reset",
     "timeRanges": {
+      "lastWeek": "Last week",
       "thisMonth": "This month",
       "lastMonth": "Last month",
       "last3Months": "Last 3 months",
@@ -525,6 +526,7 @@
       "lastWeek": "Last week",
       "lastMonth": "Last month",
       "last3Months": "Last 3 months",
+      "thisYear": "This year",
       "custom": "Custom"
     },
     "formats": {
