@@ -530,7 +530,7 @@ export default function CardListScreen() {
         )}
       </ScrollView>
       <CustomLoader
-        loading={isFocused && (isLoading || (isFetching && !isManualRefresh && (!data || data.content.length === 0))) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
+        loading={(isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
       />
 
       <ConfirmationBottomSheet
