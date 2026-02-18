@@ -335,7 +335,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                 <View style={styles.detailsGrid}>
                                     {detailsFields.map((item, index) => (
                                         <View key={index} style={styles.gridItem}>
-                                            <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]}>
+                                            <CustomText type={TextType.Label} style={[styles.gridLabel, { color: colors.tertiaryText }]} selectable>
                                                 {item.label}:
                                             </CustomText>
                                             <ScrollView
@@ -343,7 +343,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
                                                 showsHorizontalScrollIndicator={false}
                                                 style={styles.gridValueScroll}
                                             >
-                                                <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]}>
+                                                <CustomText type={TextType.Label} style={[styles.gridValue, { color: colors.onBackground }]} selectable>
                                                     {item.value}
                                                 </CustomText>
                                             </ScrollView>

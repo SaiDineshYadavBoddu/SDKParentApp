@@ -25,7 +25,7 @@ const LimitProgress = ({ label, spent, total, currency }: { label: string, spent
             <View style={styles.limitHeader}>
                 <CustomText type={TextType.CardTitle}>{label}</CustomText>
                 <CustomText type={TextType.CardText}>
-                    {isUnlimited ? `Remaining: Unlimited` : `Remaining: ${remaining.toLocaleString('en-IN')}`}
+                    {isUnlimited ? `Remaining: Unlimited` : `Remaining: ${remaining.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
                 </CustomText>
             </View>
             <View style={[styles.progressBarContainer, { backgroundColor: '#F0F0F0' }]}>
@@ -35,11 +35,11 @@ const LimitProgress = ({ label, spent, total, currency }: { label: string, spent
                 <CustomText type={TextType.CardText}>0</CustomText>
                 {spent > 0 && (
                     <CustomText type={TextType.CardText}>
-                        {spent.toLocaleString('en-IN')}
+                        {spent.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </CustomText>
                 )}
                 <CustomText type={TextType.CardText}>
-                    {isUnlimited ? `Unlimited` : total.toLocaleString('en-IN')}
+                    {isUnlimited ? `Unlimited` : total.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </CustomText>
             </View>
         </View>

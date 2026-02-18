@@ -2,6 +2,8 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { ms } from 'react-native-size-matters';
+
+const CARD_ASPECT_RATIO = 1.586; // Standard card (85.60 × 53.98 mm)
 import CustomText, { TextType } from './CustomText';
 import CustomImage from './CustomImage';
 import { Spacing } from '../../theme/spacing';
@@ -48,6 +50,8 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
 }) => {
   const { colors } = useTheme();
   const scaledTranslate = ms(40);
+  const minCardHeight = ms(200);
+  const cardHeight = Math.max(minCardHeight, cardWidth / CARD_ASPECT_RATIO);
 
   const formatPAN = (pan?: string) => {
     if (!pan) return '**** **** **** ****';
@@ -104,6 +108,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
       <Animated.View
         style={[
           styles.card,
+          { height: cardHeight },
           animatedStyle,
         ]}
       >
@@ -196,7 +201,6 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: ms(16),
     overflow: 'hidden',
-    height: ms(200),
     width: '100%',
   },
   toggle: {

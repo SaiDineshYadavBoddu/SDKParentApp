@@ -67,7 +67,6 @@ const TransactionsScreen = () => {
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
 
   const [selectedCardId, setSelectedCardId] = useState<string>(initialCardId || '');
-  const isInitialParamConsumed = useRef(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -77,10 +76,8 @@ const TransactionsScreen = () => {
       setCustomDateRange({ start: '', end: '' });
 
       const targetCardId = route.params?.cardId;
-      if (targetCardId && !isInitialParamConsumed.current) {
+      if (targetCardId) {
         setSelectedCardId(targetCardId);
-        isInitialParamConsumed.current = true;
-        // Navigation params persist, so we clear them conceptually via the ref
       } else if (!selectedCardId && cards.length > 0) {
         setSelectedCardId(cards[0].cardIdentifier);
       }
@@ -381,6 +378,7 @@ const TransactionsScreen = () => {
         cards={cards}
         selectedCardId={selectedCardId}
         onSelect={(id) => {
+          navigation.setParams({ cardId: undefined });
           setPageNumber(0);
           setSelectedCardId(id);
           setCardSheetVisible(false);

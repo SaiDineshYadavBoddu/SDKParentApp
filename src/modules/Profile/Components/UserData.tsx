@@ -6,7 +6,6 @@ import SectionContainer, {
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { useGetUserDetailsQuery } from '../../../network/profile/profile.api';
-import { formatPhoneNumber } from '../../../utils/userUtils';
 
 export default function UserData() {
   const { colors } = useTheme();
@@ -45,7 +44,11 @@ export default function UserData() {
           type={TextType.CardText}
           style={[styles.details, { color: colors.secondaryText }]}
         >
-          {userDetails?.contactDetails?.mobilePhone || ''}
+          {userDetails?.contactDetails?.mobilePhone
+            ? (userDetails.contactDetails.mobilePhone.startsWith('+')
+                ? userDetails.contactDetails.mobilePhone
+                : `+${userDetails.contactDetails.mobilePhone}`)
+            : ''}
         </CustomText>
       </ScrollView>
       <ScrollView

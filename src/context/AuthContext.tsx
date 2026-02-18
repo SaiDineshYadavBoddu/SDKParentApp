@@ -243,6 +243,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
 
+      // Check access token for cardholder role; show access restricted if not
+      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
+      setIsCardholder(hasCardholderRole);
+      globalIsCardholder = hasCardholderRole;
+
       // Extract and store updated bank claims
       globalBankCode = getBankCode(result.accessToken);
       globalBankId = getBankId(result.accessToken);

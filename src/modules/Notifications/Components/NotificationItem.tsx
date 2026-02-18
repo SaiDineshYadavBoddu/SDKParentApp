@@ -117,10 +117,10 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
       activeOpacity={0.8}
     >
       <View style={styles.content}>
-        {/* Line 1: ID and Date */}
+        {/* Line 1: Title and Date */}
         <View style={styles.headerRow}>
-          <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.secondaryText }}>
-            {item.id}
+          <CustomText type={TextType.Label} style={[styles.title, styles.titleInRow]}>
+            {item.title}
           </CustomText>
           <View style={styles.rightInfo}>
             <CustomText type={TextType.ScreenDisplaySmall} style={{ color: colors.secondaryText }}>
@@ -129,11 +129,6 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ item, onPress, onVi
             {!item.isRead && <View style={[styles.unreadDot, { backgroundColor: colors.statusResolved }]} />}
           </View>
         </View>
-
-        {/* Line 2: Message */}
-        <CustomText type={TextType.Label} style={styles.title}>
-          {item.title}
-        </CustomText>
 
         {/* Line 3: Badge and View Request */}
         <View style={styles.footerRow}>
@@ -176,7 +171,12 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: Spacing.s,
+  },
+  titleInRow: {
+    width: '70%',
+    marginBottom: 0,
   },
   rightInfo: {
     flexDirection: 'row',

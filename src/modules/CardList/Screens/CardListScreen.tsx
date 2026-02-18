@@ -186,13 +186,13 @@ export default function CardListScreen() {
 
   const dateRange = React.useMemo(() => calculateDateRange('lastMonth'), []);
 
-  const { data: transactionsData, isLoading: isTxnLoading } = useGetTransactionsQuery({
+  const { data: transactionsData, isLoading: isTxnLoading, isFetching: isTxnFetching } = useGetTransactionsQuery({
     cardId: activeCard?.cardIdentifier,
     pageSize: 5,
     pageNumber: 0,
     ...dateRange,
   }, {
-    skip: isLoading || !activeCard?.cardIdentifier
+    skip: isLoading || !activeCard?.cardIdentifier || isCardPendingActivation(activeCard?.cardStatus)
   });
   // Card status checks
   const isBlocked = isCardBlocked(activeCard?.cardStatus);
@@ -522,7 +522,7 @@ export default function CardListScreen() {
                   }}
                   items={transactionItems}
                   emptyMessage={t('cardList.noTransactions')}
-                  loading={isTxnLoading}
+                  loading={isTxnLoading || isTxnFetching}
                 />
               </View>
             )}
@@ -530,7 +530,7 @@ export default function CardListScreen() {
         )}
       </ScrollView>
       <CustomLoader
-        loading={(isLoading || (isFetching && !isManualRefresh)) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
+        loading={(isLoading || (isFetching && !isManualRefresh) || isTxnLoading || isTxnFetching) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
       />
 
       <ConfirmationBottomSheet
