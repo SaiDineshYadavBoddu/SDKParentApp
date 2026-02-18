@@ -26,7 +26,7 @@ interface AuthContextData {
   idToken: string | null;
   refreshToken: string | null;
   expirationDate: string | null;
-  refreshAccessToken: () => Promise<void>;
+  refreshAccessToken: () => Promise<boolean>;
   sessionExpired: boolean;
   setSessionExpired: (value: boolean) => void;
   isCardholder: boolean;
@@ -59,7 +59,7 @@ const AuthContext = createContext<AuthContextData>({
   idToken: null,
   refreshToken: null,
   expirationDate: null,
-  refreshAccessToken: async () => { },
+  refreshAccessToken: async () => false,
   sessionExpired: false,
   setSessionExpired: () => { },
   isCardholder: false,
@@ -262,7 +262,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const refreshAccessToken = async () => {
+  const refreshAccessToken = async (): Promise<boolean> => {
     try {
       if (refreshToken) {
         const result = await refresh(keycloakConfig as AuthConfiguration, {
@@ -279,11 +279,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         globalBankCode = getBankCode(result.accessToken);
         globalBankId = getBankId(result.accessToken);
         globalRole = getRole(result.accessToken);
+        return true;
       }
+      return false;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      // If refresh fails, sign out
       signOut();
+      return false;
     }
   };
 

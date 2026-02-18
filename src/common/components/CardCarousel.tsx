@@ -211,7 +211,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         ref={flatListRef}
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.cardIdentifier}
+        keyExtractor={(item, index) => `${item.cardIdentifier ?? 'card'}-${index}`}
         initialScrollIndex={selectedIndex && selectedIndex > 0 ? selectedIndex : undefined}
         horizontal
         showsHorizontalScrollIndicator={false}

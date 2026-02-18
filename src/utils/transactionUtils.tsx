@@ -53,10 +53,10 @@ export const getFormattedTransaction = (txn: any, colors: any) => {
  * @param transactions Array of transaction objects from the API.
  */
 export const mapTransactionsToSectionItems = (transactions: any[], colors: any): SectionItem[] => {
-    return transactions.map((txn) => {
+    return transactions.map((txn, index) => {
         const { amountDisplay, color, displayName } = getFormattedTransaction(txn, colors);
         return {
-            id: txn.transactionRefId,
+            id: `${txn.transactionRefId ?? 'txn'}-${index}`,
             top: (
                 <>
                     <CustomText type={TextType.CardTitle}>{displayName}</CustomText>

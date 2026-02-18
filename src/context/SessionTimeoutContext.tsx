@@ -2,15 +2,23 @@ import React, { createContext, useState, useContext, ReactNode, useEffect, useRe
 import { AppState, AppStateStatus } from 'react-native';
 import { useAuth } from './AuthContext';
 import SessionTimeoutModal from '../common/components/SessionTimeoutModal';
+import { recordActivity, isInactiveForThreshold } from '../utils/sessionActivity';
 
 // Constants
 const SHOW_MODAL_BEFORE_EXPIRY = 60; // Show modal 1 minute before expiry
 
-// Global function for external use (api.config 401 handling)
+// Global functions for external use (api.config 401 handling)
 let globalExpireSession: (() => Promise<void>) | null = null;
+let globalTrySilentRefresh: (() => Promise<boolean>) | null = null;
 
 export const expireSession = async () => {
     if (globalExpireSession) await globalExpireSession();
+};
+
+/** Try to refresh the access token silently. Returns true if refresh succeeded. */
+export const trySilentRefresh = async (): Promise<boolean> => {
+    if (globalTrySilentRefresh) return globalTrySilentRefresh();
+    return false;
 };
 
 
@@ -55,13 +63,15 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         await signOut();
     }, [clearTimers, signOut, setSessionExpired]);
 
-    // Expose expireSessionImpl globally
+    // Expose expireSessionImpl and trySilentRefresh globally
     useEffect(() => {
         globalExpireSession = expireSessionImpl;
+        globalTrySilentRefresh = async () => await refreshAccessToken();
         return () => {
             globalExpireSession = null;
+            globalTrySilentRefresh = null;
         };
-    }, [expireSessionImpl]);
+    }, [expireSessionImpl, refreshAccessToken]);
 
     // Start session timers
     const startTimers = useCallback(() => {
@@ -81,19 +91,28 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         const screenTimeout = timeUntilExpiry;
 
         if (modalTimeout > 0) {
-            modalTimerRef.current = setTimeout(() => {
-                setIsModalVisible(true);
-                setRemainingTime(SHOW_MODAL_BEFORE_EXPIRY);
+            modalTimerRef.current = setTimeout(async () => {
+                if (isInactiveForThreshold()) {
+                    setIsModalVisible(true);
+                    setRemainingTime(SHOW_MODAL_BEFORE_EXPIRY);
+                } else {
+                    clearTimers();
+                    await refreshAccessToken();
+                }
             }, modalTimeout);
         } else {
-            // Already within 1 minute of expiry
-            const initialRemaining = Math.max(0, Math.floor(timeUntilExpiry / 1000));
-            setRemainingTime(initialRemaining);
-            setIsModalVisible(true);
+            if (isInactiveForThreshold()) {
+                const initialRemaining = Math.max(0, Math.floor(timeUntilExpiry / 1000));
+                setRemainingTime(initialRemaining);
+                setIsModalVisible(true);
+            } else {
+                clearTimers();
+                refreshAccessToken();
+            }
         }
 
         screenTimerRef.current = setTimeout(() => expireSessionImpl(true), screenTimeout);
-    }, [clearTimers, expireSessionImpl, expirationDate]);
+    }, [clearTimers, expireSessionImpl, expirationDate, refreshAccessToken]);
 
     useEffect(() => {
         if (isModalVisible) {
@@ -123,6 +142,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
     useEffect(() => {
         const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
             if (nextAppState === 'active' && isAuthenticated) {
+                recordActivity();
                 console.log('🚀 ~ App returned to foreground, recalculating timers...');
                 startTimers();
             }
@@ -135,6 +155,7 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
 
     useEffect(() => {
         if (isAuthenticated) {
+            recordActivity();
             startTimers();
         } else {
             clearTimers();

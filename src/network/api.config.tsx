@@ -7,10 +7,10 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
 import { getAccessToken } from '../context/AuthContext';
-import { expireSession } from '../context/SessionTimeoutContext';
+import { expireSession, trySilentRefresh } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
 import { generateTraceparent } from '../utils/tracingUtils';
-
+import { recordActivity, getInactivityMs, INACTIVITY_THRESHOLD_MS } from '../utils/sessionActivity';
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 const dynamicBaseQuery: BaseQueryFn<
@@ -18,6 +18,7 @@ const dynamicBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, WebApi, extraOptions) => {
+  recordActivity();
   const traceparent = generateTraceparent();
   const rawBaseQuery = fetchBaseQuery({
     baseUrl: 'https://sit.corporate.un.infradev.w4.az.network.ae',
@@ -52,6 +53,13 @@ const baseQueryWithReauth: BaseQueryFn<
   Logger.log(`API Response: [${method}] ${url}`, result);
 
   if (result.error && result.error.status === 401) {
+    const inactivityMs = getInactivityMs();
+    if (inactivityMs < INACTIVITY_THRESHOLD_MS) {
+      const refreshed = await trySilentRefresh();
+      if (refreshed) {
+        return dynamicBaseQuery(args, api, extraOptions);
+      }
+    }
     await expireSession();
   } else if (result.error && result.error.status === 'TIMEOUT_ERROR') {
     Logger.error(`API Timeout: [${method}] ${url}`, result.error);
