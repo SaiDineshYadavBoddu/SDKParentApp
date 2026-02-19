@@ -8,6 +8,7 @@ import {
   StyleProp,
   ViewStyle,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from './CustomText';
@@ -43,6 +44,8 @@ interface Props {
   ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
   emptyMessage?: string;
   loading?: boolean;
+  /** When true, show a small inline ActivityIndicator instead of full-screen CustomLoader */
+  useInlineLoader?: boolean;
 }
 
 export default function SectionContainer({
@@ -56,6 +59,7 @@ export default function SectionContainer({
   ItemSeparatorComponent,
   emptyMessage,
   loading,
+  useInlineLoader = false,
 }: Props) {
   const { colors } = useTheme();
 
@@ -99,8 +103,12 @@ export default function SectionContainer({
         scrollEnabled={false}
         ListEmptyComponent={
           loading ? (
-            <View style={styles.emptyContainer}>
-              <CustomLoader loading={true} />
+            <View style={[styles.emptyContainer, useInlineLoader && styles.inlineLoaderContainer]}>
+              {useInlineLoader ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <CustomLoader loading={true} />
+              )}
             </View>
           ) : (
             ListEmptyComponent ??
@@ -157,6 +165,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing.m,
+  },
+  inlineLoaderContainer: {
+    minHeight: ms(80),
   },
   emptyText: {
     textAlign: 'center',

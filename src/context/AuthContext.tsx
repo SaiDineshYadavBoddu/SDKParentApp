@@ -229,6 +229,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   const changeCompany = async () => {
+    setIsLoading(true);
+    // Defer Keycloak so the loading view paints first and we never show Profile during transition
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
     try {
       const result = await authorize({
         ...keycloakConfig,
@@ -237,21 +242,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       } as AuthConfiguration);
       console.log('Change company success:', result);
+
+      // Set cardholder role first, then tokens, then loading false in one batch so navigator never shows MainStack with old role
+      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
+      setIsCardholder(hasCardholderRole);
+      globalIsCardholder = hasCardholderRole;
+
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
 
-      // Check access token for cardholder role; show access restricted if not
-      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
-      setIsCardholder(hasCardholderRole);
-      globalIsCardholder = hasCardholderRole;
-
-      // Extract and store updated bank claims
       globalBankCode = getBankCode(result.accessToken);
       globalBankId = getBankId(result.accessToken);
       globalRole = getRole(result.accessToken);
+
+      setIsLoading(false);
     } catch (error) {
       if (error instanceof Error &&
         (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
@@ -259,6 +266,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         console.error('Change company failed:', error);
       }
+      setIsLoading(false);
     }
   };
 

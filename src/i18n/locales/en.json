@@ -1,5 +1,6 @@
 {
   "common": {
+    "goBack": "Go back",
     "done": "Done",
     "submit": "Submit",
     "confirm": "Confirm",

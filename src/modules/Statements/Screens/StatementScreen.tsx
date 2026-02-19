@@ -285,9 +285,9 @@ const StatementScreen = () => {
       />
 
       {downloadError === 'timeout' ? (
-        <RequestTimeoutScreen onRetry={() => setDownloadError(null)} />
+        <RequestTimeoutScreen onGoBack={() => setDownloadError(null)} />
       ) : downloadError === 'server' ? (
-        <CustomErrorView onRetry={() => setDownloadError(null)} />
+        <CustomErrorView onGoBack={() => setDownloadError(null)} />
       ) : (
         <>
           <View style={{ paddingHorizontal: Spacing.l }}>

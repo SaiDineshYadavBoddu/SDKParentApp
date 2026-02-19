@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../theme/ThemeProvider';
 import CustomText, { TextType } from './CustomText';
 import CustomButton from './CustomButton';
@@ -9,11 +10,15 @@ import { moderateScale } from 'react-native-size-matters';
 const { width } = Dimensions.get('window');
 
 interface RequestTimeoutScreenProps {
-    onRetry: () => void;
+    onRetry?: () => void;
+    /** When set, shows "Go back" instead of "Try Again" and calls this. */
+    onGoBack?: () => void;
 }
 
-const RequestTimeoutScreen = ({ onRetry }: RequestTimeoutScreenProps) => {
+const RequestTimeoutScreen = ({ onRetry, onGoBack }: RequestTimeoutScreenProps) => {
     const { colors } = useTheme();
+    const { t } = useTranslation();
+    const useGoBack = Boolean(onGoBack);
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -30,8 +35,8 @@ const RequestTimeoutScreen = ({ onRetry }: RequestTimeoutScreenProps) => {
             </View>
             <View style={styles.buttonContainer}>
                 <CustomButton
-                    title="Try Again"
-                    onPress={onRetry}
+                    title={useGoBack ? t('common.goBack') : t('common.tryAgain')}
+                    onPress={useGoBack ? onGoBack! : onRetry!}
                 />
             </View>
         </View>

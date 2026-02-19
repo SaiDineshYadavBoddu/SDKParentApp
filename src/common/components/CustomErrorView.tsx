@@ -11,7 +11,9 @@ import FailureSVG from '../../assets/svgs/FailureSVG';
 interface Props {
     title?: string;
     description?: string;
-    onRetry: () => void;
+    onRetry?: () => void;
+    /** When set, shows "Go back" instead of "Try Again" and calls this. */
+    onGoBack?: () => void;
     loading?: boolean;
 }
 
@@ -19,10 +21,12 @@ export default function CustomErrorView({
     title = 'serverError.title',
     description = 'serverError.description',
     onRetry,
+    onGoBack,
     loading = false,
 }: Props) {
     const { colors } = useTheme();
     const { t } = useTranslation();
+    const useGoBack = Boolean(onGoBack);
 
     return (
         <View style={styles.container}>
@@ -45,8 +49,8 @@ export default function CustomErrorView({
             </View>
             <View style={styles.footer}>
                 <CustomButton
-                    title={t('serverError.tryAgain')}
-                    onPress={onRetry}
+                    title={useGoBack ? t('common.goBack') : t('serverError.tryAgain')}
+                    onPress={useGoBack ? onGoBack! : onRetry!}
                     loading={loading}
                     uppercase={false}
                     style={styles.button}

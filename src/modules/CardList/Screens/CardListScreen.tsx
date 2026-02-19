@@ -85,9 +85,10 @@ export default function CardListScreen() {
     onConfirm: () => { },
   });
 
-  const { data, isLoading, refetch, isError, isFetching, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
+  const { data, isLoading, refetch, isError, isFetching, isUninitialized, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
   });
+  const cardsLoaderVisible = isUninitialized || isLoading;
 
   const onRefresh = React.useCallback(async () => {
     setIsManualRefresh(true);
@@ -523,6 +524,7 @@ export default function CardListScreen() {
                   items={transactionItems}
                   emptyMessage={t('cardList.noTransactions')}
                   loading={isTxnLoading || isTxnFetching}
+                  useInlineLoader
                 />
               </View>
             )}
@@ -530,7 +532,7 @@ export default function CardListScreen() {
         )}
       </ScrollView>
       <CustomLoader
-        loading={(isLoading || (isFetching && !isManualRefresh) || isTxnLoading || isTxnFetching) && !alertConfig.visible && !showUnblockConfirm && !isActivating}
+        loading={cardsLoaderVisible && !alertConfig.visible && !showUnblockConfirm && !isActivating}
       />
 
       <ConfirmationBottomSheet

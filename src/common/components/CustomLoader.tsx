@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
   Easing,
+  Platform,
 } from 'react-native';
 import { ms } from 'react-native-size-matters';
 import CustomText, { TextType } from './CustomText';
@@ -89,7 +90,7 @@ const CustomLoader: React.FC<CustomLoaderProps> = ({
   return (
     <Modal
       transparent={true}
-      animationType="fade"
+      animationType={Platform.OS === 'ios' ? 'none' : 'fade'}
       visible={loading}
       onRequestClose={() => { }}
       statusBarTranslucent={true}
