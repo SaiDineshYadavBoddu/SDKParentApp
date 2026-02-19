@@ -131,8 +131,6 @@ export const calculateDateRange = (
     const to = new Date(today);
     const from = new Date(today);
 
-    console.log(`calculateDateRange called with: ${timeRange}`);
-
     switch (timeRange) {
         case 'lastWeek':
             // 7 days ago to today
@@ -171,7 +169,6 @@ export const calculateDateRange = (
         dateFrom: formatToISODate(from),
         dateTo: formatToISODate(to),
     };
-    console.log(`calculated result:`, result);
     return result;
 };
 

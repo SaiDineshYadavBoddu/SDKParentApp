@@ -127,15 +127,6 @@ export default function CardListScreen() {
     if (cards.length > 0) {
       if (paramCardId) {
         const targetId = String(paramCardId);
-        console.log('🔍 CardList Matching Debug:', {
-          targetId,
-          cardsInList: cards.map((c: any) => ({
-            id: c.id,
-            cardIdentifier: c.cardIdentifier,
-            maskedPan: c.maskedPan
-          }))
-        });
-
         // Always try to set active card ID from params if it's there
         if (String(activeCardId) !== targetId) {
           setActiveCardId(paramCardId);
@@ -148,7 +139,6 @@ export default function CardListScreen() {
             String(c.maskedPan) === targetId ||
             String(c.id) === targetId;
 
-          if (match) console.log('✅ Found Match at index:', cards.indexOf(c));
           return match;
         });
 
@@ -157,7 +147,6 @@ export default function CardListScreen() {
           navigation.setParams({ cardId: undefined });
         } else {
           // If not found, show error and clear param
-          console.log('❌ No match found for targetId:', targetId);
           // Small delay to ensure navigation transition is complete
           setTimeout(() => {
             setAlertConfig({
@@ -358,7 +347,7 @@ export default function CardListScreen() {
           <CustomErrorView onRetry={refetch} loading={isFetching} />
         ) : (
           <>
-            {cards.length === 0 && !isLoading && !isFetching && !isError && (
+            {cards.length === 0 && !isLoading && !isFetching && !isError && !isUninitialized && (
               <View style={styles.emptyContainer}>
                 <CustomText type={TextType.SectionTitle} style={styles.emptyText}>
                   {t('cardList.NoCardsFound')}

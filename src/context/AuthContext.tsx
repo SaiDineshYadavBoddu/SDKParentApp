@@ -96,7 +96,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // If user moves app to background, we preserve the session
       // to permit returning to it later. Accuracy is handled by SessionTimeoutContext.
       if (nextAppState === 'background' && isAuthenticated) {
-        console.log('🚀 ~ App moved to background, session preserved.');
       }
     });
 
@@ -124,7 +123,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Only reset if we had previous claims and they are different from current
       if (prevClaimsRef.current && prevClaimsRef.current !== currentClaims) {
-        console.log('🚀 ~ Auth context changed (Bank/Role), resetting API state...');
         dispatch(backendApi.util.resetApiState());
       }
 
@@ -143,7 +141,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           prompt: 'login select_account',
         } as any,
       } as AuthConfiguration);
-      console.log('Login success:', result);
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
@@ -158,7 +155,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       globalBankCode = getBankCode(result.accessToken);
       globalBankId = getBankId(result.accessToken);
       globalRole = getRole(result.accessToken);
-      console.log('🚀 ~ Bank Claims - bankCode:', globalBankCode, 'bankId:', globalBankId, 'role:', globalRole);
 
       setIsAuthenticated(true);
       globalIsAuthenticated = true;
@@ -206,7 +202,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           kc_action: 'UPDATE_PASSWORD',
         },
       } as AuthConfiguration);
-      console.log('Change password success:', result);
       setAccessToken(result.accessToken);
       globalAccessToken = result.accessToken;
       setIdToken(result.idToken);
@@ -220,7 +215,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       if (error instanceof Error &&
         (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
-        console.log('User cancelled password update');
       } else {
         console.error('Change password failed:', error);
       }
@@ -241,7 +235,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           kc_action: 'NI_ADMIN_COMPANY_SELECT',
         },
       } as AuthConfiguration);
-      console.log('Change company success:', result);
 
       // Set cardholder role first, then tokens, then loading false in one batch so navigator never shows MainStack with old role
       const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
@@ -262,7 +255,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       if (error instanceof Error &&
         (error.message === 'User cancelled' || error.message.includes('User cancelled flow'))) {
-        console.log('User cancelled company update');
       } else {
         console.error('Change company failed:', error);
       }
@@ -276,7 +268,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const result = await refresh(keycloakConfig as AuthConfiguration, {
           refreshToken: refreshToken,
         });
-        console.log('Token refresh success:', result);
         setAccessToken(result.accessToken);
         globalAccessToken = result.accessToken;
         setIdToken(result.idToken);

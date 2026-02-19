@@ -135,8 +135,6 @@ const NotificationsScreen = () => {
       }));
   }, [notifications]);
 
-  console.log(groupedNotifications, 'groupedNotifications')
-
   const hasUnread = useMemo(
     () => notifications.some(n => !n.isRead),
     [notifications],

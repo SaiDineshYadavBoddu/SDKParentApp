@@ -8,3 +8,14 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# NI Card Management SDK – data-binding BR class referenced at runtime
+-dontwarn ae.network.nicardmanagementsdk.BR
+-keep class ae.network.nicardmanagementsdk.BR { *; }
+-keep class ae.network.nicardmanagementsdk.databinding.** { *; }
+
+# OkHttp / react-native-ssl-pinning
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-keep class okhttp3.** { *; }
+-keep class okio.** { *; }

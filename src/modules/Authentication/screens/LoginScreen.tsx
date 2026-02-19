@@ -80,7 +80,6 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    console.log('Login pressed');
     await signIn();
   };
 

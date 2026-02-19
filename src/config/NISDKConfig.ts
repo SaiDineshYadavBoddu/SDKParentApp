@@ -21,8 +21,6 @@ const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string, actionToken?: string) => {
   const traceparent = getTraceparent();
-  Logger.log('🚀 ~ NI SDK ROOT_URL:', ROOT_URL);
-  Logger.log('🚀 ~ NI SDK traceparent:', traceparent);
 
   const headers: any = {
     "apiuat_za_network_global": "qWyQt3D44Upner1T",
@@ -41,7 +39,6 @@ const connectionProperties = (token: string, actionToken?: string) => {
 };
 
 export const TEST_INPUT = (token: string, CardId: string, bankCode: string, actionToken?: string) => {
-  Logger.log('🚀 ~ NI SDK bankCode:', bankCode);
   return {
     bankCode: bankCode,
     cardIdentifierId: CardId,

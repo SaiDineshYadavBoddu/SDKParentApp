@@ -146,22 +146,7 @@ export const cardApi = backendApi.injectEndpoints({
         url: API_ENDPOINTS.GET_STATEMENT_DOWNLOAD,
         method: 'GET',
         params: { statementName },
-        responseHandler: (response) => response.blob(),
       }),
-      transformResponse: async (response: Blob) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-              resolve(reader.result);
-            } else {
-              reject(new Error('Failed to convert blob to base64'));
-            }
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(response);
-        });
-      },
     }),
   }),
 });

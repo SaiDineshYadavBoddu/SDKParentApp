@@ -14,7 +14,6 @@ export const decodeJWT = (token: string): any => {
 
 export const hasRole = (token: string, roleName: string, clientName: string): boolean => {
     const decoded = decodeJWT(token);
-    console.log('decoded', decoded);
     if (!decoded) return false;
 
     // Check resource_access for the specific client roles

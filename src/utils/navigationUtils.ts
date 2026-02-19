@@ -61,7 +61,6 @@ export const navigateToServerErrorScreen = (onRetry?: () => void) => {
               navigationRef.goBack();
             }
           } catch (error) {
-            Logger.error('Global retry failed:', error);
           }
         },
       },
@@ -90,7 +89,6 @@ export const navigateToTimeoutScreen = (onRetry?: () => void) => {
               navigationRef.goBack();
             }
           } catch (error) {
-            Logger.error('Global retry failed:', error);
           }
         },
       },

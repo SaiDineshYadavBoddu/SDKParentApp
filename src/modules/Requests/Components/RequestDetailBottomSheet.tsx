@@ -128,7 +128,6 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
         if (!activeRequest) return [];
 
         const status = activeRequest.status;
-        console.log('🚀 ~ Request status:', status, 'Type:', typeof status);
 
         // One-line timeline for CANCELLED or REJECTED
         if (status === 'CANCELLED' || status === 'REJECTED') {

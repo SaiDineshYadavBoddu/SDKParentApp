@@ -1,4 +1,19 @@
 PODS:
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
+    - AFNetworking/NSURLSession
   - AppAuth (2.0.0):
     - AppAuth/Core (= 2.0.0)
     - AppAuth/ExternalUserAgent (= 2.0.0)
@@ -16,6 +31,8 @@ PODS:
   - hermes-engine (0.81.5):
     - hermes-engine/Pre-built (= 0.81.5)
   - hermes-engine/Pre-built (0.81.5)
+  - jail-monkey (2.8.5):
+    - React-Core
   - NICardManagementSDK (1.1.0-alpha.1)
   - RCT-Folly (2024.11.18.00):
     - boost
@@ -2679,6 +2696,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNSslPinning (1.6.0):
+    - AFNetworking (~> 4.0)
+    - React
   - RNSVG (15.15.1):
     - boost
     - DoubleConversion
@@ -2776,6 +2796,7 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
+  - jail-monkey (from `../node_modules/jail-monkey`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native/Libraries/Required`)
@@ -2850,6 +2871,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSslPinning (from `../node_modules/react-native-ssl-pinning`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SocketRocket (~> 0.7.1)
@@ -2857,6 +2879,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AFNetworking
     - AppAuth
     - NICardManagementSDK
     - SocketRocket
@@ -2879,6 +2902,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-07-07-RNv0.81.0-e0fc67142ec0763c6b6153ca2bf96df815539782
+  jail-monkey:
+    :path: "../node_modules/jail-monkey"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -3025,6 +3050,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSslPinning:
+    :path: "../node_modules/react-native-ssl-pinning"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -3033,6 +3060,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AFNetworking: 3bd23d814e976cd148d7d44c3ab78017b744cd58
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
@@ -3042,6 +3070,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
+  jail-monkey: d9a972bd6d9be27ae2eb0a3cb8a5d9dda4caa083
   NICardManagementSDK: 53fa5d6a2a7a57667f020fb55b8e7fac361ea9e3
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: 5eb1d2eeff5fb91151e8a8eef45b6c7658b6c897
@@ -3116,6 +3145,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 606b85298c19d681ca076ca523dc23396120adab
   RNReanimated: d31cc4b3b90329229123e6f37facf0c11119a70a
   RNScreens: 3693ec4bbc0065151b843269e50e9807644e9918
+  RNSslPinning: e41cb0faaaad87c588ab4b7285c0095052ff8ace
   RNSVG: 046b3f72f0ddbe895a88cdd3bfc3b19822c9efab
   RNVectorIcons: 6acc19c833be864e9c70894e101a587fe491150a
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

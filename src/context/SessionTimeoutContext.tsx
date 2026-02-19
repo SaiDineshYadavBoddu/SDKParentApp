@@ -143,7 +143,6 @@ export const SessionTimeoutProvider = ({ children }: { children: ReactNode }) =>
         const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
             if (nextAppState === 'active' && isAuthenticated) {
                 recordActivity();
-                console.log('🚀 ~ App returned to foreground, recalculating timers...');
                 startTimers();
             }
         });

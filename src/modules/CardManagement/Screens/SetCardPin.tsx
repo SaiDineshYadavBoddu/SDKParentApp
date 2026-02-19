@@ -27,10 +27,7 @@ const SetCardPin = () => {
   const { card } = route.params || {};
   const { colors } = useTheme();
   const { accessToken } = useAuth();
-  // const {onChangePin, isLoading: isChangingPin} = useChangePin()
   const { result, error, onSetPin, isLoading: isSettingPin } = useSetPin();
-  // console.log('NI SDK result:', result);
-  // console.log('NI SDK error:', error);
   const { startAuthFlow } = useSecondaryAuth();
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -92,17 +89,10 @@ const SetCardPin = () => {
         return;
       }
 
-      console.log('accessToken', accessToken);
-      console.log('cardIdentifierId', cardIdentifierId);
-      console.log('bankId', bankId);
-      console.log('pin', confirmPin);
-      console.log('input', TEST_INPUT(accessToken, cardIdentifierId, bankId));
       onSetPin(
         confirmPin,
         TEST_INPUT(accessToken, cardIdentifierId, bankId),
         (error: NIErrorResponse | null, result: string | null) => {
-          console.log('NI SDK set PIN error:', error);
-          console.log('NI SDK set PIN result:', result);
           if (error) {
             navigation.reset({
               index: 1,

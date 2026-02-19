@@ -54,7 +54,6 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   const { accessToken } = useAuth();
   const { startAuthFlow } = useSecondaryAuth();
   const { result, error, onGetCardDetails } = useGetCardDetails();
-  console.log("Ni SDK result log", result)
   const [visibleCardIds, setVisibleCardIds] = useState<Set<string>>(new Set());
   const [fetchingCardId, setFetchingCardId] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
@@ -127,9 +126,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
       TEST_INPUT(accessToken, cardIdentifierId, bankId, actionToken),
       (error: NIErrorResponse | null, result: string | null) => {
         setIsFetchingDetails(false);
-        console.log('🚀 ~ NI SDK Result:', result);
         if (error) {
-          console.log('🚀 ~ NI SDK Error:', error);
           setShowErrorSheet(true);
           setVisibleCardIds(prev => {
             const newSet = new Set(prev);

@@ -27,6 +27,8 @@ import { Spacing } from '../theme/spacing';
 import CustomLoader from '../common/components/CustomLoader';
 import ConfirmationBottomSheet from '../common/components/ConfirmationBottomSheet';
 import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
+import { useDeviceSecurity } from '../hooks/useDeviceSecurity';
+import DeviceInsecureScreen from '../common/components/DeviceInsecureScreen';
 
 const NavigationContent = () => {
   const {
@@ -39,6 +41,7 @@ const NavigationContent = () => {
     signOut,
     isLoading,
   } = useAuth();
+  const { deviceSecurityStatus, isDeviceSecure } = useDeviceSecurity();
   const navigationRef = useNavigationContainerRef();
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -100,6 +103,25 @@ const NavigationContent = () => {
       return () => clearTimeout(timer);
     }
   }, [sessionExpired, setSessionExpired]);
+
+  if (deviceSecurityStatus === null) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomLoader
+          loading={true}
+          overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
+        />
+      </View>
+    );
+  }
+
+  if (!isDeviceSecure) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <DeviceInsecureScreen />
+      </View>
+    );
+  }
 
   const renderMainContent = () => {
     if (isLoading) {

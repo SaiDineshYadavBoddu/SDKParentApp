@@ -58,7 +58,7 @@ export default function GenericOTPScreen() {
     if (Platform.OS === 'android') {
       RNOtpVerify.getOtp()
         .then(() => RNOtpVerify.addListener(otpHandler))
-        .catch((err) => console.log('OTP Verify Error:', err));
+        .catch((err) => {});
 
       return () => RNOtpVerify.removeListener();
     }

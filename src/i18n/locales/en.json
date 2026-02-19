@@ -23,6 +23,11 @@
     "title": "Exit App",
     "message": "Are you sure you want to close the app?"
   },
+  "deviceSecurity": {
+    "insecureTitle": "Device not secure",
+    "insecureMessage": "This device appears to be rooted or jailbroken. For your security, this app cannot run on compromised devices.",
+    "exitApp": "Exit app"
+  },
   "unblockCard": {
     "confirmTitle": "Unblock Card",
     "confirmMessage": "Are you sure you want to unblock this card?",
