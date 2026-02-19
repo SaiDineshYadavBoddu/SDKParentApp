@@ -88,15 +88,26 @@ export default function CardListScreen() {
   const { data, isLoading, refetch, isError, isFetching, isUninitialized, error } = useGetCardsQuery(CARD_QUERY_PARAMS, {
     refetchOnMountOrArgChange: true,
   });
-  const cardsLoaderVisible = isUninitialized || isLoading;
+  const cards = data?.content || [];
+  const [contentReady, setContentReady] = React.useState(false);
+  React.useEffect(() => {
+    if (isUninitialized || isLoading) {
+      setContentReady(false);
+      return;
+    }
+    if (cards.length > 0) {
+      const t = setTimeout(() => setContentReady(true), 1000);
+      return () => clearTimeout(t);
+    }
+    setContentReady(true);
+  }, [isUninitialized, isLoading, cards.length]);
+  const cardsLoaderVisible = (isUninitialized || isLoading) || (cards.length > 0 && !contentReady);
 
   const onRefresh = React.useCallback(async () => {
     setIsManualRefresh(true);
     await refetch();
     setIsManualRefresh(false);
   }, [refetch]);
-
-  const cards = data?.content || [];
 
   // Derive active index from ID
   const activeCardIndex = React.useMemo(() => {
