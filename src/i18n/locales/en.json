@@ -29,6 +29,11 @@
     "insecureMessage": "This device appears to be rooted or jailbroken. For your security, this app cannot run on compromised devices.",
     "exitApp": "Exit app"
   },
+  "sslPinningError": {
+    "title": "Connection not secure",
+    "description": "We couldn't verify the server's security certificate. For your safety, the app cannot continue. Please try again later.",
+    "exitApp": "Exit app"
+  },
   "unblockCard": {
     "confirmTitle": "Unblock Card",
     "confirmMessage": "Are you sure you want to unblock this card?",

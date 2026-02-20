@@ -31,7 +31,7 @@ const DeviceInsecureScreen = () => {
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <CustomButton title={t('deviceSecurity.exitApp')} onPress={handleExit} />
+        <CustomButton title={t('deviceSecurity.exitApp')} uppercase={false} onPress={handleExit} />
       </View>
     </View>
   );

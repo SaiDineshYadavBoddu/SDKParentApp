@@ -10,13 +10,15 @@ import { expireSession, trySilentRefresh } from '../context/SessionTimeoutContex
 import { Logger } from '../utils/logger';
 import { generateTraceparent } from '../utils/tracingUtils';
 import { recordActivity, getInactivityMs, INACTIVITY_THRESHOLD_MS } from '../utils/sessionActivity';
+import { Platform } from 'react-native';
+import { reportSslPinningFailure, isSslPinningError } from '../utils/sslPinningError';
 
 const BASE_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae';
 
 const SSL_PINNING_CONFIG = {
   pkPinning: true,
   sslPinning: {
-    certs: ['CommercialCards'],
+    certs: Platform.OS === 'android' ? ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='] : ['CommercialCards'],
     keyHashes: ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='],
   },
 };
@@ -67,6 +69,8 @@ const sslPinnedBaseQuery: BaseQueryFn<
     }
   }
 
+  Logger.log(`API Request: [${method}] ${fullUrl}`, body !== undefined ? { body } : '');
+
   try {
     const response = await sslFetch(fullUrl, {
       method: method as 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -83,6 +87,7 @@ const sslPinnedBaseQuery: BaseQueryFn<
       } catch {
         data = response.bodyString ?? null;
       }
+      Logger.log(`API Response (success): [${method}] ${fullUrl}`, { status: response.status, data });
       return { data };
     }
 
@@ -97,7 +102,12 @@ const sslPinnedBaseQuery: BaseQueryFn<
       error: { status: response.status, data: errorData } as FetchBaseQueryError,
     };
   } catch (err: any) {
+    Logger.error(`API Request failed: [${method}] ${fullUrl}`, err?.bodyString ?? err?.message ?? err);
     const message = err?.bodyString || err?.message || String(err);
+
+    if (isSslPinningError(message)) {
+      reportSslPinningFailure();
+    }
 
     if (/timeout/i.test(message)) {
       return {
@@ -128,6 +138,14 @@ const baseQueryWithReauth: BaseQueryFn<
 
   const url = typeof args === 'string' ? args : args.url;
   const method = typeof args === 'string' ? 'GET' : args.method;
+
+  if (result.error) {
+    const err = result.error as { status: number | string; data?: unknown; error?: string };
+    const errMsg = typeof err.error === 'string' ? err.error : String(err.data ?? err.error ?? '');
+    if (isSslPinningError(errMsg)) {
+      reportSslPinningFailure();
+    }
+  }
 
   if (result.error && result.error.status === 401) {
     const inactivityMs = getInactivityMs();

@@ -29,6 +29,8 @@ import ConfirmationBottomSheet from '../common/components/ConfirmationBottomShee
 import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 import { useDeviceSecurity } from '../hooks/useDeviceSecurity';
 import DeviceInsecureScreen from '../common/components/DeviceInsecureScreen';
+import { setSslPinningFailureHandler } from '../utils/sslPinningError';
+import SslPinningErrorScreen from '../common/components/SslPinningErrorScreen';
 
 const NavigationContent = () => {
   const {
@@ -47,7 +49,13 @@ const NavigationContent = () => {
   const { t } = useTranslation();
   const [hasLaunchCheckPassed, setHasLaunchCheckPassed] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showSslPinningError, setShowSslPinningError] = useState(false);
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    setSslPinningFailureHandler(() => setShowSslPinningError(true));
+    return () => setSslPinningFailureHandler(null);
+  }, []);
 
   useEffect(() => {
     checkIsInternetConnected();
@@ -176,6 +184,12 @@ const NavigationContent = () => {
           BackHandler.exitApp();
         }}
       />
+
+      {showSslPinningError && (
+        <View style={[StyleSheet.absoluteFill, styles.sslErrorOverlay, { backgroundColor: colors.background }]}>
+          <SslPinningErrorScreen />
+        </View>
+      )}
     </View>
   );
 };
@@ -211,6 +225,9 @@ const styles = StyleSheet.create({
     left: Spacing.m,
     right: Spacing.m,
     zIndex: 10000,
+  },
+  sslErrorOverlay: {
+    zIndex: 10001,
   },
 });
 
