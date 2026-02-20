@@ -17,6 +17,7 @@ import CustomText, { TextType } from '../../../common/components/CustomText';
 import NotificationItem from '../Components/NotificationItem';
 import CustomErrorView from '../../../common/components/CustomErrorView';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import NoDataView from '../../../common/components/NoDataView';
 import RequestDetailBottomSheet from '../../Requests/Components/RequestDetailBottomSheet';
 import {
   useGetNotificationsMutation,
@@ -267,11 +268,7 @@ const NotificationsScreen = () => {
           }
           ListEmptyComponent={
             !isLoading && !hasError && notifications.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <CustomText type={TextType.Label}>
-                  {t('notifications.empty')}
-                </CustomText>
-              </View>
+              <NoDataView style={styles.emptyContainer} />
             ) : null
           }
           stickySectionHeadersEnabled={false}

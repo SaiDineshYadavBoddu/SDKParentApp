@@ -41,6 +41,7 @@ import { useSelector } from 'react-redux';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomErrorView from '../../../common/components/CustomErrorView';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import NoDataView from '../../../common/components/NoDataView';
 
 
 
@@ -358,16 +359,17 @@ const TransactionsScreen = () => {
             keyboardShouldPersistTaps="handled"
             ListEmptyComponent={
               !isTxnLoading && !isFetching ? (
-                <View style={styles.emptyContainer}>
-                  <CustomText type={TextType.CardSubtitle}>No transactions found</CustomText>
-                </View>
+                <NoDataView style={styles.emptyContainer} />
               ) : null
             }
           />
         </View>
       ) : (
         <View style={styles.emptyCardContainer}>
-          <CustomText type={TextType.CardSubtitle}>{t('cardList.NoCardsFound')}</CustomText>
+          <NoDataView
+            title={t('cardList.NoCardsFound')}
+            description={t('common.noDataDescription')}
+          />
         </View>
       )}
 
