@@ -77,7 +77,7 @@ const sslPinnedBaseQuery: BaseQueryFn<
       timeoutInterval: 20000,
       ...SSL_PINNING_CONFIG,
       headers,
-      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+      ...(body !== undefined && body !== null ? { body: JSON.stringify(body) } : {}),
     });
 
     if (response.status >= 200 && response.status < 300) {
