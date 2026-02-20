@@ -15,11 +15,16 @@ import { reportSslPinningFailure, isSslPinningError } from '../utils/sslPinningE
 
 const BASE_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae';
 
-const SSL_PINNING_CONFIG = {
+const SSL_PINNING_CONFIG = Platform.OS === 'ios' ? {
   pkPinning: true,
   sslPinning: {
-    certs: Platform.OS === 'android' ? ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='] : ['CommercialCards'],
+    certs: ['CommercialCards'],
     keyHashes: ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='],
+  },
+} : {
+  pkPinning: true,
+  sslPinning: {
+    certs: ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='],
   },
 };
 
@@ -71,13 +76,21 @@ const sslPinnedBaseQuery: BaseQueryFn<
 
   Logger.log(`API Request: [${method}] ${fullUrl}`, body !== undefined ? { body } : '');
 
+  const isPostOrPut = method === 'POST' || method === 'PUT';
+  const requestBody =
+    body !== undefined && body !== null
+      ? JSON.stringify(body)
+      : isPostOrPut
+        ? '{}'
+        : undefined;
+
   try {
     const response = await sslFetch(fullUrl, {
       method: method as 'GET' | 'POST' | 'PUT' | 'DELETE',
       timeoutInterval: 20000,
       ...SSL_PINNING_CONFIG,
       headers,
-      ...(body !== undefined && body !== null ? { body: JSON.stringify(body) } : {}),
+      ...(requestBody !== undefined ? { body: requestBody } : {}),
     });
 
     if (response.status >= 200 && response.status < 300) {
