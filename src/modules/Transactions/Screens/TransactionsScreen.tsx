@@ -133,49 +133,14 @@ const TransactionsScreen = () => {
     return sortTransactions(filtered, 'newest');
   }, [transactions, debouncedSearchQuery]);
 
-
-  if (isError && !isTimeoutError) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <CustomHeader
-          title={t('transactions.title')}
-        />
-        <CustomErrorView
-          title={t('common.error')}
-          description={t('transactions.errorLoading')}
-          onRetry={refetch}
-        />
-        {/* <CustomLoader loading={isFetching} /> */}
-      </View>
-    );
-  }
-
-  if (isTimeoutError) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <CustomHeader
-          title={t('transactions.title')}
-        />
-        <RequestTimeoutScreen onRetry={refetch} />
-        {/* <CustomLoader loading={isFetching} /> */}
-      </View>
-    );
-  }
-
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (!isTxnLoading && !isFetching && txnData && !txnData.last) {
       setPageNumber(prev => prev + 1);
     }
-  };
+  }, [isTxnLoading, isFetching, txnData]);
 
-  const TransactionItem = memo(({ item, isExpanded, onToggle, colors }: any) => {
+  const TransactionItem = useMemo(() => memo(({ item, isExpanded, onToggle, colors }: any) => {
     const { amountDisplay, color, displayName } = getFormattedTransaction(item, colors);
-
-
-    // Reanimated Layout Transition (easiest for variable height)
-    // We need to import Layout from reanimated if we want to use `layout={Layout.Spring}`
-    // But basic `LayoutAnimation` replacement is usually `Entering` / `Exiting`.
-
     return (
       <View style={[
         styles.transactionItem,
@@ -228,7 +193,7 @@ const TransactionsScreen = () => {
         )}
       </View>
     );
-  });
+  }), []);
 
   const renderTransactionItem = useCallback(({ item }: { item: any }) => (
     <TransactionItem
@@ -242,7 +207,33 @@ const TransactionsScreen = () => {
       }}
       colors={colors}
     />
-  ), [expandedTxnIds, colors]);
+  ), [TransactionItem, expandedTxnIds, colors]);
+
+  if (isError && !isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={t('transactions.title')}
+        />
+        <CustomErrorView
+          title={t('common.error')}
+          description={t('transactions.errorLoading')}
+          onRetry={refetch}
+        />
+      </View>
+    );
+  }
+
+  if (isTimeoutError) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <CustomHeader
+          title={t('transactions.title')}
+        />
+        <RequestTimeoutScreen onRetry={refetch} />
+      </View>
+    );
+  }
 
   const renderFooter = () => {
     if (!isFetching) return null;
