@@ -11,6 +11,7 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		B0765D832F3B349D0070F99A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B0765D822F3B349D0070F99A /* GoogleService-Info.plist */; };
+		B0F8DEA82F48373B00AF0B7B /* CommercialCards.cer in Resources */ = {isa = PBXBuildFile; fileRef = B0F8DEA72F48373B00AF0B7B /* CommercialCards.cer */; };
 		E2781099FF1A4BC338A2B6F3 /* libPods-NI Commercial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778C154ADE83FF4AEC18EBED /* libPods-NI Commercial.a */; };
 		E6A08223357A6AEA753E5440 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = NICCApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		992EEE1DE88A80EC37907EBC /* Pods-NI Commercial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.debug.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.debug.xcconfig"; sourceTree = "<group>"; };
 		B0765D822F3B349D0070F99A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B0F8DEA72F48373B00AF0B7B /* CommercialCards.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = CommercialCards.cer; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -44,6 +46,7 @@
 		13B07FAE1A68108700A75B9A /* NI Commercial */ = {
 			isa = PBXGroup;
 			children = (
+				B0F8DEA72F48373B00AF0B7B /* CommercialCards.cer */,
 				B0765D822F3B349D0070F99A /* GoogleService-Info.plist */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
@@ -165,6 +168,7 @@
 				B0765D832F3B349D0070F99A /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				E6A08223357A6AEA753E5440 /* PrivacyInfo.xcprivacy in Resources */,
+				B0F8DEA82F48373B00AF0B7B /* CommercialCards.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,9 +199,12 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -234,9 +241,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
