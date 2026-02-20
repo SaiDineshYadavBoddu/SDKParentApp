@@ -41,6 +41,7 @@ import {
 } from '../../../network/requests/request.api';
 import CustomLoader from '../../../common/components/CustomLoader';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import NoDataView from '../../../common/components/NoDataView';
 
 import { RequestItem } from '../../../network/requests/request.types';
 import RequestListItem from '../Components/RequestListItem';
@@ -519,14 +520,7 @@ const RequestsScreen = () => {
                   }
                   ListEmptyComponent={
                     !isLoading && !isFetching ? (
-                      <View style={styles.emptyContainer}>
-                        <CustomText
-                          type={TextType.CardText}
-                          style={styles.emptyText}
-                        >
-                          {t('requests.noRequests')}
-                        </CustomText>
-                      </View>
+                      <NoDataView style={styles.emptyContainer} />
                     ) : null
                   }
                   contentContainerStyle={styles.listContent}

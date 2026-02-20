@@ -14,7 +14,8 @@
     "tryAgain": "Try again",
     "error": "Error",
     "ok": "Ok",
-    "noDataAvailable": "No data available",
+    "noDataAvailable": "No Data Available",
+    "noDataDescription": "There is nothing to show here yet.",
     "alert": "Alert",
     "close": "Close",
     "success": "Success"

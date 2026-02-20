@@ -9,6 +9,7 @@ import StatementHistoryItem, { StatementHistoryItemData } from './StatementHisto
 import { useGetStatementsQuery } from '../../../network/card/card.api';
 import CustomErrorView from '../../../common/components/CustomErrorView';
 import RequestTimeoutScreen from '../../../common/components/RequestTimeoutScreen';
+import NoDataView from '../../../common/components/NoDataView';
 
 interface StatementHistoryListProps {
   cardId: string;
@@ -77,11 +78,7 @@ const StatementHistoryList: React.FC<StatementHistoryListProps> = ({
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             !isLoading ? (
-              <View style={styles.historyPlaceholder}>
-                <CustomText type={TextType.CardText} style={{ color: colors.secondaryText }}>
-                  {t('statements.historyPlaceholder')}
-                </CustomText>
-              </View>
+              <NoDataView style={styles.historyPlaceholder} />
             ) : null
           }
         />
