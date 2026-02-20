@@ -59,6 +59,33 @@ const TransactionLimitsScreen = () => {
 
     const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
+    const limitItems = React.useMemo(() => {
+        const limits = limitsData?.limits;
+        if (!Array.isArray(limits)) return [];
+        return limits.map((limit: any, index: number) => {
+            if (limit == null) return null;
+            let labelKey = 'transactionLimits.daily';
+            if (limit.limitType === 'MONTHLY') labelKey = 'transactionLimits.monthly';
+            if (limit.limitType === 'SINGLE_AMOUNT') labelKey = 'transactionLimits.single';
+
+            const spent = limit.currentAmount ?? 0;
+            const total = limit.maxAmount ?? 0;
+            const currency = limit.currency || 'AED';
+
+            return {
+                id: `limit-${limit.limitType ?? index}-${index}`,
+                body: (
+                    <LimitProgress
+                        label={t(labelKey)}
+                        spent={spent}
+                        total={total}
+                        currency={currency}
+                    />
+                ),
+            };
+        }).filter(Boolean) as { id: string; body: React.ReactNode }[];
+    }, [limitsData, t]);
+
     if (isTimeoutError) {
         return (
             <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -71,33 +98,6 @@ const TransactionLimitsScreen = () => {
             </View>
         );
     }
-
-    const limitItems = React.useMemo(() => {
-        if (!limitsData?.limits) return [];
-        return limitsData.limits.map((limit: any) => {
-            let labelKey = 'transactionLimits.daily';
-            if (limit.limitType === 'MONTHLY') labelKey = 'transactionLimits.monthly';
-            if (limit.limitType === 'SINGLE_AMOUNT') labelKey = 'transactionLimits.single';
-
-            const spent = limit.currentAmount || 0;
-            const total = limit.maxAmount || 0;
-            const currency = limit.currency || 'AED';
-
-            return {
-                id: limit.limitType,
-                body: (
-                    <LimitProgress
-                        label={t(labelKey)}
-                        spent={spent}
-                        total={total}
-                        currency={currency}
-                    />
-                ),
-            };
-        });
-    }, [limitsData, t]);
-
-
 
     return (
         <View style={[styles.container, {

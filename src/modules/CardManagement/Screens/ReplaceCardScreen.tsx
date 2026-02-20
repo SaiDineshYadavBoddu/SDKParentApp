@@ -40,6 +40,13 @@ const ReplaceCardScreen = () => {
     skip: !card?.cardIdentifier,
   });
 
+  const [replaceCard, { isLoading: isReplaceLoading }] = useReplaceCardMutation();
+
+  const replacementFee = React.useMemo(() => {
+    const tariff = tariffData?.tariffDetails?.find((t: any) => t.code === 'CP_REPL_PINS');
+    return tariff ? tariff.feeBase : '26.00';
+  }, [tariffData]);
+
   const isTimeoutError = (error as any)?.status === 'TIMEOUT_ERROR';
 
   if (isTimeoutError) {
@@ -54,13 +61,6 @@ const ReplaceCardScreen = () => {
       </View>
     );
   }
-
-  const [replaceCard, { isLoading: isReplaceLoading }] = useReplaceCardMutation();
-
-  const replacementFee = React.useMemo(() => {
-    const tariff = tariffData?.tariffDetails?.find((t: any) => t.code === 'CP_REPL_PINS');
-    return tariff ? tariff.feeBase : '26.00';
-  }, [tariffData]);
 
   const handleConfirm = () => {
     setSelectedReason(tempReason);
