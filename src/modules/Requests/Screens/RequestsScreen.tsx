@@ -782,8 +782,8 @@ const RequestsScreen = () => {
                 <CustomButton
                   title={t('requests.filters.apply')}
                   disabled={
-                    JSON.stringify(selectedStatus.sort()) === JSON.stringify(appliedFilters.status.sort()) &&
-                    JSON.stringify(selectedRequestType.sort()) === JSON.stringify(appliedFilters.type.sort()) &&
+                    JSON.stringify([...selectedStatus].sort()) === JSON.stringify([...appliedFilters.status].sort()) &&
+                    JSON.stringify([...selectedRequestType].sort()) === JSON.stringify([...appliedFilters.type].sort()) &&
                     startDate === appliedFilters.startDate &&
                     endDate === appliedFilters.endDate
                   }
