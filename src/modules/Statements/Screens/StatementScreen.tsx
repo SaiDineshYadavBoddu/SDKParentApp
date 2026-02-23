@@ -103,9 +103,7 @@ const StatementScreen = () => {
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const fileName = `Corporate Executive Card Statement ${day}-${month}-${year} ${hours}-${minutes}.${config.extension}`;
+    const fileName = `Corporate Executive Card Statement ${day}-${month}-${year}.${config.extension}`;
 
     const params = `cardId=${selectedCardId}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
     const url = `${baseUrl}${API_ENDPOINTS.GET_STATEMENTS}?${params}`;
