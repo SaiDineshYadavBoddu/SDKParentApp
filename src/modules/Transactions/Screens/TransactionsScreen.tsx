@@ -95,12 +95,12 @@ const TransactionsScreen = () => {
     };
   }, [searchQuery]);
 
-  // Reset page when card or time range changes
+  // Reset page only when card or time range changes. Do NOT reset on search — so we keep all loaded pages and filter over them.
   React.useEffect(() => {
     setPageNumber(0);
     setExpandedTxnIds({});
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, [selectedCardId, selectedTimeRange, customDateRange, debouncedSearchQuery]);
+  }, [selectedCardId, selectedTimeRange, customDateRange]);
 
   const selectedCard = useMemo(
     () => cards.find((c: any) => c.cardIdentifier === selectedCardId),
@@ -129,7 +129,10 @@ const TransactionsScreen = () => {
   }, [txnData]);
 
   const filteredTransactions = useMemo(() => {
-    const filtered = filterTransactions(transactions, debouncedSearchQuery);
+    const query = (debouncedSearchQuery || '').trim();
+    const filtered = query
+      ? filterTransactions(transactions, query)
+      : transactions;
     return sortTransactions(filtered, 'newest');
   }, [transactions, debouncedSearchQuery]);
 
@@ -302,7 +305,7 @@ const TransactionsScreen = () => {
               <TouchableOpacity
                 style={styles.downloadButton}
                 onPress={() => {
-                  navigation.navigate('Statement');
+                  navigation.navigate('Statement', { cardId: selectedCardId });
                 }}
               >
                 <StatementDownloadSVG width={ms(48)} height={ms(48)} />

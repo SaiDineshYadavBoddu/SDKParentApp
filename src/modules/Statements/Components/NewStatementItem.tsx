@@ -25,7 +25,7 @@ interface NewStatementItemProps {
   selectedCard?: any;
   selectedTimeRange: string;
   selectedFormat: string;
-  onCardSelect: () => void;
+  onCardSelect?: () => void;
   onTimeRangeChange: (range: string) => void;
   onFormatChange: (format: string) => void;
 }
@@ -41,25 +41,32 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
   const { t } = useTranslation();
   const { colors } = useTheme();
 
+  const cardDisplay = (
+    <View style={[styles.cardSelector, { borderColor: colors.outline }]}>
+      <View style={styles.cardSelectorLeft}>
+        <CustomImage
+          source={require('../../../assets/images/SmallCard.png')}
+          style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
+          resizeMode="contain"
+        />
+        <CustomText type={TextType.CardTitle}>
+          {selectedCard?.maskedPan ? formatMaskedCardNumber(selectedCard.maskedPan) : t('statements.selectCard')}
+        </CustomText>
+      </View>
+      {onCardSelect ? <ChevronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} /> : null}
+    </View>
+  );
+
   return (
     <>
-      {/* Card Selection */}
-      <TouchableOpacity
-        style={[styles.cardSelector, { borderColor: colors.outline }]}
-        onPress={onCardSelect}
-      >
-        <View style={styles.cardSelectorLeft}>
-          <CustomImage
-            source={require('../../../assets/images/SmallCard.png')}
-            style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
-            resizeMode="contain"
-          />
-          <CustomText type={TextType.CardTitle}>
-            {selectedCard?.maskedPan ? formatMaskedCardNumber(selectedCard.maskedPan) : t('statements.selectCard')}
-          </CustomText>
-        </View>
-        <ChevronDownSVG width={ms(20)} height={ms(20)} stroke={colors.primary} />
-      </TouchableOpacity>
+      {/* Card (selected from Transactions screen – no dropdown) */}
+      {onCardSelect ? (
+        <TouchableOpacity onPress={onCardSelect} activeOpacity={0.7}>
+          {cardDisplay}
+        </TouchableOpacity>
+      ) : (
+        cardDisplay
+      )}
 
       {/* Time Period Selection */}
       <ScrollView

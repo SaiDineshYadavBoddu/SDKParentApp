@@ -82,17 +82,29 @@ export const mapTransactionsToSectionItems = (transactions: any[], colors: any):
 };
 
 /**
+ * Effective display name for a transaction (same logic as getFormattedTransaction).
+ * Used so search can match "Withdrawal" when we show that for debits with no merchant name.
+ */
+const getSearchableDisplayName = (txn: any) =>
+    txn.merchantName || (txn.debitCardFlag === 'D' ? 'Withdrawal' : txn.description || '');
+
+/**
  * Filters a list of transactions based on search query and card ID.
+ * Matches merchantName, description, transactionRefId, and the derived display label (e.g. "Withdrawal" for debits).
  */
 export const filterTransactions = (
     transactions: any[],
     searchQuery: string
 ) => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return transactions;
     return transactions.filter((txn) => {
-        const matchesSearch =
-            (txn.merchantName || txn.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (txn.transactionRefId || '').includes(searchQuery);
-        return matchesSearch;
+        const displayName = getSearchableDisplayName(txn);
+        return (
+            (displayName && displayName.toLowerCase().includes(q)) ||
+            (txn.merchantCategoryGroup || '').toLowerCase().includes(q) ||
+            (txn.transactionRefId || '').toLowerCase().includes(q)
+        );
     });
 };
 

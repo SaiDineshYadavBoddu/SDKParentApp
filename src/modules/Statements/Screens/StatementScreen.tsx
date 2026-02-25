@@ -19,14 +19,13 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomHeader from '../../../common/components/CustomHeader';
 import CustomDatePicker from '../../../common/components/CustomDatePicker';
 import CustomLoader from '../../../common/components/CustomLoader';
-import CardSelectionBottomSheet from '../../Transactions/Components/CardSelectionBottomSheet';
 import NotificationSVG from '../../../assets/svgs/NotificationSVG';
 import { calculateDateRange } from '../../../utils/transactionUtils';
 import NewStatementItem from '../Components/NewStatementItem';
 import StatementHistoryList from '../Components/StatementHistoryList';
 import { StatementHistoryItemData } from '../Components/StatementHistoryItem';
 import DownloadSVG from '../../../assets/svgs/DownloadSVG';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { API_ENDPOINTS } from '../../../network/endpoint.const';
 import { getAccessToken } from '../../../context/AuthContext';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -54,12 +53,12 @@ const StatementScreen = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const navigation = useNavigation();
+  const route = useRoute<any>();
 
   const [statementType, setStatementType] = useState<'new' | 'history'>('new');
   const [selectedCardId, setSelectedCardId] = useState<string>('');
   const [selectedTimeRange, setSelectedTimeRange] = useState('lastMonth');
   const [selectedFormat, setSelectedFormat] = useState('csv');
-  const [isCardSheetVisible, setCardSheetVisible] = useState(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [customDateRange, setCustomDateRange] = useState({ start: '', end: '' });
   const [downloadSuccessVisible, setDownloadSuccessVisible] = useState(false);
@@ -69,18 +68,29 @@ const StatementScreen = () => {
   const cardsData = useSelector((state: any) => state.card?.cards);
   const cards = useMemo(() => cardsData?.content || [], [cardsData?.content]);
 
-  useEffect(() => {
-    if (cards.length > 0 && !selectedCardId) {
-      setSelectedCardId(cards[0].cardIdentifier);
+  // Whenever screen is focused, use card from route params (from Transactions); otherwise keep current or first card
+  useFocusEffect(
+    useCallback(() => {
+      const paramCardId = route.params?.cardId;
+      if (paramCardId && cards.some((c: any) => c.cardIdentifier === paramCardId)) {
+        setSelectedCardId(paramCardId);
+      } else if (cards.length > 0 && !selectedCardId) {
+        setSelectedCardId(cards[0].cardIdentifier);
+      }
+    }, [route.params?.cardId, cards])
+  );
+
+  // Prefer route param so view + download + history use the card passed from Transactions (avoids stale state)
+  const cardIdForApi = useMemo(() => {
+    if (route.params?.cardId && cards.some((c: any) => c.cardIdentifier === route.params?.cardId)) {
+      return route.params.cardId;
     }
-  }, [cards, selectedCardId]);
+    return selectedCardId;
+  }, [route.params?.cardId, selectedCardId, cards]);
 
   const selectedCard = useMemo(
-    () => {
-      const card = cards.find((c: any) => c.cardIdentifier === selectedCardId);
-      return card;
-    },
-    [cards, selectedCardId]
+    () => cards.find((c: any) => c.cardIdentifier === cardIdForApi),
+    [cards, cardIdForApi]
   );
 
   const dateRange = useMemo(
@@ -91,7 +101,8 @@ const StatementScreen = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async () => {
-    if (!selectedCardId) return;
+    if (!cardIdForApi) return;
+    console.log("cardIdForApi", cardIdForApi);
 
     setIsDownloading(true);
     const { dirs } = ReactNativeBlobUtil.fs;
@@ -103,9 +114,11 @@ const StatementScreen = () => {
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    const fileName = `Corporate Executive Card Statement ${day}-${month}-${year}.${config.extension}`;
+    // Unique filename per download so "Open file" always opens this download (avoids (1)/(2) and opening old file)
+    const timestamp = Date.now();
+    const fileName = `Corporate Executive Card Statement ${day}-${month}-${year}-${timestamp}.${config.extension}`;
 
-    const params = `cardId=${selectedCardId}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
+    const params = `cardId=${cardIdForApi}&dateFrom=${dateRange.dateFrom}&dateTo=${dateRange.dateTo}&format=${formatValue}`;
     const url = `${baseUrl}${API_ENDPOINTS.GET_STATEMENTS}?${params}`;
 
     try {
@@ -355,7 +368,6 @@ const StatementScreen = () => {
                   selectedCard={selectedCard}
                   selectedTimeRange={selectedTimeRange}
                   selectedFormat={selectedFormat}
-                  onCardSelect={() => setCardSheetVisible(true)}
                   onTimeRangeChange={handleTimeRangePress}
                   onFormatChange={setSelectedFormat}
                 />
@@ -363,12 +375,12 @@ const StatementScreen = () => {
               <View style={styles.bottomContainer}>
                 <TouchableOpacity
                   onPress={handleDownload}
-                  disabled={!selectedCardId || isDownloading}
+                  disabled={!cardIdForApi || isDownloading}
                   style={[
                     styles.downloadButton,
                     {
                       backgroundColor: colors.primary,
-                      opacity: (!selectedCardId || isDownloading) ? 0.6 : 1
+                      opacity: (!cardIdForApi || isDownloading) ? 0.6 : 1
                     }
                   ]}
                   activeOpacity={0.7}
@@ -381,7 +393,7 @@ const StatementScreen = () => {
           ) : (
             <View style={{ flex: 1, paddingHorizontal: Spacing.l }}>
               <StatementHistoryList
-                cardId={selectedCardId}
+                cardId={cardIdForApi}
                 onDownload={(item) => {
                   setIsDownloading(true);
                   handleHistoryDownload(item).finally(() => setIsDownloading(false));
@@ -394,16 +406,6 @@ const StatementScreen = () => {
 
       <CustomLoader loading={isDownloading} title={t('loader.title')} />
 
-      <CardSelectionBottomSheet
-        visible={isCardSheetVisible}
-        onClose={() => setCardSheetVisible(false)}
-        cards={cards}
-        selectedCardId={selectedCardId}
-        onSelect={(id) => {
-          setSelectedCardId(id);
-          setCardSheetVisible(false);
-        }}
-      />
       <CustomDatePicker
         visible={isDatePickerVisible}
         onClose={() => setDatePickerVisible(false)}
