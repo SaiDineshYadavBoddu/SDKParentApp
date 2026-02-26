@@ -16,7 +16,7 @@ const getTraceparent = () => {
   return `00-${traceId}-${spanId}-01`;
 };
 
-const ROOT_URL = 'https://api.sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
+const ROOT_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
 const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string, actionToken?: string) => {
