@@ -93,16 +93,16 @@
   },
   "onboarding": {
     "step1": {
-      "title": "Accept\nPayments",
-      "description": "Tap or link, seamless payments"
+      "title": "Business\nFocused",
+      "description": "Empowering smarter business spending."
     },
     "step2": {
       "title": "Track Every\nTransaction",
       "description": "Clear, fast and reliable tracking"
     },
     "step3": {
-      "title": "Instant\nSettlements",
-      "description": "Withdraw funds anytime, instantly"
+      "title": "Security &\nControl Emphasis",
+      "description": "Secure control for every transaction."
     }
   },
   "login": {
