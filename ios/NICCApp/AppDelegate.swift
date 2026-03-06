@@ -12,6 +12,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RNAppAuthAuthorizationFlo
   public weak var authorizationFlowManagerDelegate:
     RNAppAuthAuthorizationFlowManagerDelegate?
 
+  var blurView: UIVisualEffectView?
+
+  func applicationWillResignActive(_ application: UIApplication) {
+    if blurView == nil {
+      let blurEffect = UIBlurEffect(style: .extraLight)
+      blurView = UIVisualEffectView(effect: blurEffect)
+      blurView?.frame = window?.bounds ?? UIScreen.main.bounds
+    }
+    window?.addSubview(blurView!)
+  }
+
+  func applicationDidBecomeActive(_ application: UIApplication) {
+    blurView?.removeFromSuperview()
+  }
+
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
