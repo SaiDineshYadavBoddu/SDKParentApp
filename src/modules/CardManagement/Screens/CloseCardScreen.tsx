@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ms } from 'react-native-size-matters';
@@ -149,7 +149,13 @@ const CloseCardScreen = () => {
                         placeholder={t('closeCard.reasonPlaceholder')}
                         value={message}
                         maxLength={255}
-                        onChangeText={setMessage}
+                        onChangeText={(text) => {
+                            if (/[^a-zA-Z0-9 ]/.test(text)) {
+                                Alert.alert('Error', 'Invalid character');
+                                return;
+                            }
+                            setMessage(text);
+                        }}
                         inputStyle={{ height: ms(80), textAlignVertical: 'top' }}
                     />
                 </ScrollView>
