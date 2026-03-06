@@ -151,7 +151,6 @@ const CloseCardScreen = () => {
                         maxLength={255}
                         onChangeText={(text) => {
                             if (/[^a-zA-Z0-9 ]/.test(text)) {
-                                Alert.alert('Error', 'Invalid character');
                                 return;
                             }
                             setMessage(text);
