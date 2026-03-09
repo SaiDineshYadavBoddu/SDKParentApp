@@ -17,6 +17,7 @@ export const isSslPinningError = (message: string): boolean => {
   const normalized = message.trim();
   return (
     /Certificate pinning failure!/i.test(normalized) ||
-    /The certificate for this server is invalid/i.test(normalized)
+    /The certificate for this server is invalid/i.test(normalized) ||
+    /^cancelled$/i.test(normalized)
   );
 };

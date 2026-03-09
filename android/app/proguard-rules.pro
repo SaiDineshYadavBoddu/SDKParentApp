@@ -41,7 +41,7 @@
 -dontwarn org.openjsse.**
 -dontwarn javax.annotation.**
 
-# OkHttp / react-native-ssl-pinning
+# OkHttp / SecureApi
 -dontwarn okhttp3.**
 -dontwarn okio.**
 -keep class okhttp3.** { *; }

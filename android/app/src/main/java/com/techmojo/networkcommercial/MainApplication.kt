@@ -11,6 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.faizal.OtpVerify.OtpVerifyPackage
 import com.reactnativecommunity.netinfo.NetInfoPackage
+import com.techmojo.networkcommercial.network.SecureApiPackage
 
 
 class MainApplication : Application(), ReactApplication {
@@ -22,6 +23,7 @@ class MainApplication : Application(), ReactApplication {
               // Packages that cannot be autolinked yet can be added manually here, for example:
               add(OtpVerifyPackage())
               add(NetInfoPackage())
+              add(SecureApiPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

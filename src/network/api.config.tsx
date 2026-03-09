@@ -4,29 +4,17 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { fetch as sslFetch } from 'react-native-ssl-pinning';
+import { NativeModules } from 'react-native';
 import { getAccessToken } from '../context/AuthContext';
 import { expireSession, trySilentRefresh } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
 import { generateTraceparent } from '../utils/tracingUtils';
 import { recordActivity, getInactivityMs, INACTIVITY_THRESHOLD_MS } from '../utils/sessionActivity';
-import { Platform } from 'react-native';
 import { reportSslPinningFailure, isSslPinningError } from '../utils/sslPinningError';
 
-const BASE_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae';
+const { SecureApi } = NativeModules;
 
-const SSL_PINNING_CONFIG = Platform.OS === 'ios' ? {
-  pkPinning: true,
-  sslPinning: {
-    certs: ['CommercialCards'],
-    keyHashes: ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='],
-  },
-} : {
-  pkPinning: true,
-  sslPinning: {
-    certs: ['sha256/ltOGk1gdwk6yZGFj5mFS2uBvdSltWivbOYc6z6WpVTE=', 'sha256/ipMRIz6G+i0OtsBSqH1+5XGqbQhUEmvOpv1dJ+vmGDI=', 'sha256/AlSQhgtJirc8ahLyekmtX+Iw+v46yPYRLJt9Cq1GlB0=', 'sha256/C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='],
-  },
-};
+const BASE_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae';
 
 const sslPinnedBaseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -76,7 +64,7 @@ const sslPinnedBaseQuery: BaseQueryFn<
 
   Logger.log(`API Request: [${method}] ${fullUrl}`, body !== undefined ? { body } : '');
 
-  const isPostOrPut = method === 'POST' || method === 'PUT';
+  const isPostOrPut = method === 'POST' || method === 'PUT' || method === 'PATCH';
   const requestBody =
     body !== undefined && body !== null
       ? JSON.stringify(body)
@@ -85,13 +73,25 @@ const sslPinnedBaseQuery: BaseQueryFn<
         : undefined;
 
   try {
-    const response = await sslFetch(fullUrl, {
-      method: method as 'GET' | 'POST' | 'PUT' | 'DELETE',
-      timeoutInterval: 20000,
-      ...SSL_PINNING_CONFIG,
-      headers,
-      ...(requestBody !== undefined ? { body: requestBody } : {}),
-    });
+    let response: { status: number; bodyString: string };
+
+    switch (method) {
+      case 'POST':
+        response = await SecureApi.post(fullUrl, requestBody ?? '{}', headers);
+        break;
+      case 'PUT':
+        response = await SecureApi.put(fullUrl, requestBody ?? '{}', headers);
+        break;
+      case 'PATCH':
+        response = await SecureApi.patch(fullUrl, requestBody ?? '{}', headers);
+        break;
+      case 'DELETE':
+        response = await SecureApi.delete(fullUrl, headers);
+        break;
+      default:
+        response = await SecureApi.get(fullUrl, headers);
+        break;
+    }
 
     if (response.status >= 200 && response.status < 300) {
       let data = null;

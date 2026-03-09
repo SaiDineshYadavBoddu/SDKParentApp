@@ -11,13 +11,7 @@ const nodeModules = path.resolve(projectRoot, 'node_modules');
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  resolver: {
-    // Force Metro to resolve react-native-ssl-pinning and its dependency from project node_modules
-    extraNodeModules: {
-      'react-native-ssl-pinning': path.resolve(nodeModules, 'react-native-ssl-pinning'),
-      q: path.resolve(nodeModules, 'q'),
-    },
-  },
+  resolver: {},
   watchFolders: [nodeModules],
 };
 

@@ -133,6 +133,9 @@ dependencies {
     }
     implementation project(':react-native-otp-verify')
     // implementation project(':@react-native-community_netinfo')
+
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 }
 
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"

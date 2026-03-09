@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		284C821BAE1C6D9C8DF54B7C /* libPods-NI Commercial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 536D472F59EC5731B139F89C /* libPods-NI Commercial.a */; };
+		67C15A025387343843A52B14 /* SecureApi.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A2654262330018D850B36B /* SecureApi.m */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		B07124F92F4896E9002D83F8 /* CommercialCards.cer in Resources */ = {isa = PBXBuildFile; fileRef = B07124F82F4896E9002D83F8 /* CommercialCards.cer */; };
+		B5BB1B3CB37C349C31ADC323 /* SecureApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8973C3D4915D1CB6263249 /* SecureApi.swift */; };
 		E6A08223357A6AEA753E5440 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -21,11 +22,12 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NICCApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = NICCApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3E65EFDA56FB9EB23A00D9F7 /* Pods-NI Commercial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.release.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.release.xcconfig"; sourceTree = "<group>"; };
+		4F8973C3D4915D1CB6263249 /* SecureApi.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SecureApi.swift; sourceTree = "<group>"; };
 		536D472F59EC5731B139F89C /* libPods-NI Commercial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NI Commercial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = NICCApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = NICCApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8FD3C5CED77E874A7B8C7CD4 /* Pods-NI Commercial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.debug.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.debug.xcconfig"; sourceTree = "<group>"; };
-		B07124F82F4896E9002D83F8 /* CommercialCards.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = CommercialCards.cer; sourceTree = "<group>"; };
+		C3A2654262330018D850B36B /* SecureApi.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SecureApi.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -44,7 +46,6 @@
 		13B07FAE1A68108700A75B9A /* NI Commercial */ = {
 			isa = PBXGroup;
 			children = (
-				B07124F82F4896E9002D83F8 /* CommercialCards.cer */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -78,6 +79,8 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				4F8973C3D4915D1CB6263249 /* SecureApi.swift */,
+				C3A2654262330018D850B36B /* SecureApi.m */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -164,7 +167,6 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				E6A08223357A6AEA753E5440 /* PrivacyInfo.xcprivacy in Resources */,
-				B07124F92F4896E9002D83F8 /* CommercialCards.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +260,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				B5BB1B3CB37C349C31ADC323 /* SecureApi.swift in Sources */,
+				67C15A025387343843A52B14 /* SecureApi.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
