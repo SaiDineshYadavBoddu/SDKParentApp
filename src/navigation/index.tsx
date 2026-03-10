@@ -123,13 +123,13 @@ const NavigationContent = () => {
     );
   }
 
-  if (!__DEV__ && !isDeviceSecure) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <DeviceInsecureScreen />
-      </View>
-    );
-  }
+  // if (!__DEV__ && !isDeviceSecure) {
+  //   return (
+  //     <View style={[styles.container, { backgroundColor: colors.background }]}>
+  //       <DeviceInsecureScreen />
+  //     </View>
+  //   );
+  // }
 
   const renderMainContent = () => {
     if (isLoading) {
