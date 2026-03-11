@@ -5,6 +5,7 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
 import { NativeModules } from 'react-native';
+import Config from 'react-native-config';
 import { getAccessToken } from '../context/AuthContext';
 import { expireSession, trySilentRefresh } from '../context/SessionTimeoutContext';
 import { Logger } from '../utils/logger';
@@ -14,7 +15,7 @@ import { reportSslPinningFailure, isSslPinningError } from '../utils/sslPinningE
 
 const { SecureApi } = NativeModules;
 
-const BASE_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae';
+const BASE_URL = Config.BASE_URL;
 
 const sslPinnedBaseQuery: BaseQueryFn<
   string | FetchArgs,

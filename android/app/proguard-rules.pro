@@ -46,3 +46,6 @@
 -dontwarn okio.**
 -keep class okhttp3.** { *; }
 -keep class okio.** { *; }
+
+# react-native-config
+-keep class com.lugg.RNCConfig.** { *; }

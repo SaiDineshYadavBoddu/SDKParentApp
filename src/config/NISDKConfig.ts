@@ -1,4 +1,5 @@
 import { NIConnectionProperties, NiInputInterface } from "@networkinternational/ni-card-management-sdk";
+import Config from 'react-native-config';
 import { Logger } from "../utils/logger";
 
 const generateHexString = (length: number) => {
@@ -16,7 +17,7 @@ const getTraceparent = () => {
   return `00-${traceId}-${spanId}-01`;
 };
 
-const ROOT_URL = 'https://sit.corporate.un.infradev.w4.az.network.ae/api/mine/secured-cards'
+const ROOT_URL = Config.NISDK_ROOT_URL;
 const CARD_TYPE = 'EXID';
 
 const connectionProperties = (token: string, actionToken?: string) => {

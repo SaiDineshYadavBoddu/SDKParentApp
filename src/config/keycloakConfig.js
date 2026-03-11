@@ -1,13 +1,8 @@
-/**
- * Keycloak OAuth config.
- * iOS: iosPrefersEphemeralSession: false keeps cookies in the in-app browser session,
- * so returning to Keycloak can reuse the existing session and may reduce the
- * "NI Commercial wants to open Keycloak" alert when the user is already logged in there.
- */
+import Config from 'react-native-config';
+
 export const keycloakConfig = {
-  issuer:
-    'https://keycloak.corporate.un.infradev.w4.az.network.ae/auth/realms/Network/',
-  clientId: 'corporate-portal-mobile',
+  issuer: Config.KEYCLOAK_ISSUER,
+  clientId: Config.KEYCLOAK_CLIENT_ID,
   redirectUrl: 'com.keycloakpoc://oauthredirect',
   scopes: ['openid', 'profile', 'email', 'offline_access'],
   dangerouslyAllowInsecureHttpRequests: true,

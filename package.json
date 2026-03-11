@@ -4,7 +4,17 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:stage": "react-native run-android --mode stageDebug",
+    "android:assemble-stage": "cd android && gradlew.bat assembleStageRelease && cd ..",
+    "android:bundle-stage": "cd android && gradlew.bat bundleStageRelease && cd ..",
+    "android:prod": "react-native run-android --mode prodDebug",
+    "android:assemble-prod": "cd android && gradlew.bat assembleProdRelease && cd ..",
+    "android:bundle-prod": "cd android && gradlew.bat bundleProdRelease && cd ..",
     "ios": "react-native run-ios",
+    "ios:stage": "ENVFILE=.env.stage react-native run-ios",
+    "ios:stage-release": "ENVFILE=.env.stage react-native run-ios --configuration Release",
+    "ios:prod": "ENVFILE=.env.prod react-native run-ios",
+    "ios:prod-release": "ENVFILE=.env.prod react-native run-ios --configuration Release",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
