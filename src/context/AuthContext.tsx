@@ -7,12 +7,13 @@ import React, {
   useRef,
 } from 'react';
 import { authorize, logout, refresh, AuthConfiguration } from 'react-native-app-auth';
-import { Linking, AppState, AppStateStatus } from 'react-native';
+import { Linking, AppState, AppStateStatus, ToastAndroid, Platform, Alert } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
 import NetInfo from '@react-native-community/netinfo';
 import { useDispatch } from 'react-redux';
 import { backendApi } from '../network/api.config';
 import { hasRole, getBankCode, getBankId, getRole } from '../utils/jwtUtils';
+import { isSslPinningError, reportSslPinningFailure } from '../utils/sslPinningError';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -78,6 +79,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const isSigningIn = useRef(false);
+
+  const showSignInToast = (message: string) => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.LONG);
+    } else {
+      Alert.alert('Sign In Failed', message);
+    }
+  };
 
 
   useEffect(() => {
@@ -160,8 +169,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       globalIsAuthenticated = true;
       setSessionExpired(false);
     } catch (error) {
-      console.error('Login failed:', error);
-      // Handle error appropriately
+      const message = error instanceof Error ? error.message : String(error);
+      if (isSslPinningError(message)) {
+        reportSslPinningFailure();
+      } else if (
+        message !== 'User cancelled' &&
+        !message.includes('User cancelled flow') &&
+        !message.toLowerCase().includes('cancelled')
+      ) {
+        showSignInToast(message);
+      }
     } finally {
       setIsLoading(false);
       isSigningIn.current = false;
