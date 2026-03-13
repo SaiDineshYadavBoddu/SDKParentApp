@@ -45,41 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RNAppAuthAuthorizationFlo
     )
   }
 
-  /// Wraps the app content in the secure text field's internal subview so it is hidden in
-  /// screenshots (and already hidden in screen recording via secureOverlay). Uses the same
-  /// mechanism as password fields: content inside the secure view is redacted in screenshots.
-  func protectScreenshot() {
-    guard let window = self.window else { return }
-
-    // Run after React Native has added its root view to the window.
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-      guard let window = self?.window else { return }
-      guard let rootView = window.subviews.first else { return }
-
-      let secureField = UITextField()
-      secureField.isSecureTextEntry = true
-      secureField.isUserInteractionEnabled = false
-      secureField.backgroundColor = .clear
-      secureField.frame = window.bounds
-      // Force the text field to create its internal secure subview (used for screenshot redaction).
-      secureField.layoutIfNeeded()
-
-      guard let secureView = secureField.subviews.first else { return }
-
-      secureView.removeFromSuperview()
-      secureView.subviews.forEach { $0.removeFromSuperview() }
-      secureView.frame = window.bounds
-      secureView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-      rootView.removeFromSuperview()
-      rootView.frame = secureView.bounds
-      rootView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-      window.addSubview(secureView)
-      secureView.addSubview(rootView)
-    }
-  }
-
   @objc func screenCaptureChanged() {
 
     guard let window = window else { return }
@@ -133,8 +98,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, RNAppAuthAuthorizationFlo
 
     // Enable screen recording protection
     setupScreenCaptureProtection()
-
-    protectScreenshot()
 
     // Detect screenshot
     NotificationCenter.default.addObserver(
