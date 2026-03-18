@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		284C821BAE1C6D9C8DF54B7C /* libPods-NI Commercial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 536D472F59EC5731B139F89C /* libPods-NI Commercial.a */; };
-		67C15A025387343843A52B14 /* SecureApi.m in Sources */ = {isa = PBXBuildFile; fileRef = C3A2654262330018D850B36B /* SecureApi.m */; };
+		3E89C52C09C6842466DA4409 /* libPods-NI Commercial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D602E712E1B4F63DEE62663F /* libPods-NI Commercial.a */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		B5BB1B3CB37C349C31ADC323 /* SecureApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8973C3D4915D1CB6263249 /* SecureApi.swift */; };
+		B09277B92F63FC7400F26415 /* SecureScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B09277B72F63F71700F26415 /* SecureScreenManager.m */; };
+		B09277BA2F63FC7A00F26415 /* SecureScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09277B82F63F71700F26415 /* SecureScreenManager.swift */; };
 		E6A08223357A6AEA753E5440 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -21,13 +21,13 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NICCApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NICCApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = NICCApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		3E65EFDA56FB9EB23A00D9F7 /* Pods-NI Commercial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.release.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.release.xcconfig"; sourceTree = "<group>"; };
-		4F8973C3D4915D1CB6263249 /* SecureApi.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SecureApi.swift; sourceTree = "<group>"; };
-		536D472F59EC5731B139F89C /* libPods-NI Commercial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NI Commercial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		51350B24464602961736DE29 /* Pods-NI Commercial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.release.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.release.xcconfig"; sourceTree = "<group>"; };
+		5E381354A9DCC569380F494E /* Pods-NI Commercial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.debug.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.debug.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = NICCApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = NICCApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8FD3C5CED77E874A7B8C7CD4 /* Pods-NI Commercial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NI Commercial.debug.xcconfig"; path = "Target Support Files/Pods-NI Commercial/Pods-NI Commercial.debug.xcconfig"; sourceTree = "<group>"; };
-		C3A2654262330018D850B36B /* SecureApi.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SecureApi.m; sourceTree = "<group>"; };
+		B09277B72F63F71700F26415 /* SecureScreenManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecureScreenManager.m; sourceTree = "<group>"; };
+		B09277B82F63F71700F26415 /* SecureScreenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureScreenManager.swift; sourceTree = "<group>"; };
+		D602E712E1B4F63DEE62663F /* libPods-NI Commercial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NI Commercial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -36,7 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284C821BAE1C6D9C8DF54B7C /* libPods-NI Commercial.a in Frameworks */,
+				3E89C52C09C6842466DA4409 /* libPods-NI Commercial.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				536D472F59EC5731B139F89C /* libPods-NI Commercial.a */,
+				D602E712E1B4F63DEE62663F /* libPods-NI Commercial.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -74,13 +74,13 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				B09277B72F63F71700F26415 /* SecureScreenManager.m */,
+				B09277B82F63F71700F26415 /* SecureScreenManager.swift */,
 				13B07FAE1A68108700A75B9A /* NI Commercial */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
-				4F8973C3D4915D1CB6263249 /* SecureApi.swift */,
-				C3A2654262330018D850B36B /* SecureApi.m */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -98,8 +98,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8FD3C5CED77E874A7B8C7CD4 /* Pods-NI Commercial.debug.xcconfig */,
-				3E65EFDA56FB9EB23A00D9F7 /* Pods-NI Commercial.release.xcconfig */,
+				5E381354A9DCC569380F494E /* Pods-NI Commercial.debug.xcconfig */,
+				51350B24464602961736DE29 /* Pods-NI Commercial.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -111,13 +111,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "NI Commercial" */;
 			buildPhases = (
-				4076D5D2497459AB3132CDE6 /* [CP] Check Pods Manifest.lock */,
+				C322A123842B7F245DE46B38 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				EA3C489BC3D672C6FC00818A /* [CP] Embed Pods Frameworks */,
-				2D9A80E3ABF0024147EB92F0 /* [CP] Copy Pods Resources */,
+				1EA58D2E2307D762E5C8023E /* [CP] Embed Pods Frameworks */,
+				F150F7918C93922EC00CF036 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -189,27 +189,28 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		2D9A80E3ABF0024147EB92F0 /* [CP] Copy Pods Resources */ = {
+		1EA58D2E2307D762E5C8023E /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4076D5D2497459AB3132CDE6 /* [CP] Check Pods Manifest.lock */ = {
+		C322A123842B7F245DE46B38 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -231,25 +232,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EA3C489BC3D672C6FC00818A /* [CP] Embed Pods Frameworks */ = {
+		F150F7918C93922EC00CF036 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NI Commercial/Pods-NI Commercial-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -259,9 +259,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B09277BA2F63FC7A00F26415 /* SecureScreenManager.swift in Sources */,
+				B09277B92F63FC7400F26415 /* SecureScreenManager.m in Sources */,
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
-				B5BB1B3CB37C349C31ADC323 /* SecureApi.swift in Sources */,
-				67C15A025387343843A52B14 /* SecureApi.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -270,7 +270,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8FD3C5CED77E874A7B8C7CD4 /* Pods-NI Commercial.debug.xcconfig */;
+			baseConfigurationReference = 5E381354A9DCC569380F494E /* Pods-NI Commercial.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -301,7 +301,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3E65EFDA56FB9EB23A00D9F7 /* Pods-NI Commercial.release.xcconfig */;
+			baseConfigurationReference = 51350B24464602961736DE29 /* Pods-NI Commercial.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

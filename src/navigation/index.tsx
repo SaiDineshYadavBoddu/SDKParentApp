@@ -112,16 +112,16 @@ const NavigationContent = () => {
     }
   }, [sessionExpired, setSessionExpired]);
 
-  if (deviceSecurityStatus === null) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <CustomLoader
-          loading={true}
-          overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
-        />
-      </View>
-    );
-  }
+  // if (deviceSecurityStatus === null) {
+  //   return (
+  //     <View style={[styles.container, { backgroundColor: colors.background }]}>
+  //       <CustomLoader
+  //         loading={true}
+  //         overlayStyle={{ backgroundColor: colors.background, opacity: 1 }}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   // if (!__DEV__ && !isDeviceSecure) {
   //   return (
