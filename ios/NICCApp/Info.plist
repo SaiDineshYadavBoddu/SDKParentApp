@@ -26,6 +26,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.keycloakpoc</string>
+				<string>com.networkinternational.networkcommercial</string>
 			</array>
 		</dict>
 	</array>

@@ -1,4 +1,4 @@
-package com.techmojo.networkcommercial.network
+package com.networkinternational.networkcommercial.network
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.*

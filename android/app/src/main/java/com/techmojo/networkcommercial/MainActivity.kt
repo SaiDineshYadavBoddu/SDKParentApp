@@ -1,4 +1,4 @@
-package com.techmojo.networkcommercial
+package com.networkinternational.networkcommercial
 
 import android.os.Bundle
 import android.view.WindowManager

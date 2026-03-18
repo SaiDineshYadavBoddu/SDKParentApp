@@ -85,9 +85,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.techmojo.networkcommercial"
+    namespace "com.networkinternational.networkcommercial"
     defaultConfig {
-        applicationId "com.techmojo.networkcommercial"
+        applicationId "com.networkinternational.networkcommercial"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-package com.techmojo.networkcommercial.network
+package com.networkinternational.networkcommercial.network
 
 import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
