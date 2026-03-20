@@ -137,6 +137,7 @@ android {
         stage {
             applicationIdSuffix '.stage'
             resValue 'string', 'app_name', '"NI Commercial Stage"'
+            resValue "string", "build_config_package", "com.networkinternational.networkcommercial"
         }
     }
 }
