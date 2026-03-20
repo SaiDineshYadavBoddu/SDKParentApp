@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Config from 'react-native-config';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -123,13 +124,13 @@ const NavigationContent = () => {
     );
   }
 
-  // if (!__DEV__ && !isDeviceSecure) {
-  //   return (
-  //     <View style={[styles.container, { backgroundColor: colors.background }]}>
-  //       <DeviceInsecureScreen />
-  //     </View>
-  //   );
-  // }
+  if (Config.REQUIRE_DEVICE_SECURITY === 'true' && !isDeviceSecure) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <DeviceInsecureScreen />
+      </View>
+    );
+  }
 
   const renderMainContent = () => {
     if (isLoading) {
