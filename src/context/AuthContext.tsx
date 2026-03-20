@@ -177,7 +177,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         !message.includes('User cancelled flow') &&
         !message.toLowerCase().includes('cancelled')
       ) {
-        showSignInToast(message);
+        // showSignInToast(message);
       }
     } finally {
       setIsLoading(false);
