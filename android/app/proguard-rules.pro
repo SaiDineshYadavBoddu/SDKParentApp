@@ -48,4 +48,7 @@
 -keep class okio.** { *; }
 
 # react-native-config
+-keep class com.lugg.ReactNativeConfig.** { *; }
 -keep class com.lugg.RNCConfig.** { *; }
+-keep class com.networkinternational.networkcommercial.BuildConfig { *; }
+-keep class com.networkinternational.networkcommercial.stage.BuildConfig { *; }
