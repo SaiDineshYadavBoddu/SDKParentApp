@@ -143,6 +143,9 @@ const LoginScreen = () => {
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <CustomText type={TextType.Button}>{t('login.loginButton')}</CustomText>
         </TouchableOpacity>
+        <CustomText type={TextType.CardText} style={styles.footerText}>
+          {t('login.footerText')}
+        </CustomText>
       </View>
     </View>
   );
