@@ -12,9 +12,9 @@
     "android:bundle-prod": "cd android && gradlew.bat bundleProdRelease && cd ..",
     "ios": "react-native run-ios",
     "ios:stage": "ENVFILE=.env.stage react-native run-ios",
-    "ios:stage-release": "ENVFILE=.env.stage react-native run-ios --configuration Release",
+    "ios:stage-release": "ENVFILE=.env.stage react-native run-ios --mode Release",
     "ios:prod": "ENVFILE=.env.prod react-native run-ios",
-    "ios:prod-release": "ENVFILE=.env.prod react-native run-ios --configuration Release",
+    "ios:prod-release": "ENVFILE=.env.prod react-native run-ios --mode Release",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
