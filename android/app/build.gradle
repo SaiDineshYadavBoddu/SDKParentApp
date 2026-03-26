@@ -132,11 +132,11 @@ android {
     flavorDimensions 'default'
     productFlavors {
         prod {
-            resValue 'string', 'app_name', '"NI Commercial"'
+            resValue 'string', 'app_name', '"Network Commercial"'
         }
         stage {
             applicationIdSuffix '.stage'
-            resValue 'string', 'app_name', '"NI Commercial Stage"'
+            resValue 'string', 'app_name', '"Network Commercial Stage"'
             resValue "string", "build_config_package", "com.networkinternational.networkcommercial"
         }
     }
