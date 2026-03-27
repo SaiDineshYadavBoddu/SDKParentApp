@@ -6,10 +6,20 @@ import CommonCrypto
 class SecureApi: NSObject, URLSessionDelegate {
 
     // MARK: SSL Pins
-    private let allowedPins = [
-        "YGqEby6vfqMde2KyON4Jtg5e1GAtHe9Ky1hrNanULgA=",
-        "iFvwVyJSxnQdyaUvUERIf+8qk7gRze3612JMwoO3zdU="
-    ]
+    private var allowedPins: [String] {
+        var pins: [String] = []
+        if let pin1 = RNCConfig.env(for: "SSL_PINNING_SHA256_1"), !pin1.isEmpty {
+            pins.append(pin1)
+        }
+        if let pin2 = RNCConfig.env(for: "SSL_PINNING_SHA256_2"), !pin2.isEmpty {
+            pins.append(pin2)
+        }
+        return pins
+    }
+
+    private var pinningHostname: String? {
+        return RNCConfig.env(for: "SSL_PINNING_HOSTNAME")
+    }
 
     // MARK: SHA256
     private func sha256(data: Data) -> String {
@@ -76,13 +86,25 @@ class SecureApi: NSObject, URLSessionDelegate {
                     completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
 
         let host = challenge.protectionSpace.host
-        print("SecureApi: Received challenge for host: \(host)")
+        NSLog("SecureApi: Received challenge for host: \(host)")
 
         guard challenge.protectionSpace.authenticationMethod ==
               NSURLAuthenticationMethodServerTrust,
               let serverTrust = challenge.protectionSpace.serverTrust else {
 
-            print("SecureApi: Challenge rejected - not server trust or no server trust object")
+            NSLog("SecureApi: Challenge rejected for host \(host) - not server trust or no server trust object")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        guard let targetHost = pinningHostname, !targetHost.isEmpty else {
+            NSLog("SecureApi: ERROR - No SSL_PINNING_HOSTNAME configured. Pinning is required and cannot be bypassed.")
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        guard host == targetHost else {
+            NSLog("SecureApi: ERROR - Host \(host) does not match target \(targetHost). Pinning is required for all requests.")
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
         }
@@ -94,32 +116,33 @@ class SecureApi: NSObject, URLSessionDelegate {
         let trusted = SecTrustEvaluateWithError(serverTrust, &error)
 
         if !trusted {
-            print("SecureApi: Trust evaluation failed: \(error?.localizedDescription ?? "unknown error")")
+            NSLog("SecureApi: ERROR - Trust evaluation failed for host \(host): \(error?.localizedDescription ?? "unknown error")")
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
         }
 
         if let certChain = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate] {
-            print("SecureApi: Certificate chain count: \(certChain.count)")
+            NSLog("SecureApi: Certificate chain count for \(host): \(certChain.count)")
 
+            let pins = allowedPins
             for certificate in certChain {
                 if let hash = publicKeyHash(for: certificate) {
 
-                    print("SecureApi: SERVER PIN: \(hash)")
+                    NSLog("SecureApi: SERVER PIN: \(hash)")
 
-                    if allowedPins.contains(hash) {
-                        print("SecureApi: Pin matched!")
+                    if pins.contains(hash) {
+                        NSLog("SecureApi: SUCCESS - SSL Pin matched for host \(host)!")
                         completionHandler(.useCredential,
                                           URLCredential(trust: serverTrust))
                         return
                     }
                 } else {
-                    print("SecureApi: Could not calculate hash for cert")
+                    NSLog("SecureApi: WARNING - Could not calculate hash for certificate in chain for \(host)")
                 }
             }
         }
 
-        print("SecureApi: No pins matched. Allowed pins: \(allowedPins)")
+        NSLog("SecureApi: ERROR - SSL Pinning Failure for host \(host). No pins matched. Allowed pins: \(allowedPins)")
         completionHandler(.cancelAuthenticationChallenge, nil)
     }
 
