@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import Config from 'react-native-config';
 import { authorize, logout, refresh, AuthConfiguration } from 'react-native-app-auth';
 import { Linking, AppState, AppStateStatus, ToastAndroid, Platform, Alert } from 'react-native';
 import { keycloakConfig } from '../config/keycloakConfig';
@@ -14,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { backendApi } from '../network/api.config';
 import { hasRole, getBankCode, getBankId, getRole } from '../utils/jwtUtils';
 import { isSslPinningError, reportSslPinningFailure } from '../utils/sslPinningError';
+import { Logger } from '../utils/logger';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -156,7 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(result.refreshToken);
       setExpirationDate(result.accessTokenExpirationDate);
 
-      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
+      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', Config.KEYCLOAK_CLIENT_ROLE_CLIENT_ID as string);
       setIsCardholder(hasCardholderRole);
       globalIsCardholder = hasCardholderRole;
 
@@ -191,7 +193,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Cast to any to avoid type error with idTokenToHint
         await logout(keycloakConfig as any, {
           idToken: idToken,
-          postLogoutRedirectUrl: keycloakConfig.redirectUrl,
+          postLogoutRedirectUrl: keycloakConfig.redirectUrl as string,
         });
       }
     } catch (error) {
@@ -254,7 +256,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } as AuthConfiguration);
 
       // Set cardholder role first, then tokens, then loading false in one batch so navigator never shows MainStack with old role
-      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', 'corporate-portal-api-sit');
+      const hasCardholderRole = hasRole(result.accessToken, 'cardholder', Config.KEYCLOAK_CLIENT_ROLE_CLIENT_ID as string);
       setIsCardholder(hasCardholderRole);
       globalIsCardholder = hasCardholderRole;
 

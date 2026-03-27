@@ -3,17 +3,25 @@ import { DeviceSecurityStatus, getDeviceSecurityStatus } from "../utils/deviceSe
 
 export const useDeviceSecurity = () => {
     const [deviceSecurityStatus, setDeviceSecurityStatus] = useState<DeviceSecurityStatus | null>(null);
-    const [isDeviceSecure, setIsDeviceSecure] = useState(false);
 
     useEffect(() => {
         const fetchDeviceSecurityStatus = async () => {
             const status = await getDeviceSecurityStatus()
             setDeviceSecurityStatus(status)
-            const isCompromised = status.isJailbroken || status.isRooted || status.isEmulator || status.isDebuggerAttached || status.isMockLocation || status.isOnExternalStorage || status.isDevelopmentSettingsModeEnabled || status.isAdbEnabled
-            setIsDeviceSecure(!isCompromised)
         }
         fetchDeviceSecurityStatus()
     }, [])
+
+    const isDeviceSecure = !deviceSecurityStatus ? true : !(
+        deviceSecurityStatus.isJailbroken ||
+        deviceSecurityStatus.isRooted ||
+        deviceSecurityStatus.isEmulator ||
+        deviceSecurityStatus.isDebuggerAttached ||
+        deviceSecurityStatus.isMockLocation ||
+        deviceSecurityStatus.isOnExternalStorage ||
+        deviceSecurityStatus.isDevelopmentSettingsModeEnabled ||
+        deviceSecurityStatus.isAdbEnabled
+    );
 
     return {
         deviceSecurityStatus,
