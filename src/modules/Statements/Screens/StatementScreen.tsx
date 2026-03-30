@@ -12,6 +12,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ms } from 'react-native-size-matters';
+import Config from 'react-native-config';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { Spacing } from '../../../theme/spacing';
 import CustomText, { TextType } from '../../../common/components/CustomText';
@@ -107,14 +108,13 @@ const StatementScreen = () => {
     setIsDownloading(true);
     const { dirs } = ReactNativeBlobUtil.fs;
     const token = getAccessToken();
-    const baseUrl = 'https://sit.corporate.un.infradev.w4.az.network.ae';
+    const baseUrl = Config.BASE_URL || 'https://nicorportal.com';
     const formatValue = selectedFormat.toUpperCase();
     const config = FORMAT_CONFIG[selectedFormat] || FORMAT_CONFIG.csv;
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
-    // Unique filename per download so "Open file" always opens this download (avoids (1)/(2) and opening old file)
     const timestamp = Date.now();
     const fileName = `Corporate Executive Card Statement ${day}-${month}-${year}-${timestamp}.${config.extension}`;
 
@@ -241,7 +241,7 @@ const StatementScreen = () => {
 
       const res = await ReactNativeBlobUtil.config(configWithAuth).fetch(
         'GET',
-        `https://sit.corporate.un.infradev.w4.az.network.ae${API_ENDPOINTS.GET_STATEMENT_DOWNLOAD}?statementName=${item.fileKey}`,
+        `${Config.BASE_URL || 'https://nicorportal.com'}${API_ENDPOINTS.GET_STATEMENT_DOWNLOAD}?statementName=${item.fileKey}`,
         {
           Authorization: `Bearer ${token}`,
         }
