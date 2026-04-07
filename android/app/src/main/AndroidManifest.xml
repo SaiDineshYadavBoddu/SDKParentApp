@@ -40,7 +40,7 @@
                   android:scheme="com.keycloakpoc"
                   android:host="oauthredirect"/>
               <data
-                  android:scheme="com.network.commercial"
+                  android:scheme="com.networkinternational.networkcommercial"
                   android:host="oauthredirect"/>
           </intent-filter>
       </activity>

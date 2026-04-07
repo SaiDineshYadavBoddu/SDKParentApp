@@ -1,4 +1,4 @@
-package com.network.commercial
+package com.networkinternational.networkcommercial
 
 import android.os.Bundle
 import android.view.WindowManager

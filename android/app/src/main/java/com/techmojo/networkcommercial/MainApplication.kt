@@ -1,4 +1,4 @@
-package com.network.commercial
+package com.networkinternational.networkcommercial
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -11,7 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.faizal.OtpVerify.OtpVerifyPackage
 import com.reactnativecommunity.netinfo.NetInfoPackage
-import com.network.commercial.network.SecureApiPackage
+import com.networkinternational.networkcommercial.network.SecureApiPackage
 
 
 class MainApplication : Application(), ReactApplication {

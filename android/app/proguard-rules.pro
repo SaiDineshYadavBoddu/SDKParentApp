@@ -50,5 +50,5 @@
 # react-native-config
 -keep class com.lugg.ReactNativeConfig.** { *; }
 -keep class com.lugg.RNCConfig.** { *; }
--keep class com.network.commercial.BuildConfig { *; }
--keep class com.network.commercial.stage.BuildConfig { *; }
+-keep class com.networkinternational.networkcommercial.BuildConfig { *; }
+-keep class com.networkinternational.networkcommercial.stage.BuildConfig { *; }

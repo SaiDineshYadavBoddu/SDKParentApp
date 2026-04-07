@@ -301,7 +301,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.network.commercial;
+				PRODUCT_BUNDLE_IDENTIFIER = com.networkinternational.networkcommercial;
 				PRODUCT_NAME = "NI Commercial";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NICCApp/NICCApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -331,7 +331,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.network.commercial;
+				PRODUCT_BUNDLE_IDENTIFIER = com.networkinternational.networkcommercial;
 				PRODUCT_NAME = "NI Commercial";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/NICCApp/NICCApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

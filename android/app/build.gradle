@@ -85,9 +85,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.network.commercial"
+    namespace "com.networkinternational.networkcommercial"
     defaultConfig {
-        applicationId "com.network.commercial"
+        applicationId "com.networkinternational.networkcommercial"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -137,7 +137,7 @@ android {
         stage {
             applicationIdSuffix '.stage'
             resValue 'string', 'app_name', '"Network Commercial Stage"'
-            resValue "string", "build_config_package", "com.network.commercial"
+            resValue "string", "build_config_package", "com.networkinternational.networkcommercial"
         }
     }
 }
