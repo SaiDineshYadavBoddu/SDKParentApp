@@ -1,4 +1,4 @@
-BASE_URL=https:/$()/nicorportal.com/
+BASE_URL=https:/$()/nicorportal.com
 NISDK_ROOT_URL=https:/$()/nicorportal.com/api/mine/secured-cards
 KEYCLOAK_ISSUER=https:/$()/identity.network.global/auth/realms/Prepaid-Portal
 KEYCLOAK_CLIENT_ID=corporate-portal-mobile
@@ -7,5 +7,5 @@ REQUIRE_DEVICE_SECURITY=false
 ALLOW_SCREENSHOTS=true
 KEYCLOAK_CLIENT_ROLE_CLIENT_ID=corporate-portal-api
 SSL_PINNING_HOSTNAME=nicorportal.com
-SSL_PINNING_SHA256_1=R3BpDPADwxchZldkEzl5d1hImDF9EZfobiVXa23CCmw
+SSL_PINNING_SHA256_1=R3BpDPADwxchZldkEzl5d1hImDF9EZfobiVXa23CCmw=
 SSL_PINNING_SHA256_2=kZwN96eHtZftBWrOZUsd6cA4es80n3NzSk/XtYz2EqQ=
