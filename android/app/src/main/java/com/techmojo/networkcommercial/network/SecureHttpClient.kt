@@ -1,6 +1,6 @@
-package com.networkinternational.networkcommercial.network
+package com.network.commercial.network
 
-import com.networkinternational.networkcommercial.BuildConfig
+import com.network.commercial.BuildConfig
 import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
