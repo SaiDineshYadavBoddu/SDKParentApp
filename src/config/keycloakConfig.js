@@ -7,5 +7,5 @@ export const keycloakConfig = {
   scopes: ['openid', 'profile', 'email', 'offline_access'],
   dangerouslyAllowInsecureHttpRequests: true,
   /** iOS: false = persistent session, cookies kept (can reduce "open Keycloak" prompt) */
-  iosPrefersEphemeralSession: true,
+  iosPrefersEphemeralSession: false,
 };
