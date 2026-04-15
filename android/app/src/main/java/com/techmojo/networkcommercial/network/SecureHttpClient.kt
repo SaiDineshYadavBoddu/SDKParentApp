@@ -18,27 +18,27 @@ object SecureHttpClient {
             val builder = OkHttpClient.Builder()
 
             // 1. Force HTTP/1.1 as a baseline for debugging (HTTP/2 often causes INTERNAL_ERROR)
-            builder.protocols(listOf(Protocol.HTTP_1_1))
+            // builder.protocols(listOf(Protocol.HTTP_1_1))
 
             // 2. Increase timeouts to handle slower prod handshakes or redirects
-            builder.connectTimeout(30, TimeUnit.SECONDS)
-            builder.readTimeout(30, TimeUnit.SECONDS)
-            builder.writeTimeout(30, TimeUnit.SECONDS)
+            // builder.connectTimeout(30, TimeUnit.SECONDS)
+            // builder.readTimeout(30, TimeUnit.SECONDS)
+            // builder.writeTimeout(30, TimeUnit.SECONDS)
 
             // 3. Explicitly allow modern TLS versions
-            val spec = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
-                .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3)
-                .build()
-            builder.connectionSpecs(listOf(spec, ConnectionSpec.CLEARTEXT))
+            // val spec = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                // .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3)
+                // .build()
+            // builder.connectionSpecs(listOf(spec, ConnectionSpec.CLEARTEXT))
 
             // 4. Add User-Agent to mimic a browser or iOS client (some servers reject OkHttp default)
-            builder.addInterceptor { chain ->
-                val original = chain.request()
-                val request = original.newBuilder()
-                    .header("User-Agent", "NICCApp/1.0 (Android; " + android.os.Build.VERSION.RELEASE + ")")
-                    .build()
-                chain.proceed(request)
-            }
+            // builder.addInterceptor { chain ->
+                // val original = chain.request()
+                // val request = original.newBuilder()
+                    // .header("User-Agent", "NICCApp/1.0 (Android; " + android.os.Build.VERSION.RELEASE + ")")
+                    // .build()
+                // chain.proceed(request)
+            // }
 
             // 5. SSL Pinning
             val hostname = BuildConfig.SSL_PINNING_HOSTNAME
