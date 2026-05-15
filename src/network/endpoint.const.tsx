@@ -1,3 +1,5 @@
+import Config from 'react-native-config';
+
 export const API_ENDPOINTS = {
   GET_CARDS: '/api/v1/cards/mine',
   GET_REQUESTS: '/api-approval/api/v1/requests/mine',
@@ -5,8 +7,8 @@ export const API_ENDPOINTS = {
   GET_REQUEST_TYPES: '/api-approval/api/v1/requests/mine/types',
   GET_USER: '/api/v1/customers/profile',
   GET_USER_ME: '/api/v1/users/me',
-  SEND_OTP: '/api-keycloak/auth/realms/Network/otp-token/otp-code',
-  VERIFY_OTP: '/api-keycloak/auth/realms/Network/otp-token/verification-code',
+  SEND_OTP: `/api-keycloak/auth/realms/${Config.KEYCLOAK_REALM}/otp-token/otp-code`,
+  VERIFY_OTP: `/api-keycloak/auth/realms/${Config.KEYCLOAK_REALM}/otp-token/verification-code`,
   GET_POSTS: '/posts',
   VIEW_POST: '/posts/',
   COMMENT_POST: '/comments/',
