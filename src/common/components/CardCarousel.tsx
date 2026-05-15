@@ -63,8 +63,8 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
   const [currentIndex, setCurrentIndex] = useState(selectedIndex || 0);
   const isFocused = useIsFocused();
 
-  console.log("Ni SDK result log", result)
-  console.log("Ni SDK error log", error)
+  // console.log("Ni SDK result log", result)
+  // console.log("Ni SDK error log", error)
 
   // Reset visibility when screen loses focus
   useEffect(() => {

@@ -103,7 +103,7 @@ const StatementScreen = () => {
 
   const handleDownload = async () => {
     if (!cardIdForApi) return;
-    console.log("cardIdForApi", cardIdForApi);
+    // console.log("cardIdForApi", cardIdForApi);
 
     setIsDownloading(true);
     const { dirs } = ReactNativeBlobUtil.fs;
