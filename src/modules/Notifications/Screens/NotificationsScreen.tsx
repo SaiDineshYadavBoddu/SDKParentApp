@@ -147,6 +147,58 @@ const NotificationsScreen = () => {
     }
   }, [isLoading, hasMore, hasError, fetchNotifications, page]);
 
+  const renderItem = useCallback(({ item }: { item: NotificationType }) => (
+    <NotificationItem
+      item={item}
+      onViewRequest={() => {
+        if (!item.isRead) {
+          handleMarkAsRead(item.id);
+        }
+        setSelectedRequest({
+          id: item.subjectId,
+        } as unknown as RequestItem);
+      }}
+      onViewCard={() => {
+        if (!item.isRead) {
+          handleMarkAsRead(item.id);
+        }
+        if (item.subjectId) {
+          (navigation as any).reset({
+            index: 0,
+            routes: [
+              {
+                name: 'BottomTabs',
+                params: {
+                  screen: 'My Cards',
+                  params: { cardId: item.subjectId },
+                  cardId: item.subjectId,
+                },
+              },
+            ],
+          });
+        }
+      }}
+    />
+  ), [handleMarkAsRead, navigation]);
+
+  const renderSectionHeader = useCallback(({ section: { title } }: { section: { title: string } }) => (
+    <View style={styles.sectionHeader}>
+      <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
+        {t(`notifications.sections.${title}`)}
+      </CustomText>
+      {hasUnread && title === groupedNotifications[0]?.title && (
+        <TouchableOpacity onPress={handleMarkAllAsRead}>
+          <CustomText
+            type={TextType.ScreenDisplaySmall}
+            style={{ color: colors.primary, fontWeight: '600' }}
+          >
+            {t('notifications.markAllAsRead')}
+          </CustomText>
+        </TouchableOpacity>
+      )}
+    </View>
+  ), [t, handleMarkAllAsRead, colors.primary, hasUnread, groupedNotifications]);
+
   const handleCancelRequest = async (requestId: string) => {
     try {
       await cancelRequest(requestId).unwrap();
@@ -189,56 +241,8 @@ const NotificationsScreen = () => {
         <SectionList
           sections={groupedNotifications}
           keyExtractor={item => item.id.toString()}
-          renderItem={useCallback(({ item }: { item: NotificationType }) => (
-            <NotificationItem
-              item={item}
-              onViewRequest={() => {
-                if (!item.isRead) {
-                  handleMarkAsRead(item.id);
-                }
-                setSelectedRequest({
-                  id: item.subjectId,
-                } as unknown as RequestItem);
-              }}
-              onViewCard={() => {
-                if (!item.isRead) {
-                  handleMarkAsRead(item.id);
-                }
-                if (item.subjectId) {
-                  (navigation as any).reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: 'BottomTabs',
-                        params: {
-                          screen: 'My Cards',
-                          params: { cardId: item.subjectId },
-                          cardId: item.subjectId,
-                        },
-                      },
-                    ],
-                  });
-                }
-              }}
-            />
-          ), [handleMarkAsRead, navigation])}
-          renderSectionHeader={useCallback(({ section: { title } }: { section: { title: string } }) => (
-            <View style={styles.sectionHeader}>
-              <CustomText type={TextType.Label} style={{ fontWeight: '700' }}>
-                {t(`notifications.sections.${title}`)}
-              </CustomText>
-              {hasUnread && title === groupedNotifications[0]?.title && (
-                <TouchableOpacity onPress={handleMarkAllAsRead}>
-                  <CustomText
-                    type={TextType.ScreenDisplaySmall}
-                    style={{ color: colors.primary, fontWeight: '600' }}
-                  >
-                    {t('notifications.markAllAsRead')}
-                  </CustomText>
-                </TouchableOpacity>
-              )}
-            </View>
-          ), [t, handleMarkAllAsRead, colors.primary, hasUnread, groupedNotifications])}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContent}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
