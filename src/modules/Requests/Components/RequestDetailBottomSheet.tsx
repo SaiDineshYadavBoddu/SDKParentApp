@@ -17,7 +17,6 @@ import { getStatusColors } from '../../../utils/requestUtils';
 import { useGetRequestByIdQuery, useRetryRequestMutation } from '../../../network/requests/request.api';
 import { useSearchCardsQuery } from '../../../network/card/card.api';
 import { ActivityIndicator } from 'react-native';
-import { getGlobalRole } from '../../../context/AuthContext';
 import CustomErrorView from '../../../common/components/CustomErrorView';
 import CurrencySVG from '../../../assets/svgs/CurrencySVG';
 import InfoSVG from '../../../assets/svgs/InfoSVG';
@@ -120,7 +119,7 @@ const RequestDetailBottomSheet: React.FC<RequestDetailBottomSheetProps> = ({
             { label: 'requester', value: activeRequest?.requester || '-' },
             { label: 'requesterId', value: activeRequest?.requesterId || '-' },
             { label: 'requesterName', value: activeRequest?.requester || '-' },
-            { label: 'role', value: getGlobalRole() || '-' },
+            { label: 'role', value: actionData?.role || '-' },
         ];
     }
 
