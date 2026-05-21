@@ -69,7 +69,7 @@ export default function Addresses() {
         {
           id: '1',
           label: 'profile.details.addresses.fields.line',
-          value: currentAddress?.addressLine1 ?? '-',
+          value: [currentAddress?.addressLine1, currentAddress?.addressLine2].filter(Boolean).join(', ') || '-',
         },
         {
           id: '2',
