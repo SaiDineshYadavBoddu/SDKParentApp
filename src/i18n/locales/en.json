@@ -109,6 +109,14 @@
     "loginButton": "Sign in",
     "footerText": "If you're an existing merchant, please contact your Relationship Manager or call 6004488 to access the app."
   },
+  "appUpdate": {
+    "title": "Update Available",
+    "message": "A new version of the app is available. Update now for the latest features and improvements.",
+    "hardTitle": "Update Required",
+    "hardMessage": "This version of the app is no longer supported. Please update to continue using the app.",
+    "updateButton": "Update Now",
+    "laterButton": "Later"
+  },
   "manageCard": {
     "title": "Manage Card",
     "controlsTitle": "Card Controls",

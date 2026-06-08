@@ -32,6 +32,9 @@ import { useDeviceSecurity } from '../hooks/useDeviceSecurity';
 import DeviceInsecureScreen from '../common/components/DeviceInsecureScreen';
 import { setSslPinningFailureHandler } from '../utils/sslPinningError';
 import SslPinningErrorScreen from '../common/components/SslPinningErrorScreen';
+import useAppUpdateCheck from '../hooks/useAppUpdateCheck';
+import SoftUpdateModal from '../common/components/SoftUpdateModal';
+import { Linking } from 'react-native';
 
 const NavigationContent = () => {
   const {
@@ -52,6 +55,12 @@ const NavigationContent = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showSslPinningError, setShowSslPinningError] = useState(false);
   const insets = useSafeAreaInsets();
+  const { checking: isUpdateChecking, updateType, storeUrl } = useAppUpdateCheck();
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+  useEffect(() => {
+    if (updateType) setShowUpdateModal(true);
+  }, [updateType]);
 
   useEffect(() => {
     setSslPinningFailureHandler(() => setShowSslPinningError(true));
@@ -113,7 +122,7 @@ const NavigationContent = () => {
     }
   }, [sessionExpired, setSessionExpired]);
 
-  if (deviceSecurityStatus === null) {
+  if (isUpdateChecking || deviceSecurityStatus === null) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <CustomLoader
@@ -191,6 +200,16 @@ const NavigationContent = () => {
           <SslPinningErrorScreen />
         </View>
       )}
+
+      <SoftUpdateModal
+        visible={showUpdateModal}
+        isHardUpdate={updateType === 'hard'}
+        onUpdate={() => {
+          if (storeUrl) Linking.openURL(storeUrl);
+          if (updateType === 'soft') setShowUpdateModal(false);
+        }}
+        onDismiss={() => setShowUpdateModal(false)}
+      />
     </View>
   );
 };
