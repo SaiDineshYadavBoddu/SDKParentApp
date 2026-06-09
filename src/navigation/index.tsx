@@ -27,11 +27,11 @@ import CustomWarning from '../common/components/CustomWarning';
 import { Spacing } from '../theme/spacing';
 import CustomLoader from '../common/components/CustomLoader';
 import ConfirmationBottomSheet from '../common/components/ConfirmationBottomSheet';
-import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 import { useDeviceSecurity } from '../hooks/useDeviceSecurity';
 import DeviceInsecureScreen from '../common/components/DeviceInsecureScreen';
 import { setSslPinningFailureHandler } from '../utils/sslPinningError';
 import SslPinningErrorScreen from '../common/components/SslPinningErrorScreen';
+import AccessRestrictedScreen from '../modules/Authentication/screens/AccessRestrictedScreen';
 
 const NavigationContent = () => {
   const {
