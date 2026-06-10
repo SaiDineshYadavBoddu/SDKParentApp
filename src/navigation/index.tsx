@@ -203,7 +203,7 @@ const NavigationContent = () => {
 
       <SoftUpdateModal
         visible={showUpdateModal}
-        isHardUpdate={updateType === 'hard'}
+        isHardUpdate={updateType === 'HARD'}
         onUpdate={() => {
           if (storeUrl) Linking.openURL(storeUrl);
           if (updateType === 'soft') setShowUpdateModal(false);

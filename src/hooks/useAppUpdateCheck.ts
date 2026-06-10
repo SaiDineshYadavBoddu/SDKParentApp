@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import remoteConfig from '@react-native-firebase/remote-config';
 import DeviceInfo from 'react-native-device-info';
+import { Logger } from '../utils/logger';
 
-export type UpdateType = 'soft' | 'hard' | null;
+export type UpdateType = 'SOFT' | 'HARD' | null;
 
 interface AppUpdateCheckResult {
   checking: boolean;
@@ -40,32 +41,36 @@ const useAppUpdateCheck = (): AppUpdateCheckResult => {
         });
 
         await remoteConfig().setDefaults({
-          latest_version: '0.0.0',
-          update_type: 'soft',
+          android_latest_version: '0.0.0',
+          ios_latest_version: '0.0.0',
+          update_type: 'SOFT',
           store_url_android: 'https://play.google.com/store/apps/details?id=com.networkinternational.networkcommercial',
           store_url_ios: 'https://apps.apple.com/ae/app/network-commercial/id6761809664',
         });
 
         await remoteConfig().fetchAndActivate();
 
-        const latestVersion = remoteConfig().getString('latest_version');
+        const isAndroid = DeviceInfo.getSystemName() === 'Android';
+        const latestVersion = isAndroid
+          ? remoteConfig().getString('android_latest_version')
+          : remoteConfig().getString('ios_latest_version');
         const type = remoteConfig().getString('update_type') as UpdateType;
         const currentVersion = DeviceInfo.getVersion();
-        const androidUrl = remoteConfig().getString('store_url_android');
-        const iosUrl = remoteConfig().getString('store_url_ios');
-        const url = DeviceInfo.getSystemName() === 'Android' ? androidUrl : iosUrl;
+        const url = isAndroid
+          ? remoteConfig().getString('store_url_android')
+          : remoteConfig().getString('store_url_ios');
 
-        console.log('[AppUpdate] currentVersion:', currentVersion);
-        console.log('[AppUpdate] latestVersion:', latestVersion);
-        console.log('[AppUpdate] update_type:', type);
-        console.log('[AppUpdate] needsUpdate:', compareVersions(currentVersion, latestVersion));
+        Logger.log('[AppUpdate] currentVersion:', currentVersion);
+        Logger.log('[AppUpdate] latestVersion:', latestVersion);
+        Logger.log('[AppUpdate] update_type:', type);
+        Logger.log('[AppUpdate] needsUpdate:', compareVersions(currentVersion, latestVersion));
 
-        if (compareVersions(currentVersion, latestVersion) && (type === 'soft' || type === 'hard')) {
+        if (compareVersions(currentVersion, latestVersion) && (type === 'SOFT' || type === 'HARD')) {
           setUpdateType(type);
           setStoreUrl(url);
         }
       } catch (e) {
-        console.log('[AppUpdate] error:', e);
+        Logger.error('[AppUpdate] error:', e);
       } finally {
         setChecking(false);
       }
