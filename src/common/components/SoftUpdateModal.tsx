@@ -9,11 +9,12 @@ import { Spacing } from '../../theme/spacing';
 interface SoftUpdateModalProps {
   visible: boolean;
   isHardUpdate: boolean;
+  message: string;
   onUpdate: () => void;
   onDismiss: () => void;
 }
 
-const SoftUpdateModal = ({ visible, isHardUpdate, onUpdate, onDismiss }: SoftUpdateModalProps) => {
+const SoftUpdateModal = ({ visible, isHardUpdate, message, onUpdate, onDismiss }: SoftUpdateModalProps) => {
   const { t } = useTranslation();
 
   return (
@@ -24,7 +25,7 @@ const SoftUpdateModal = ({ visible, isHardUpdate, onUpdate, onDismiss }: SoftUpd
             {t(isHardUpdate ? 'appUpdate.hardTitle' : 'appUpdate.title')}
           </CustomText>
           <CustomText type={TextType.CardText} style={styles.desc}>
-            {t(isHardUpdate ? 'appUpdate.hardMessage' : 'appUpdate.message')}
+            {message}
           </CustomText>
           <View style={styles.btnContainer}>
             <CustomButton

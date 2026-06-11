@@ -55,7 +55,7 @@ const NavigationContent = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showSslPinningError, setShowSslPinningError] = useState(false);
   const insets = useSafeAreaInsets();
-  const { checking: isUpdateChecking, updateType, storeUrl } = useAppUpdateCheck();
+  const { checking: isUpdateChecking, updateType, storeUrl, updateMessage } = useAppUpdateCheck();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   useEffect(() => {
@@ -204,9 +204,10 @@ const NavigationContent = () => {
       <SoftUpdateModal
         visible={showUpdateModal}
         isHardUpdate={updateType === 'HARD'}
+        message={updateMessage}
         onUpdate={() => {
           if (storeUrl) Linking.openURL(storeUrl);
-          if (updateType === 'soft') setShowUpdateModal(false);
+          if (updateType === 'SOFT') setShowUpdateModal(false);
         }}
         onDismiss={() => setShowUpdateModal(false)}
       />
