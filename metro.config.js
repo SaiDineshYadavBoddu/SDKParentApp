@@ -11,7 +11,17 @@ const nodeModules = path.resolve(projectRoot, 'node_modules');
  * @type {import('@react-native/metro-config').MetroConfig}
  */
 const config = {
-  resolver: {},
+  resolver: {
+    resolveRequest: (context, moduleName, platform) => {
+      if (moduleName === 'react-native-device-info') {
+        return {
+          filePath: path.resolve(nodeModules, 'react-native-device-info/lib/commonjs/index.js'),
+          type: 'sourceFile',
+        };
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
+  },
   watchFolders: [nodeModules],
 };
 

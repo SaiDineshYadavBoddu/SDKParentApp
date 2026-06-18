@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "143912879744",
-    "project_id": "mint-commercial-cards",
-    "storage_bucket": "mint-commercial-cards.firebasestorage.app"
+    "project_number": "709448491218",
+    "project_id": "commercial-card-a31e2",
+    "storage_bucket": "commercial-card-a31e2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:143912879744:android:9eb5e8501b9e8898c84865",
+        "mobilesdk_app_id": "1:709448491218:android:b1ef74b8eebf2dec400d0b",
         "android_client_info": {
           "package_name": "com.networkinternational.networkcommercial"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDr9lSFedqyzZZPNn-gz87AMmqmB0GgiSI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:143912879744:android:07afc9e55e882cdfc84865",
-        "android_client_info": {
-          "package_name": "com.networkinternational.networkcommercial.stage"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDr9lSFedqyzZZPNn-gz87AMmqmB0GgiSI"
+          "current_key": "AIzaSyCutDIWS4Jj5xoI04fP7jg7MrZkq7NVz5c"
         }
       ],
       "services": {

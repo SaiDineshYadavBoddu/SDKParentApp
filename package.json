@@ -23,7 +23,7 @@
     "@networkinternational/ni-card-management-sdk": "^1.0.4",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-firebase/app": "^24.1.0",
-    "@react-native-firebase/remote-config": "^24.1.0",
+    "@react-native-firebase/remote-config": "^24.1.1",
     "@react-native/new-app-screen": "0.81.5",
     "@react-navigation/bottom-tabs": "^7.9.0",
     "@react-navigation/native": "^7.1.22",
