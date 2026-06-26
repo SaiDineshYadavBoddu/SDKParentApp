@@ -113,77 +113,77 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
           animatedStyle,
         ]}
       >
-        <CustomImage
-          source={
-            item.product === 'commercial'
-              ? require('../../assets/images/commercial_card.png')
-              : require('../../assets/images/business_card.png')
-          }
-          style={{ width: cardWidth, height: cardHeight }}
-          resizeMode="cover"
-        />
+        <View style={styles.cardInner}>
+          <CustomImage
+            source={
+              item.product === 'commercial'
+                ? require('../../assets/images/commercial_card.png')
+                : require('../../assets/images/business_card.png')
+            }
+            style={{ width: cardWidth, height: cardHeight }}
+            resizeMode="cover"
+          />
 
-        {showEyeIcon && (
-          <TouchableOpacity
-            onPress={() => onToggleVisibility(item.cardIdentifier)}
-            style={[styles.toggle, { zIndex: 20 }]}
-          >
-            {isDetailsVisible ? <EyeOffSVG /> : <EyeSVG />}
-          </TouchableOpacity>
-        )}
+          {showEyeIcon && (
+            <TouchableOpacity
+              onPress={() => onToggleVisibility(item.cardIdentifier)}
+              style={[styles.toggle, { zIndex: 20 }]}
+            >
+              {isDetailsVisible ? <EyeOffSVG /> : <EyeSVG />}
+            </TouchableOpacity>
+          )}
 
-        <View style={styles.cardDetails}>
-          <CustomText
-            type={TextType.ImageLarge}
-            style={{ paddingBottom: Spacing.s, color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
-          >
-            {isDetailsVisible && sensitiveData?.clearPan
-              ? formatPAN(sensitiveData.clearPan)
-              : (() => {
-                const masked = item.maskedPan || '';
-                const clean = masked.replace(/[\s-]/g, '');
-                if (clean.length < 12) return clean;
-                const first = clean.slice(0, 4);
-                const last = clean.slice(-4);
-                return `${first} **** **** ${last}`;
-              })()}
-          </CustomText>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingBottom: Spacing.xl,
-            }}
-          >
-            <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
-              {(() => {
-                  const date = item.expiryDate || '';
-                  const parts = date.split('-');
-                  if (parts.length >= 2) {
-                    const year = parts[0].slice(-2);
-                    const month = parts[1];
-                    return `${month}/${year}`;
-                  }
-                  return date;
+          <View style={styles.cardDetails}>
+            <CustomText
+              type={TextType.ImageLarge}
+              style={{ paddingBottom: Spacing.s, color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
+            >
+              {isDetailsVisible && sensitiveData?.clearPan
+                ? formatPAN(sensitiveData.clearPan)
+                : (() => {
+                  const masked = item.maskedPan || '';
+                  const clean = masked.replace(/[\s-]/g, '');
+                  if (clean.length < 12) return clean;
+                  const first = clean.slice(0, 4);
+                  const last = clean.slice(-4);
+                  return `${first} **** **** ${last}`;
                 })()}
             </CustomText>
-            <CustomText
-              type={TextType.ImageSmall}
-              style={{ marginLeft: ms(15), color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
+
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingBottom: Spacing.xl,
+              }}
             >
-              {isDetailsVisible && sensitiveData?.clearCVV2
-                ? sensitiveData.clearCVV2
-                : '***'}
+              <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
+                {(() => {
+                    const date = item.expiryDate || '';
+                    const parts = date.split('-');
+                    if (parts.length >= 2) {
+                      const year = parts[0].slice(-2);
+                      const month = parts[1];
+                      return `${month}/${year}`;
+                    }
+                    return date;
+                  })()}
+              </CustomText>
+              <CustomText
+                type={TextType.ImageSmall}
+                style={{ marginLeft: ms(15), color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
+              >
+                {isDetailsVisible && sensitiveData?.clearCVV2
+                  ? sensitiveData.clearCVV2
+                  : '***'}
+              </CustomText>
+            </View>
+
+            <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
+              {sensitiveData?.cardholderName || item.cardholderName}
             </CustomText>
           </View>
-
-          <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
-            {sensitiveData?.cardholderName || item.cardholderName}
-          </CustomText>
         </View>
-
-
       </Animated.View>
     </View>
   );
@@ -195,13 +195,18 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: ms(16),
-    overflow: 'hidden',
     width: '100%',
     elevation: 8,
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
+  },
+  cardInner: {
+    borderRadius: ms(16),
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
   },
   toggle: {
     position: 'absolute',
