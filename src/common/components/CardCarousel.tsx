@@ -215,6 +215,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
         initialScrollIndex={selectedIndex && selectedIndex > 0 ? selectedIndex : undefined}
         horizontal
         showsHorizontalScrollIndicator={false}
+        overScrollMode="never"
         snapToInterval={SNAP_INTERVAL}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -231,7 +232,7 @@ const CardCarousel: React.FC<CardCarouselProps> = ({ data, onIndexChange, select
           offset: SNAP_INTERVAL * index,
           index,
         })}
-        style={{ overflow: 'visible' }}
+        style={{ overflow: 'visible', backgroundColor: '#FFFFFF' }}
       />
       <View style={styles.paginatorContainer}>
         {data.map((_, i) => (
@@ -271,7 +272,7 @@ const Dot = memo(({ i, scrollX, colors }: { i: number; scrollX: any; colors: any
 
     return {
       transform: [{ scaleX: dotScaleX }],
-      backgroundColor: backgroundColorValue > 0.5 ? colors.onPrimary : colors.primaryContainer,
+      backgroundColor: backgroundColorValue > 0.5 ? colors.primary : colors.primaryContainer,
     };
   });
 

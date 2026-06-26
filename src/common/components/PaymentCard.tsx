@@ -21,6 +21,7 @@ interface CardData {
   cardStatus: string;
   statusCause?: string;
   brand?: string;
+  product?: string;
 }
 
 interface PaymentCardProps {
@@ -113,14 +114,13 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         ]}
       >
         <CustomImage
-          source={require('../../assets/images/cardbackground.png')}
+          source={
+            item.product === 'commercial'
+              ? require('../../assets/images/commercial_card.png')
+              : require('../../assets/images/business_card.png')
+          }
+          style={{ width: cardWidth, height: cardHeight }}
           resizeMode="cover"
-        />
-
-        <CustomImage
-          source={require('../../assets/images/LogoDefault.png')}
-          style={styles.logo}
-          resizeMode="contain"
         />
 
         {showEyeIcon && (
@@ -135,7 +135,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
         <View style={styles.cardDetails}>
           <CustomText
             type={TextType.ImageLarge}
-            style={{ paddingBottom: Spacing.s }}
+            style={{ paddingBottom: Spacing.s, color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
           >
             {isDetailsVisible && sensitiveData?.clearPan
               ? formatPAN(sensitiveData.clearPan)
@@ -156,7 +156,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               paddingBottom: Spacing.xl,
             }}
           >
-            <CustomText type={TextType.ImageSmall}>
+            <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
               {(() => {
                   const date = item.expiryDate || '';
                   const parts = date.split('-');
@@ -170,7 +170,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             </CustomText>
             <CustomText
               type={TextType.ImageSmall}
-              style={{ marginLeft: ms(15) }}
+              style={{ marginLeft: ms(15), color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}
             >
               {isDetailsVisible && sensitiveData?.clearCVV2
                 ? sensitiveData.clearCVV2
@@ -178,16 +178,11 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
             </CustomText>
           </View>
 
-          <CustomText type={TextType.ImageSmall}>
+          <CustomText type={TextType.ImageSmall} style={{ color: item.product === 'commercial' ? '#000000' : '#FFFFFF' }}>
             {sensitiveData?.cardholderName || item.cardholderName}
           </CustomText>
         </View>
 
-        <CustomImage
-          source={require('../../assets/images/MastercardLogo.png')}
-          style={styles.mastercardLogo}
-          resizeMode="contain"
-        />
 
       </Animated.View>
     </View>
@@ -202,6 +197,11 @@ const styles = StyleSheet.create({
     borderRadius: ms(16),
     overflow: 'hidden',
     width: '100%',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
   },
   toggle: {
     position: 'absolute',

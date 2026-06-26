@@ -52,3 +52,11 @@
 -keep class com.lugg.RNCConfig.** { *; }
 -keep class com.networkinternational.networkcommercial.BuildConfig { *; }
 -keep class com.networkinternational.networkcommercial.stage.BuildConfig { *; }
+
+# React Native Firebase
+-keep class io.invertase.firebase.** { *; }
+-dontwarn io.invertase.firebase.**
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**

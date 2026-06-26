@@ -310,7 +310,7 @@ export default function CardListScreen() {
 
   if (isTimeoutError) {
     return (
-      <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
+      <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
         <CustomHeader
           title={t('cardList.title')}
         />
@@ -321,7 +321,7 @@ export default function CardListScreen() {
   }
 
   return (
-    <View style={[styles.mainContainer, { backgroundColor: colors.secondaryScreenBackground }]}>
+    <View style={[styles.mainContainer, { backgroundColor: colors.background }]}>
       <CustomHeader
         title={t('cardList.title')}
         rightContent={
