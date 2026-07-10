@@ -2,7 +2,7 @@ import * as React from "react"
 import Svg, { ForeignObject, G, Path, Defs, ClipPath } from "react-native-svg"
 /* SVGR has dropped some elements not supported by react-native-svg: div, filter */
 
-function EyeOffSVG({width = 96, height = 112}) {
+function EyeOffSVG({width = 96, height = 112, color = "#fff"}) {
   return (
     <Svg
       width={width}
@@ -28,17 +28,17 @@ function EyeOffSVG({width = 96, height = 112}) {
             fillRule="evenodd"
             clipRule="evenodd"
             d="M55.898 44.9c7 0 10-5.5 10-8s-3-8-10-8-10 5.5-10 8 3 8 10 8zm0-5a3 3 0 100-6 3 3 0 000 6z"
-            fill="#fff"
+            fill={color}
           />
           <Path
             d="M65.898 36.9c0 2.5-3 8-10 8s-10-5.5-10-8 3-8 10-8 10 5.5 10 8z"
-            stroke="#fff"
+            stroke={color}
             strokeWidth={1.5}
             strokeLinecap="round"
           />
           <Path
             d="M58.898 36.9a3 3 0 11-6 0 3 3 0 016 0z"
-            stroke="#fff"
+            stroke={color}
             strokeWidth={1.5}
             strokeLinecap="round"
           />

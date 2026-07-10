@@ -142,7 +142,7 @@ const FreezeCardScreen = () => {
                     {t('freezeCard.subtitle')}
                 </CustomText>
 
-                <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
+                <CustomCardNumberDisplay maskedPan={card?.maskedPan} product={card?.product} />
 
                 <CustomDropdown
                     label={t('freezeCard.reasonLabel')}

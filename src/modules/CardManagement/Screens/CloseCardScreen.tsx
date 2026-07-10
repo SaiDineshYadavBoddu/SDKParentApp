@@ -138,7 +138,7 @@ const CloseCardScreen = () => {
                         {t('closeCard.subtitle')}
                     </CustomText>
 
-                    <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
+                    <CustomCardNumberDisplay maskedPan={card?.maskedPan} product={card?.product} />
 
                     <CustomWarning message={t('closeCard.warning')} style={{ marginBottom: ms(24) }} />
 

@@ -166,7 +166,7 @@ const ReplaceCardScreen = () => {
           {t('replaceCard.description')}
         </CustomText>
 
-        <CustomCardNumberDisplay maskedPan={card?.maskedPan} />
+        <CustomCardNumberDisplay maskedPan={card?.maskedPan} product={card?.product} />
 
         <CustomDropdown
           label={t('replaceCard.selectReasonForReplacement')}

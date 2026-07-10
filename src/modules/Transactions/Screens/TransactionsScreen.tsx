@@ -31,7 +31,7 @@ import {
   calculateDateRange,
   getFormattedTransaction,
 } from '../../../utils/transactionUtils';
-import { formatMaskedCardNumber } from '../../../utils/cardUtils';
+import { formatMaskedCardNumber, getCardImage } from '../../../utils/cardUtils';
 import CardSelectionBottomSheet from '../Components/CardSelectionBottomSheet';
 import { useGetTransactionsQuery } from '../../../network/card/card.api';
 import CustomLoader from '../../../common/components/CustomLoader';
@@ -277,7 +277,7 @@ const TransactionsScreen = () => {
             >
               <View style={styles.cardSelectorLeft}>
                 <CustomImage
-                  source={require('../../../assets/images/SmallCard.png')}
+                  source={getCardImage(selectedCard?.product)}
                   style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
                   resizeMode="contain"
                 />

@@ -2,7 +2,7 @@ import * as React from "react"
 import Svg, { ForeignObject, G, Path, Defs, ClipPath } from "react-native-svg"
 /* SVGR has dropped some elements not supported by react-native-svg: div, filter */
 
-function EyeSVG({width = 96, height = 112}) {
+function EyeSVG({width = 96, height = 112, color = "#fff"}) {
   return (
     <Svg
       width={width}
@@ -26,11 +26,11 @@ function EyeSVG({width = 96, height = 112}) {
           <Path
             opacity={0.12}
             d="M45.898 36.9c0 2.5 3 8 10 8 2.588 0 4.63-.752 6.175-1.825l-4.053-4.053a3 3 0 11-4.243-4.243l-4.053-4.053c-2.634 1.831-3.826 4.599-3.826 6.174z"
-            fill="#fff"
+            fill={color}
           />
           <Path
             d="M46.898 27.9l2.826 2.826M64.898 45.9l-2.825-2.826m0 0c-1.545 1.074-3.587 1.826-6.175 1.826-7 0-10-5.5-10-8 0-1.576 1.192-4.343 3.826-6.174m12.349 12.348l-4.053-4.053m-8.296-8.295l4.053 4.053m0 0a3 3 0 104.243 4.243m-4.243-4.243l4.243 4.242m6.298 1.879c.124-.166.24-.333.348-.5.838-1.291 1.232-2.593 1.232-3.5 0-2.5-3-8-10-8-1.097 0-2.095.135-3 .372-.17.045-.336.093-.5.145"
-            stroke="#fff"
+            stroke={color}
             strokeWidth={1.5}
             strokeLinecap="round"
           />

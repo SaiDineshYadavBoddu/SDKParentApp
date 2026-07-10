@@ -10,6 +10,7 @@ import { Spacing } from '../../theme/spacing';
 import { useTheme } from '../../theme/ThemeProvider';
 import EyeSVG from '../../assets/svgs/EyeSVG';
 import EyeOffSVG from '../../assets/svgs/EyeOffSVG';
+import { getCardImage } from '../../utils/cardUtils';
 
 interface CardData {
   cardIdentifier: string;
@@ -115,11 +116,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
       >
         <View style={styles.cardInner}>
           <CustomImage
-            source={
-              item.product === 'commercial'
-                ? require('../../assets/images/commercial_card.png')
-                : require('../../assets/images/business_card.png')
-            }
+            source={getCardImage(item.product)}
             style={{ width: cardWidth, height: cardHeight }}
             resizeMode="cover"
           />
@@ -129,7 +126,11 @@ const PaymentCard: React.FC<PaymentCardProps> = ({
               onPress={() => onToggleVisibility(item.cardIdentifier)}
               style={[styles.toggle, { zIndex: 20 }]}
             >
-              {isDetailsVisible ? <EyeOffSVG /> : <EyeSVG />}
+              {isDetailsVisible ? (
+                <EyeOffSVG color={item.product === 'commercial' ? '#000000' : '#FFFFFF'} />
+              ) : (
+                <EyeSVG color={item.product === 'commercial' ? '#000000' : '#FFFFFF'} />
+              )}
             </TouchableOpacity>
           )}
 

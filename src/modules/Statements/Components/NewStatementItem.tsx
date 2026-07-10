@@ -10,7 +10,7 @@ import CustomChip from '../../../common/components/CustomChip';
 import CustomRadioButton from '../../../common/components/CustomRadioButton';
 import ChevronSVG from '../../../assets/svgs/ChevronSVG';
 import FileIconSVG from '../../../assets/svgs/FileIconSVG';
-import { formatMaskedCardNumber } from '../../../utils/cardUtils';
+import { formatMaskedCardNumber, getCardImage } from '../../../utils/cardUtils';
 import ChevronDownSVG from '../../../assets/svgs/CheveronDownSVG';
 import { STATEMENTS_TIME_RANGES } from '../../../constants/appConstants';
 
@@ -45,7 +45,7 @@ const NewStatementItem: React.FC<NewStatementItemProps> = ({
     <View style={[styles.cardSelector, { borderColor: colors.outline }]}>
       <View style={styles.cardSelectorLeft}>
         <CustomImage
-          source={require('../../../assets/images/SmallCard.png')}
+          source={getCardImage(selectedCard?.product)}
           style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
           resizeMode="contain"
         />

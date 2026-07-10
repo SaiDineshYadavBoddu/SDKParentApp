@@ -9,7 +9,7 @@ import CustomButton from '../../../common/components/CustomButton';
 import CustomBottomSheet from '../../../common/components/CustomBottomSheet';
 import CustomImage from '../../../common/components/CustomImage';
 import { useTranslation } from 'react-i18next';
-import { formatMaskedCardNumber } from '../../../utils/cardUtils';
+import { formatMaskedCardNumber, getCardImage } from '../../../utils/cardUtils';
 
 interface CardSelectionBottomSheetProps {
     visible: boolean;
@@ -53,7 +53,7 @@ const CardSelectionBottomSheet: React.FC<CardSelectionBottomSheetProps> = ({
                     >
                         <View style={styles.cardInfo}>
                             <CustomImage
-                                source={require('../../../assets/images/SmallCard.png')}
+                                source={getCardImage(card.product)}
                                 style={{ width: ms(34), height: ms(24), marginRight: Spacing.m }}
                                 resizeMode="contain"
                             />

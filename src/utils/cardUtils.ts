@@ -1,3 +1,14 @@
+// Card image selection utility
+/**
+ * Returns the card artwork image for a given product type.
+ * Mirrors the product-based image logic used on the home screen (PaymentCard).
+ */
+export const getCardImage = (product?: string) => {
+    return product === 'commercial'
+        ? require('../assets/images/commercial_card.png')
+        : require('../assets/images/business_card.png');
+};
+
 // Card number formatting utilities
 /**
  * Formats a card number to show last 8 digits with first 4 masked.

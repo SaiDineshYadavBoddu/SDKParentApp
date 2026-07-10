@@ -6,15 +6,17 @@ import { Spacing } from '../../theme/spacing';
 import CustomText, { TextType } from './CustomText';
 import CustomImage from './CustomImage';
 import { useTheme } from '../../theme/ThemeProvider';
-import { formatMaskedCardNumber } from '../../utils/cardUtils';
+import { formatMaskedCardNumber, getCardImage } from '../../utils/cardUtils';
 
 interface CustomCardNumberDisplayProps {
     maskedPan?: string;
+    product?: string;
     containerStyle?: StyleProp<ViewStyle>;
 }
 
 const CustomCardNumberDisplay: React.FC<CustomCardNumberDisplayProps> = ({
     maskedPan,
+    product,
     containerStyle
 }) => {
     const { t } = useTranslation();
@@ -28,7 +30,7 @@ const CustomCardNumberDisplay: React.FC<CustomCardNumberDisplayProps> = ({
             <View style={[styles.cardItemContainer, { borderColor: colors.outline }]}>
                 <View style={styles.cardIcon}>
                     <CustomImage
-                        source={require('../../assets/images/SmallCard.png')}
+                        source={getCardImage(product)}
                         style={{ width: ms(34), height: ms(24) }}
                         resizeMode="contain"
                     />
