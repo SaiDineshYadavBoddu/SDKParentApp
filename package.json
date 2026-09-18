@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "android:stage": "react-native run-android --mode stageDebug",
+    "android:stage": "react-native run-android --mode stageDebug --appId com.networkinternational.networkcommercial.stage",
     "android:assemble-stage": "cd android && gradlew.bat assembleStageRelease && cd ..",
     "android:bundle-stage": "cd android && gradlew.bat bundleStageRelease && cd ..",
     "android:prod": "react-native run-android --mode prodDebug",
@@ -16,6 +16,7 @@
     "ios:prod": "ENVFILE=.env.prod react-native run-ios",
     "ios:prod-release": "ENVFILE=.env.prod react-native run-ios --mode Release",
     "lint": "eslint .",
+    "postinstall": "node scripts/patch-otp-verify.js",
     "start": "react-native start",
     "test": "jest"
   },

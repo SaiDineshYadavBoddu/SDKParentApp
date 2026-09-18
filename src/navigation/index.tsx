@@ -55,7 +55,12 @@ const NavigationContent = () => {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [showSslPinningError, setShowSslPinningError] = useState(false);
   const insets = useSafeAreaInsets();
-  const { checking: isUpdateChecking, updateType, storeUrl, updateMessage } = useAppUpdateCheck();
+  const {
+    checking: isUpdateChecking,
+    updateType,
+    storeUrl,
+    updateMessage,
+  } = useAppUpdateCheck();
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   useEffect(() => {
@@ -196,7 +201,13 @@ const NavigationContent = () => {
       />
 
       {showSslPinningError && (
-        <View style={[StyleSheet.absoluteFill, styles.sslErrorOverlay, { backgroundColor: colors.background }]}>
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.sslErrorOverlay,
+            { backgroundColor: colors.background },
+          ]}
+        >
           <SslPinningErrorScreen />
         </View>
       )}
