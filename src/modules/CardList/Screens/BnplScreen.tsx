@@ -1,82 +1,75 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { NativeSyntheticEvent, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CustomHeader from '../../../common/components/CustomHeader';
 import { useTheme } from '../../../theme/ThemeProvider';
 import {
-  MINT_CREDIT_DISMISSED_EVENT,
-  MINT_CREDIT_SCREEN_EVENT,
-  addMintCreditSdkListener,
+  BnplEventPayload,
+  BnplLauncher,
   closeMintCreditSdk,
-  goBackMintCreditSdk,
-  openMintCreditSdk,
-  updateMintCreditSdkInsets,
+  mintCreditSdkConfig,
 } from '../../../native/mintCreditSdk';
 
-const TAB_BAR_HEIGHT = 60;
+const LOG_TAG = '[BNPL]';
 
 const BnplScreen = () => {
   const { colors } = useTheme();
   const navigation = useNavigation<any>();
-  const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  const headerHeightRef = useRef(0);
-  const openedRef = useRef(false);
   const [screenTitle, setScreenTitle] = useState<string | null>(null);
-  const footerHeight = TAB_BAR_HEIGHT + insets.bottom;
-
-  const showSdk = useCallback((headerHeight: number) => {
-    if (headerHeight <= 0) {
-      return;
-    }
-    if (openedRef.current) {
-      updateMintCreditSdkInsets(headerHeight, footerHeight);
-      return;
-    }
-    openedRef.current = true;
-    openMintCreditSdk(headerHeight, footerHeight);
-  }, [footerHeight]);
 
   useFocusEffect(
     useCallback(() => {
-      showSdk(headerHeightRef.current);
-      const titleSubscription = addMintCreditSdkListener(MINT_CREDIT_SCREEN_EVENT, event => {
-        if (event?.title) {
-          setScreenTitle(event.title);
-        }
-      });
-      const dismissSubscription = addMintCreditSdkListener(MINT_CREDIT_DISMISSED_EVENT, () => {
-        navigation.navigate('My Cards');
-      });
+      console.log(`${LOG_TAG} focused, mounting BnplLauncher`);
       return () => {
-        titleSubscription.remove();
-        dismissSubscription.remove();
-        openedRef.current = false;
+        console.log(`${LOG_TAG} blurred, closing SDK`);
         closeMintCreditSdk();
         setScreenTitle(null);
       };
-    }, [navigation, showSdk]),
+    }, []),
+  );
+
+  const onBnplEvent = useCallback(
+    ({ nativeEvent }: NativeSyntheticEvent<BnplEventPayload>) => {
+      console.log(`${LOG_TAG} event`, JSON.stringify(nativeEvent));
+      switch (nativeEvent.type) {
+        case 'result':
+          if (nativeEvent.outcome?.screen) {
+            setScreenTitle(nativeEvent.outcome.screen);
+          }
+          break;
+        case 'dismissed':
+          navigation.navigate('My Cards');
+          break;
+        case 'error':
+          console.error(`${LOG_TAG} error ${nativeEvent.error?.code}: ${nativeEvent.error?.message}`);
+          break;
+      }
+    },
+    [navigation],
   );
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <CustomHeader
+        title={screenTitle ?? 'cardList.bnpl'}
+        rawTitle={screenTitle != null}
+        onBackPress={() => navigation.navigate('My Cards')}
+      />
       <View
-        onLayout={event => {
-          const nextHeight = event.nativeEvent.layout.height;
-          headerHeightRef.current = nextHeight;
-          if (isFocused) {
-            showSdk(nextHeight);
-          }
-        }}
+        style={[styles.content, { backgroundColor: colors.background }]}
+        onLayout={({ nativeEvent }) =>
+          console.log(`${LOG_TAG} launcher area ${nativeEvent.layout.width}x${nativeEvent.layout.height}`)
+        }
       >
-        <CustomHeader
-          title={screenTitle ?? 'cardList.bnpl'}
-          rawTitle={screenTitle != null}
-          onBackPress={goBackMintCreditSdk}
-        />
+        {isFocused && (
+          <BnplLauncher
+            config={mintCreditSdkConfig}
+            style={styles.content}
+            onBnplEvent={onBnplEvent}
+          />
+        )}
       </View>
-      <View style={[styles.content, { backgroundColor: colors.background }]} />
     </View>
   );
 };

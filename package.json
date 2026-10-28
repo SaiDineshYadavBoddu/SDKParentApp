@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@networkinternational/ni-card-management-sdk": "^1.0.4",
+    "@rokaTokenVault/react-native-mc-bnpl": "file:../mc-bnpl-rn-library",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-firebase/app": "^24.1.0",
     "@react-native-firebase/remote-config": "^24.1.1",

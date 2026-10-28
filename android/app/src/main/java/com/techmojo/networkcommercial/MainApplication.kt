@@ -11,7 +11,6 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.faizal.OtpVerify.OtpVerifyPackage
 import com.reactnativecommunity.netinfo.NetInfoPackage
-import com.networkinternational.networkcommercial.mint.MintCreditSdkPackage
 import com.networkinternational.networkcommercial.network.SecureApiPackage
 
 
@@ -25,7 +24,6 @@ class MainApplication : Application(), ReactApplication {
               add(OtpVerifyPackage())
               add(NetInfoPackage())
               add(SecureApiPackage())
-              add(MintCreditSdkPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
