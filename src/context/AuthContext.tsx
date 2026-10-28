@@ -16,10 +16,12 @@ import { backendApi } from '../network/api.config';
 import { hasRole, getBankCode, getBankId, getRole } from '../utils/jwtUtils';
 import { isSslPinningError, reportSslPinningFailure } from '../utils/sslPinningError';
 import { Logger } from '../utils/logger';
+import { DEMO_ACCESS_TOKEN, DEMO_CREDENTIALS } from '../constants/demoAuth';
 
 interface AuthContextData {
   isAuthenticated: boolean;
   signIn: () => Promise<void>;
+  signInWithCredentials: (username: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   changePassword: () => Promise<void>;
   changeCompany: () => Promise<void>;
@@ -53,6 +55,7 @@ export const getGlobalRole = () => globalRole;
 const AuthContext = createContext<AuthContextData>({
   isAuthenticated: false,
   signIn: async () => { },
+  signInWithCredentials: async () => false,
   signOut: async () => { },
   changePassword: async () => { },
   changeCompany: async () => { },
@@ -187,6 +190,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signInWithCredentials = async (username: string, password: string) => {
+    const isValid =
+      username.trim() === DEMO_CREDENTIALS.username &&
+      password === DEMO_CREDENTIALS.password;
+
+    if (!isValid) {
+      return false;
+    }
+
+    setAccessToken(DEMO_ACCESS_TOKEN);
+    globalAccessToken = DEMO_ACCESS_TOKEN;
+    setIdToken(null);
+    setRefreshToken(null);
+    setExpirationDate(null);
+    setIsCardholder(true);
+    globalIsCardholder = true;
+    globalBankCode = null;
+    globalBankId = null;
+    globalRole = null;
+    setIsAuthenticated(true);
+    globalIsAuthenticated = true;
+    setSessionExpired(false);
+    return true;
+  };
+
   const signOut = async () => {
     try {
       if (idToken) {
@@ -317,6 +345,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isAuthenticated,
         signIn,
+        signInWithCredentials,
         signOut,
         changePassword,
         changeCompany,

@@ -34,7 +34,7 @@ import SslPinningErrorScreen from '../common/components/SslPinningErrorScreen';
 import useAppUpdateCheck from '../hooks/useAppUpdateCheck';
 import SoftUpdateModal from '../common/components/SoftUpdateModal';
 import { Linking } from 'react-native';
-import AccessRestrictedScreen from '../modules/Authentication/screens/AccessRestrictedScreen';
+import AccessRestrictedScreen from '../modules/Authentication/Screens/AccessRestrictedScreen';
 
 const NavigationContent = () => {
   const {

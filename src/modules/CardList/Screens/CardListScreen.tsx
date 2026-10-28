@@ -20,6 +20,7 @@ import FreezeCardSVG from "../../../assets/svgs/FreezeCardSVG";
 import UnFreezeSVG from "../../../assets/svgs/UnFreezeSVG";
 import ManageCardSVG from "../../../assets/svgs/ManageCardSVG";
 import NotificationSVG from "../../../assets/svgs/NotificationSVG";
+import BnplSVG from "../../../assets/svgs/BnplSVG";
 import SuccessSVG from "../../../assets/svgs/SuccessSVG";
 import FailureSVG from "../../../assets/svgs/FailureSVG";
 import { useGetCardsQuery, useGetTransactionsQuery, useUnblockCardMutation, useActivateCardMutation } from "../../../network/card/card.api";
@@ -33,15 +34,8 @@ import { formatAmount } from "../../../utils/amountUtils";
 import { useRoute } from "@react-navigation/native";
 import {
   isCardPendingActivation,
-  isCardTempBlocked,
   isCardBlocked,
-  isCardReplaced,
-  isCardPendingClosure,
-  canBlockCard,
-  canUnblockCard,
-  canReplaceCard,
   shouldShowTransactions,
-  shouldShowManageCard,
   hasResourceAction
 } from "../../../utils/cardUtils";
 import { mapTransactionsToSectionItems, calculateDateRange, sortTransactions } from "../../../utils/transactionUtils";
@@ -198,19 +192,6 @@ export default function CardListScreen() {
   // Card status checks
   const isBlocked = isCardBlocked(activeCard?.cardStatus);
   const isPendingActivation = isCardPendingActivation(activeCard?.cardStatus);
-  const isTempBlocked = isCardTempBlocked(activeCard?.cardStatus, activeCard?.statusCause);
-  const isReplaced = isCardReplaced(activeCard?.cardStatus);
-  const isPendingClosure = isCardPendingClosure(activeCard?.cardStatus);
-
-  // App-defined permission checks based on card status
-  const canBlock = canBlockCard(activeCard?.cardStatus);
-  const canUnblock = canUnblockCard(activeCard?.cardStatus, activeCard?.statusCause);
-  const canReplace = canReplaceCard(activeCard?.cardStatus, activeCard?.statusCause);
-
-  // UI visibility flags
-  const showManageCard = shouldShowManageCard(activeCard?.cardStatus);
-  const showReplaceCard = canReplace && !isReplaced && !isPendingClosure;
-  const showBlockButton = (canBlock || canUnblock) && !isReplaced && !isPendingClosure;
   const showTransactions = shouldShowTransactions(activeCard?.cardStatus);
 
   const transactions = sortTransactions(transactionsData?.content || [], 'newest');
@@ -325,9 +306,9 @@ export default function CardListScreen() {
       <CustomHeader
         title={t('cardList.title')}
         rightContent={
-          <TouchableOpacity style={styles.rightButton} onPress={() => { navigation.navigate('Notifications') }}>
+          <View style={[styles.rightButton, styles.disabledControl]} pointerEvents="none">
             <NotificationSVG width={ms(24)} height={ms(24)} />
-          </TouchableOpacity>
+          </View>
         }
       />
       <ScrollView
@@ -425,43 +406,46 @@ export default function CardListScreen() {
             {activeCard && !isLoading && (
               <>
                 {/* Action buttons - always show but disable based on status */}
-                <View style={styles.actionsRow}>
-                  <ActionButton
-                    title={t('cardList.manage')}
-                    icon={<ManageCardSVG />}
-                    disabled={!showManageCard}
-                    onPress={() => {
-                      if (activeCard) {
-                        navigation.navigate('ManageCard', { card: activeCard })
-                      }
-                    }}
-                  />
-
-                  <ActionButton
-                    title={t('cardList.replace')}
-                    icon={<ReplaceCardSVG />}
-                    disabled={!showReplaceCard}
-                    onPress={() => {
-                      if (activeCard) {
-                        navigation.navigate('ReplaceCard', { card: activeCard })
-                      }
-                    }}
-                  />
-
-                  <ActionButton
-                    title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
-                    icon={isBlocked ? <UnFreezeSVG color={canUnblock ? colors.primary : undefined} /> : <FreezeCardSVG />}
-                    disabled={!showBlockButton}
-                    onPress={() => {
-                      if (activeCard) {
-                        if (canUnblock) {
-                          setShowUnblockConfirm(true);
-                        } else if (canBlock) {
-                          navigation.navigate('FreezeCard', { card: activeCard })
-                        }
-                      }
-                    }}
-                  />
+                <View style={styles.actionsGrid}>
+                  <View style={styles.actionsRow}>
+                    <View style={styles.actionCell}>
+                      <ActionButton
+                        expand
+                        title={t('cardList.bnpl')}
+                        icon={<BnplSVG />}
+                        onPress={() => navigation.navigate('BNPL')}
+                      />
+                    </View>
+                    <View style={styles.actionCell}>
+                      <ActionButton
+                        expand
+                        title={t('cardList.manage')}
+                        icon={<ManageCardSVG />}
+                        disabled
+                        onPress={() => {}}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.actionsRow}>
+                    <View style={styles.actionCell}>
+                      <ActionButton
+                        expand
+                        title={t('cardList.replace')}
+                        icon={<ReplaceCardSVG />}
+                        disabled
+                        onPress={() => {}}
+                      />
+                    </View>
+                    <View style={styles.actionCell}>
+                      <ActionButton
+                        expand
+                        title={isBlocked ? t('cardList.unfreeze') : t('cardList.freeze')}
+                        icon={isBlocked ? <UnFreezeSVG /> : <FreezeCardSVG />}
+                        disabled
+                        onPress={() => {}}
+                      />
+                    </View>
+                  </View>
                 </View>
 
                 {isPendingActivation && (
@@ -651,6 +635,9 @@ const styles = StyleSheet.create({
     padding: ms(6),
     marginRight: -ms(6),
   },
+  disabledControl: {
+    opacity: 0.35,
+  },
   balanceContainer: {
     marginBottom: Spacing.l,
     alignItems: 'center',
@@ -668,12 +655,17 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 
+  actionsGrid: {
+    paddingHorizontal: Spacing.l,
+    marginBottom: Spacing.xl,
+    gap: Spacing.m,
+  },
   actionsRow: {
     flexDirection: 'row',
-    marginBottom: Spacing.xl,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.l,
-    gap: Spacing.l,
+    gap: Spacing.m,
+  },
+  actionCell: {
+    flex: 1,
   },
 
   transactionContainer: {

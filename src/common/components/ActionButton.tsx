@@ -13,6 +13,7 @@ interface Props {
   loading?: boolean;
   showLabel?: boolean;
   style?: any;
+  expand?: boolean;
 }
 
 export default function ActionButton({
@@ -23,18 +24,20 @@ export default function ActionButton({
   loading = false,
   showLabel = true,
   style,
+  expand = false,
 }: Props) {
   const { colors } = useTheme();
   const isDisabled = disabled || loading;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, expand && styles.expandContainer, style]}>
       <TouchableOpacity
         onPress={onPress}
         disabled={isDisabled}
         activeOpacity={0.9}
         style={[
           styles.square,
+          expand && styles.expandSquare,
           { backgroundColor: colors.surface, opacity: isDisabled ? 0.5 : 1 },
         ]}
       >
@@ -63,6 +66,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
+  expandContainer: {
+    alignSelf: 'stretch',
+  },
   square: {
     width: ms(84),
     height: ms(80),
@@ -74,6 +80,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
+  },
+  expandSquare: {
+    width: '100%',
   },
   iconWrapper: {
     width: ICON_SIZE,

@@ -49,6 +49,7 @@
     "Blocked": "Blocked",
     "recentTransactions": "Recent Transactions",
     "viewAll": "View All",
+    "bnpl": "BNPL",
     "manage": "Manage",
     "replace": "Replace",
     "freeze": "Block",
@@ -108,6 +109,18 @@
   "login": {
     "loginButton": "Sign in",
     "footerText": "If you're an existing merchant, please contact your Relationship Manager or call 6004488 to access the app."
+  },
+  "credentialsLogin": {
+    "title": "Sign in",
+    "subtitle": "Enter the sample username and password to continue.",
+    "username": "Username",
+    "usernamePlaceholder": "Enter username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
+    "loginButton": "Login",
+    "emptyFields": "Enter both username and password.",
+    "invalidCredentials": "Username or password is incorrect.",
+    "hint": "Sample login: {{username}} / {{password}}"
   },
   "appUpdate": {
     "title": "Update Available",

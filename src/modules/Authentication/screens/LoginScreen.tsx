@@ -12,7 +12,7 @@ import {
   NativeScrollEvent,
   Animated,
 } from 'react-native';
-import { useAuth } from '../../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../../theme/ThemeProvider';
 import CustomText, { TextType } from '../../../common/components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
@@ -22,7 +22,7 @@ const { width, height } = Dimensions.get('window');
 
 const LoginScreen = () => {
   const { t } = useTranslation();
-  const { signIn } = useAuth();
+  const navigation = useNavigation<any>();
   const { colors } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
@@ -79,8 +79,8 @@ const LoginScreen = () => {
     );
   };
 
-  const handleLogin = async () => {
-    await signIn();
+  const handleLogin = () => {
+    navigation.navigate('CredentialsLogin');
   };
 
   return (

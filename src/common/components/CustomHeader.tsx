@@ -19,6 +19,7 @@ interface Props {
   onBackPress?: () => void;
   titleStyle?: StyleProp<TextStyle>;
   rightContent?: React.ReactNode;
+  rawTitle?: boolean;
 }
 
 export default function CustomHeader({
@@ -27,6 +28,7 @@ export default function CustomHeader({
   onBackPress,
   titleStyle,
   rightContent,
+  rawTitle = false,
 }: Props) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -43,7 +45,7 @@ export default function CustomHeader({
           type={TextType.SectionTitle}
           style={[styles.title, titleStyle]}
         >
-          {t(title)}
+          {rawTitle ? title : t(title)}
         </CustomText>
       </View>
       {rightContent}

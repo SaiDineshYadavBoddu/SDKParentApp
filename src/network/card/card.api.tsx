@@ -1,22 +1,41 @@
 import { backendApi } from '../api.config';
 import { API_ENDPOINTS } from '../endpoint.const';
+import { getAccessToken } from '../../context/AuthContext';
+import { DEMO_ACCESS_TOKEN } from '../../constants/demoAuth';
+import { MOCK_CARDS, MOCK_TRANSACTIONS } from '../../constants/mockData';
+
+const isDemoSession = () => getAccessToken() === DEMO_ACCESS_TOKEN;
 
 export const cardApi = backendApi.injectEndpoints({
   overrideExisting: true,
   endpoints: builder => ({
     getCards: builder.query<any, any>({
-      query: params => ({
-        url: API_ENDPOINTS.GET_CARDS,
-        method: 'GET',
-        params,
-      }),
+      async queryFn(params, _api, _extraOptions, baseQuery) {
+        if (isDemoSession()) {
+          return { data: { content: MOCK_CARDS } };
+        }
+        return baseQuery({
+          url: API_ENDPOINTS.GET_CARDS,
+          method: 'GET',
+          params,
+        });
+      },
     }),
     getTransactions: builder.query<any, any>({
-      query: params => ({
-        url: API_ENDPOINTS.GET_TRANSACTIONS,
-        method: 'GET',
-        params,
-      }),
+      async queryFn(params, _api, _extraOptions, baseQuery) {
+        if (isDemoSession()) {
+          const cardId = (params as any)?.cardId;
+          const content = MOCK_TRANSACTIONS.filter(
+            item => !cardId || item.cardId === cardId,
+          );
+          return { data: { content } };
+        }
+        return baseQuery({
+          url: API_ENDPOINTS.GET_TRANSACTIONS,
+          method: 'GET',
+          params,
+        });
+      },
       // Consolidate cache keys across pages. Skip pageNumber in key.
       serializeQueryArgs: ({ endpointName, queryArgs }) => {
         if (!queryArgs) return endpointName;

@@ -5,12 +5,14 @@ import { View, StyleSheet, Text } from 'react-native';
 
 // Screens
 import CardListScreen from '../modules/CardList/Screens/CardListScreen';
+import BnplScreen from '../modules/CardList/Screens/BnplScreen';
 import RequestsScreen from '../modules/Requests/Screens/RequestsScreen';
 import TransactionsScreen from '../modules/Transactions/Screens/TransactionsScreen';
 import ProfileScreen from '../modules/Profile/Screens/ProfileScreen';
 
 // SVGs
 import MyCardsSVG from '../assets/svgs/MyCardsSVG';
+import BnplSVG from '../assets/svgs/BnplSVG';
 import RequestsSVG from '../assets/svgs/RequestsSVG';
 import TransactionsSVG from '../assets/svgs/TransactionsSVG';
 import MyProfileSVG from '../assets/svgs/MyProfileSVG';
@@ -27,10 +29,11 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: '#666',
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [styles.tabBar, { backgroundColor: colors.background }],
         tabBarLabel: ({ color }) => (
           <Text
             allowFontScaling={false}
+            numberOfLines={1}
             style={[styles.tabBarLabel, { color }]}
           >
             {route.name}
@@ -40,6 +43,8 @@ const BottomTabNavigator = () => {
         tabBarIcon: ({ color }) => {
           if (route.name === 'My Cards') {
             return <MyCardsSVG width={24} height={24} color={color} />;
+          } else if (route.name === 'BNPL') {
+            return <BnplSVG width={24} height={24} color={color} />;
           } else if (route.name === 'Requests') {
             return <RequestsSVG width={24} height={24} color={color} />;
           } else if (route.name === 'Transactions') {
@@ -52,19 +57,45 @@ const BottomTabNavigator = () => {
       })}
     >
       <Tab.Screen name="My Cards" component={CardListScreen} />
+      <Tab.Screen name="BNPL" component={BnplScreen} />
 
       <Tab.Screen
         name="Transactions"
         component={TransactionsScreen}
-        // listeners={{
-        //   tabPress: e => {
-        //     e.preventDefault();
-        //   },
-        // }}
+        listeners={{
+          tabPress: event => {
+            event.preventDefault();
+          },
+        }}
+        options={{
+          tabBarItemStyle: styles.disabledTab,
+        }}
       />
 
-      <Tab.Screen name="Requests" component={RequestsScreen} />
-      <Tab.Screen name="My Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Requests"
+        component={RequestsScreen}
+        listeners={{
+          tabPress: event => {
+            event.preventDefault();
+          },
+        }}
+        options={{
+          tabBarItemStyle: styles.disabledTab,
+        }}
+      />
+      <Tab.Screen
+        name="My Profile"
+        component={ProfileScreen}
+        listeners={{
+          tabPress: event => {
+            event.preventDefault();
+          },
+        }}
+        options={{
+          tabBarItemStyle: styles.disabledTab,
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -76,9 +107,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   tabBarLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     marginBottom: 5,
+  },
+  disabledTab: {
+    opacity: 0.35,
   },
 });
 
